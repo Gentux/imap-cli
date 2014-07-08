@@ -34,6 +34,9 @@ Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` c
     imap_pass = 'secret'
     imap_user = userName
 
+If you want to add a minimal autocompletion, you can copy `imapcli_bash_completion.sh` in the file
+`/etc/bash_completion.d/imapcli`
+
 ## Usage ##
 
 ```
