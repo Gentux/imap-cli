@@ -36,6 +36,7 @@ setup(
         },
     install_requires=[
         "docopt>=0.6",
+        "tox>=1.6",
         ],
     keywords = "imap cli high level",
     license = "MIT License",
