@@ -56,10 +56,10 @@ def main():
             print u'Error fetching mail {}'.format(mail_id)
             continue
         mail = email.message_from_string(mail_data[0][1])
-        print u'From: {:<30} To: {:<20} Subjetc: {}'.format(
-            mail['from'],
-            mail['to'],
-            mail.get('subject', '').decode('utf-8'),
+        print ctx.format_list.format(
+            mail_from=mail['from'],
+            to=mail['to'],
+            subject=mail.get('subject', '').decode('utf-8'),
             )
 
 

@@ -61,11 +61,11 @@ def main():
         status_match = status_cre.match(data[0])
         if status_match is not None:
             group_dict = status_match.groupdict()
-            print u'{:>20} : {:>5} Unseen   {:>5} Mails     {:>5} Recent'.format(
-                group_dict['dirname'],
-                group_dict['mail_unseen'],
-                group_dict['mail_count'],
-                group_dict['mail_recent'],
+            print ctx.format_status.format(
+                directory=group_dict['dirname'],
+                unseen=group_dict['mail_unseen'],
+                count=group_dict['mail_count'],
+                recent=group_dict['mail_recent'],
             )
 
 
