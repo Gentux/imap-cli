@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+eval "$(docopts -V - -h - : "$@" <<EOF
+Imap-CLI.
+
+Usage:
+    imap-cli status [options]
+    imap-cli list [options] [<directory>]
+    imap-cli read [options] [<directory>] <mail_id>
+    imap-cli flag [options] [<directory>] <mail_id> <flag_name>
+    imap-cli delete [options] [<directory>] <mail_id>
+    imap-cli reply [options] [<directory>] <mail_id>
+    imap-cli forward [options] [<directory>] <mail_id>
+    imap-cli bounce [options] [<directory>] <mail_id>
+
+Options:
+    -f, --format=<FMT>    Output format
+    -v, --verbose         Generate verbose messages
+    -V, --python-verbose  Generate verbose messages in python script
+    -h, --help            Show help options
+    --version             Print program version
+----
+imap-cli 0.1.0
+Copyright (C) 2014 Romain Soufflet
+License MIT
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+EOF
+)"
+
+
+[ $verbose = 'true' ] && set -xv
+[ $status = 'true' ] && imap-cli-status
+[ $list = 'true' ] && imap-cli-list ${directory} ${mail_id}
+[ $read = 'true' ] && imap-cli-read ${directory} ${mail_id}
+
+exit $?
