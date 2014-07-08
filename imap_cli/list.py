@@ -50,13 +50,14 @@ def main():
 
     helpers.connect(ctx)
     status, mail_count = ctx.mail_account.select(ctx.directory, True)
-    for mail_id in helpers.list_mail(ctx):
+    for mail_id in helpers.list_mail(ctx, limit=ctx.limit):
         status, mail_data = ctx.mail_account.fetch(mail_id, '(BODY.PEEK[HEADER])')
         if status != 'OK':
             print u'Error fetching mail {}'.format(mail_id)
             continue
         mail = email.message_from_string(mail_data[0][1])
         print ctx.format_list.format(
+            mail_id=mail_id,
             mail_from=mail['from'],
             to=mail['to'],
             subject=mail.get('subject', '').decode('utf-8'),

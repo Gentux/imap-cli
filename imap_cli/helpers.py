@@ -37,15 +37,14 @@ def list_dir(ctx):
             yield parts[0], parts[1], parts[2]
 
 
-def list_mail(ctx, search_criterion='ALL'):
+def list_mail(ctx, limit=None, search_criterion='ALL'):
 #    typ, data = ctx.mail_account.search(None, 'ALL')
 #    typ, data = ctx.mail_account.search(None, 'ANSWERED')
 #    typ, data = ctx.mail_account.search(None, 'UNSEEN')
 #    typ, data = ctx.mail_account.search(None, 'UNREAD')
 #    typ, data = ctx.mail_account.search(None, 'SEEN')
     typ, data = ctx.mail_account.search(None, search_criterion)
-    for num in data[0].split():
-        yield num
+    return data[0].split() if limit is None else data[0].split()[-limit:]
 
 
 def fetch(ctx, mail_id=None):

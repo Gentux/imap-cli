@@ -63,6 +63,13 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 ```
 
+## Configuration ##
+
+The file `config-example.ini` show you available parameters and their default value when they have one.
+
+You can also find in this file some comment describing all possibilities about each parameters.
+
+
 ## Further documentation ##
 
 Full documentation available at [LogiCalc](http://logicalc.gentux.io/documentation)

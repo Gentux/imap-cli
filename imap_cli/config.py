@@ -20,9 +20,9 @@ class Ctx(object):
     hostname = None
     ssl = True
     # Display
-    limit = 20
-    format_status = u'{directory:>20} : {unseen:>5} Unseen - {count:>5} Mails - {recent:>5} Recent'
-    format_list = u'From: {mail_from:<30} To: {to:<20} Subjetc: {subject}'
+    limit = None
+    format_status = None
+    format_list = None
 
 
 def new_context(config_filename):
@@ -38,7 +38,20 @@ def new_context(config_filename):
     ctx.ssl = config.getboolean('imap', 'ssl')
 
     # Display
-    ctx.limit = config.getint('display', 'limit')
-    ctx.format_status = config.get('display', 'format_status')
-    ctx.format_list = config.get('display', 'format_list')
+    if config.has_option('display', 'limit'):
+        ctx.limit = config.getint('display', 'limit')
+
+    ctx.format_status = config.get(
+        'display',
+        'format_status',
+        ) \
+        if config.has_option('display', 'format_status') \
+        else u'{directory}:{unseen} Unseen - {count} Mails - {recent} Recent'
+
+    ctx.format_list = config.get(
+        'display',
+        'format_list',
+        ) \
+        if config.has_option('display', 'format_list') \
+        else u'From: {mail_from:<30} To: {to:<20} Subjetc: {subject}'
     return ctx
