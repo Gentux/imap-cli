@@ -48,7 +48,7 @@ def main():
     ctx.directory = args['<directory>'] or DEFAULT_DIRECTORY
 
     helpers.connect(ctx)
-    status, mail_count = ctx.mail_account.select(ctx.directory)
+    status, mail_count = ctx.mail_account.select(ctx.directory, True)
     print helpers.fetch(ctx, args['<mail_id>'])[0][1]
 
 

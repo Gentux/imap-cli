@@ -49,14 +49,18 @@ def main():
     ctx.directory = args['<directory>'] or DEFAULT_DIRECTORY
 
     helpers.connect(ctx)
-    status, mail_count = ctx.mail_account.select(ctx.directory)
+    status, mail_count = ctx.mail_account.select(ctx.directory, True)
     for mail_id in helpers.list_mail(ctx):
         status, mail_data = ctx.mail_account.fetch(mail_id, '(BODY.PEEK[HEADER])')
         if status != 'OK':
             print u'Error fetching mail {}'.format(mail_id)
             continue
         mail = email.message_from_string(mail_data[0][1])
-        print u'From: {:<30} To: {:<20} Subjetc: {}'.format(mail['from'], mail['to'], mail['subject'])
+        print u'From: {:<30} To: {:<20} Subjetc: {}'.format(
+            mail['from'],
+            mail['to'],
+            mail.get('subject', '').decode('utf-8'),
+            )
 
 
 if __name__ == '__main__':
