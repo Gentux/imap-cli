@@ -28,7 +28,6 @@ setup(
         'console_scripts': [
             'imap-cli-status=imap_cli.status:main',
             'imap-cli-list=imap_cli.list:main',
-            'imap-cli-listdir=imap_cli.listdir:main',
             'imap-cli-read=imap_cli.read:main',
             'imap-cli-flag=imap_cli.flag:main',
             'imap-cli-reply=imap_cli.reply:main',

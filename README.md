@@ -72,7 +72,7 @@ You can also find in this file some comment describing all possibilities about e
 
 ## Further documentation ##
 
-Full documentation available at [LogiCalc](http://logicalc.gentux.io/documentation)
+Full documentation available soon.
 
 ## Legal notices ##
 
