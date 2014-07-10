@@ -23,7 +23,7 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
         ],
-    description=(__doc__[2:]),
+    description=('\n'.join(__doc__.split('\n')[2:])),
     entry_points={
         'console_scripts': [
             'imap-cli-status=imap_cli.status:main',
@@ -38,7 +38,7 @@ setup(
         ],
     keywords = "imap cli high level",
     license = "MIT License",
-    long_description = __doc__[0],
+    long_description = __doc__.split('\n')[0],
     name = "Imap-CLI",
     packages = find_packages(),
     platforms = ["OS Independent"],
