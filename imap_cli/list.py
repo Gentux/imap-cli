@@ -23,6 +23,7 @@ There is NO WARRANTY, to the extent permitted by law.
 from docopt import docopt
 import email
 import logging
+import re
 import sys
 
 from imap_cli import config, helpers
@@ -30,20 +31,29 @@ from imap_cli import config, helpers
 
 log = logging.getLogger('imap-cli-list')
 
+FLAGS_RE = r'^{mail_id} \(FLAGS \({flags}'.format(
+    mail_id=r'(?P<mail_id>\d+)',
+    flags=r'(?P<flags>[^\)]*)',
+    )
+
 
 def list(ctx, directory='INBOX'):
+    flags_re = re.compile(FLAGS_RE)
     status, mail_count = ctx.mail_account.select(directory, True)
     if status != 'OK':
         log.warn(u'Cannot access directory {}'.format(directory))
         return
 
     for mail_id in helpers.list_mail(ctx, limit=ctx.limit):
-        status, mail_data = ctx.mail_account.fetch(mail_id, '(BODY.PEEK[HEADER])')
+        status, mail_data = ctx.mail_account.fetch(mail_id, '(BODY.PEEK[HEADER] FLAGS)')
         if status != 'OK':
             print u'Error fetching mail {}'.format(mail_id)
             continue
+        flag_match = flags_re.match(mail_data[0][0])
         mail = email.message_from_string(mail_data[0][1])
+        flags = flag_match.groupdict().get('flags').split()
         yield {
+            'flags': flags,
             'mail_id': mail_id,
             'mail_from': mail['from'],
             'to': mail['to'],
