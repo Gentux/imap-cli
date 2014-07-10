@@ -63,7 +63,7 @@ def list(ctx, directory=const.DEFAULT_DIRECTORY):
 
 
 def main():
-    args = docopt(__doc__[2:], version='IMAP-Cli Status v0.1')
+    args = docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.WARNING,
         stream=sys.stdout,
@@ -76,6 +76,7 @@ def main():
     helpers.connect(ctx)
     for mail_info in list(ctx):
         print ctx.format_list.format(**mail_info)
+    return 0
 
 
 if __name__ == '__main__':

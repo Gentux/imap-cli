@@ -8,7 +8,7 @@ Usage:
     imap-cli status [options]
     imap-cli list [options] [<directory>]
     imap-cli read [options] [<directory>] <mail_id>
-    imap-cli flag [options] [<directory>] <mail_id> <flag_name>
+    imap-cli flag <directory> <mail_id> <flag_name>...
     imap-cli delete [options] [<directory>] <mail_id>
     imap-cli reply [options] [<directory>] <mail_id>
     imap-cli forward [options] [<directory>] <mail_id>
@@ -34,5 +34,6 @@ EOF
 [ $status = 'true' ] && imap-cli-status
 [ $list = 'true' ] && imap-cli-list ${directory} ${mail_id}
 [ $read = 'true' ] && imap-cli-read ${directory} ${mail_id}
+[ $flag = 'true' ] && imap-cli-flag ${directory} ${mail_id} ${flag_name}
 
 exit $?

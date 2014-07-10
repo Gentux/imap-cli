@@ -11,7 +11,7 @@ Usage: status [options]
     -h, --help                  Show help options.
     --version                   Print program version.
 ----
-imap-cli-status 0.1.0
+imap-cli-status 0.1
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
@@ -55,7 +55,7 @@ def status(ctx):
 
 
 def main():
-    args = docopt(__doc__[2:], version='IMAP-Cli Status v0.1')
+    args = docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.WARNING,
         stream=sys.stdout,
@@ -68,6 +68,7 @@ def main():
     helpers.connect(ctx)
     for directory_info in status(ctx):
         print ctx.format_status.format(**directory_info)
+    return 0
 
 
 if __name__ == '__main__':
