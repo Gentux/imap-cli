@@ -26,7 +26,7 @@ import logging
 import re
 import sys
 
-from imap_cli import config, helpers
+from imap_cli import config, const, helpers
 
 
 log = logging.getLogger('imap-cli-list')
@@ -37,7 +37,7 @@ FLAGS_RE = r'^{mail_id} \(FLAGS \({flags}'.format(
     )
 
 
-def list(ctx, directory='INBOX'):
+def list(ctx, directory=const.DEFAULT_DIRECTORY):
     flags_re = re.compile(FLAGS_RE)
     status, mail_count = ctx.mail_account.select(directory, True)
     if status != 'OK':

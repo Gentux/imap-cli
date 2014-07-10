@@ -8,11 +8,11 @@ import ConfigParser
 import logging
 import os
 
+from imap_cli import const
+
 
 app_name = os.path.splitext(os.path.basename(__file__))[0]
 log = logging.getLogger(app_name)
-
-DEFAULT_CONFIG_FILE = '~/.config/imap-cli'
 
 
 class Ctx(object):
@@ -30,7 +30,7 @@ class Ctx(object):
 def new_context_from_file(config_filename=None):
     ctx = Ctx()
     if config_filename is None:
-        config_filename = DEFAULT_CONFIG_FILE
+        config_filename = const.DEFAULT_CONFIG_FILE
     config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
 
     config = ConfigParser.RawConfigParser()
