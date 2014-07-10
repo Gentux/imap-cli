@@ -6,18 +6,17 @@ Travis :
 
 ## Description ##
 
-Command line interface for imap account
-
-Imap-CLI aim to provide a dead simple command line tools for the following actions :
+Command line interface and API for imap accounts. It provide the following actions through a minial python
+library:
 
 * Get imap account status (New mails, mail counting… etc…)
-* Get list of directory
 * Get list of mails in INBOX (or any other directory)
 * Read mail
 * Flag mail (Read, Unread, Delete… etc…_
 * Reply, Forward, Bounce mails
 
-NOTE: Some of the links below may not work for now. The project is in a development phase.
+
+NOTE: Some of these commands aren't working yet. The project is in a development phase.
 
 
 ## Quickstart ##
@@ -37,7 +36,7 @@ Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` c
 If you want to add a minimal autocompletion, you can copy `imapcli_bash_completion.sh` in the file
 `/etc/bash_completion.d/imapcli`
 
-## Usage ##
+## Usage CLI ##
 
 ```
 Usage:
@@ -63,11 +62,27 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 ```
 
+## Usage Python API ##
+
+```
+from imap_cli import config, helpers
+
+config_filename = '~/.config/imap-cli'
+ctx = config.new_context_from_file(config_filename)
+
+helpers.connect(ctx)
+for directory_info in status(ctx):
+    print ctx.format_status.format(**directory_info)
+```
+
 ## Configuration ##
 
 The file `config-example.ini` show you available parameters and their default value when they have one.
 
 You can also find in this file some comment describing all possibilities about each parameters.
+
+File configuration is not the only possibility. As the package imap-cli is designed to be an API, all configuration data
+are shared in a *context* object. You can load this context progamatically if you want.
 
 
 ## Further documentation ##
