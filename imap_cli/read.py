@@ -21,36 +21,33 @@ There is NO WARRANTY, to the extent permitted by law.
 
 from docopt import docopt
 import logging
-import os
 import sys
 
 from imap_cli import config, helpers
 
 
-app_name = os.path.splitext(os.path.basename(__file__))[0]
-log = logging.getLogger(app_name)
+log = logging.getLogger('imap-cli-read')
 
-DEFAULT_CONFIG_FILE = '~/.config/imap-cli'
-DEFAULT_DIRECTORY = 'INBOX'
+
+def read(ctx, mail_id, directory=None):
+    status, mail_count = ctx.mail_account.select(directory, True)
+    return helpers.fetch(ctx, mail_id)[0][1]
 
 
 def main():
-    args = docopt(__doc__[2:], version='IMAP-Cli Status v0.1')
+    args = docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.WARNING,
         stream=sys.stdout,
     )
-    config_filename = args['--config-file'] or DEFAULT_CONFIG_FILE
-    config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
-    log.debug("Using configuration file '{}'".format(config_filename))
 
-    ctx = config.new_context(config_filename)
-    ctx.directory = args['<directory>'] or DEFAULT_DIRECTORY
+    ctx = config.new_context_from_file(args['--config-file'])
+    if args['--format'] is not None:
+        ctx.format_status = args['--format']
 
     helpers.connect(ctx)
-    status, mail_count = ctx.mail_account.select(ctx.directory, True)
-    print helpers.fetch(ctx, args['<mail_id>'])[0][1]
-
+    print read(ctx, args['<mail_id>'], directory=args['<directory>'])
+    return 0
 
 if __name__ == '__main__':
     sys.exit(main())
