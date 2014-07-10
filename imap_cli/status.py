@@ -21,23 +21,37 @@ There is NO WARRANTY, to the extent permitted by law.
 
 from docopt import docopt
 import logging
-import os
 import re
 import sys
 
 from imap_cli import config, helpers
 
 
-app_name = os.path.splitext(os.path.basename(__file__))[0]
-log = logging.getLogger(app_name)
+log = logging.getLogger('imap-cli-status')
 
-DEFAULT_CONFIG_FILE = '~/.config/imap-cli'
 STATUS_RE = r'{dirname} \({messages_count} {recent} {unseen}\)'.format(
     dirname=r'"(?P<dirname>.*)"',
     messages_count=r'MESSAGES (?P<mail_count>\d{1,5})',
     recent=r'RECENT (?P<mail_recent>\d{1,5})',
     unseen=r'UNSEEN (?P<mail_unseen>\d{1,5})',
     )
+
+
+def status(ctx):
+    status_cre = re.compile(STATUS_RE)
+    for tags, delimiter, dirname in helpers.list_dir(ctx):
+        status, data = ctx.mail_account.status(dirname, '(MESSAGES RECENT UNSEEN)')
+        if status != 'OK':
+            continue
+        status_match = status_cre.match(data[0])
+        if status_match is not None:
+            group_dict = status_match.groupdict()
+            yield {
+                'directory': group_dict['dirname'],
+                'unseen': group_dict['mail_unseen'],
+                'count': group_dict['mail_count'],
+                'recent': group_dict['mail_recent'],
+            }
 
 
 def main():
@@ -47,26 +61,13 @@ def main():
         stream=sys.stdout,
     )
 
-    config_filename = args['--config-file'] or DEFAULT_CONFIG_FILE
-    config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
-    log.debug("Using configuration file '{}'".format(config_filename))
+    ctx = config.new_context_from_file(args['--config-file'])
+    if args['--format'] is not None:
+        ctx.format_status = args['--format']
 
-    ctx = config.new_context(config_filename)
-    status_cre = re.compile(STATUS_RE)
     helpers.connect(ctx)
-    for tags, delimiter, dirname in helpers.list_dir(ctx):
-        status, data = ctx.mail_account.status(dirname, '(MESSAGES RECENT UNSEEN)')
-        if status != 'OK':
-            continue
-        status_match = status_cre.match(data[0])
-        if status_match is not None:
-            group_dict = status_match.groupdict()
-            print ctx.format_status.format(
-                directory=group_dict['dirname'],
-                unseen=group_dict['mail_unseen'],
-                count=group_dict['mail_count'],
-                recent=group_dict['mail_recent'],
-            )
+    for directory_info in status(ctx):
+        print ctx.format_status.format(**directory_info)
 
 
 if __name__ == '__main__':

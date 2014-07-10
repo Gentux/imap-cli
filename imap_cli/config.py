@@ -12,6 +12,8 @@ import os
 app_name = os.path.splitext(os.path.basename(__file__))[0]
 log = logging.getLogger(app_name)
 
+DEFAULT_CONFIG_FILE = '~/.config/imap-cli'
+
 
 class Ctx(object):
     # Account
@@ -25,11 +27,15 @@ class Ctx(object):
     format_list = None
 
 
-def new_context(config_filename):
+def new_context_from_file(config_filename=None):
     ctx = Ctx()
+    if config_filename is None:
+        config_filename = DEFAULT_CONFIG_FILE
+    config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
 
     config = ConfigParser.RawConfigParser()
     config.read(config_filename)
+    log.debug("Reading configuration file '{}'".format(config_filename))
 
     # Account
     ctx.username = config.get('imap', 'username')
