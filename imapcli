@@ -32,7 +32,7 @@ EOF
 
 [ $verbose = 'true' ] && set -xv
 [ $status = 'true' ] && imap-cli-status
-[ $list = 'true' ] && imap-cli-list ${directory} ${mail_id}
+[ $list = 'true' ] && imap-cli-list ${directory}
 [ $read = 'true' ] && imap-cli-read ${directory} ${mail_id}
 [ $flag = 'true' ] && imap-cli-flag ${directory} ${mail_id} ${flag_name}
 

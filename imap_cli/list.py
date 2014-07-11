@@ -74,7 +74,7 @@ def main():
         ctx.format_status = args['--format']
 
     helpers.connect(ctx)
-    for mail_info in list(ctx):
+    for mail_info in list(ctx, directory=args['<directory>']):
         print ctx.format_list.format(**mail_info)
     return 0
 
