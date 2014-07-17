@@ -35,6 +35,7 @@ setup(
         },
     install_requires=[
         "docopt>=0.6",
+        "mock>=1.0.1",
         ],
     keywords = "imap cli high level",
     license = "MIT License",
@@ -43,6 +44,7 @@ setup(
     packages = find_packages(),
     platforms = ["OS Independent"],
     scripts = ["imapcli"],
+    test_suite = "imap_cli.tests",
     url = "https://github.com/gentux/imap-cli",
     version = "0.1",
 )
