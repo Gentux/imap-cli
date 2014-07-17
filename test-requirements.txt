@@ -1,0 +1,5 @@
+coverage>=3.6
+discover
+hacking>=0.9.1,<0.10
+pylint==0.25.2
+redis
