@@ -46,7 +46,7 @@ def main():
         ctx.format_status = args['--format']
 
     helpers.connect(ctx)
-    print read(ctx, args['<mail_id>'], directory=args['<directory>'])
+    sys.stdout.write(read(ctx, args['<mail_id>'], directory=args['<directory>']))
     return 0
 
 if __name__ == '__main__':

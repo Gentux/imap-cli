@@ -7,7 +7,10 @@
 Set of high level mail management functions. All managed in CLI"""
 
 
-from setuptools import setup, find_packages
+from setuptools import (
+    setup,
+    find_packages,
+)
 
 
 setup(

@@ -34,7 +34,7 @@ log = logging.getLogger('imap-cli-list')
 FLAGS_RE = r'^{mail_id} \(FLAGS \({flags}'.format(
     mail_id=r'(?P<mail_id>\d+)',
     flags=r'(?P<flags>[^\)]*)',
-    )
+)
 
 
 def list(ctx, directory=None):
@@ -49,7 +49,7 @@ def list(ctx, directory=None):
     for mail_id in helpers.list_mail(ctx, limit=ctx.limit):
         status, mail_data = ctx.mail_account.fetch(mail_id, '(BODY.PEEK[HEADER] FLAGS)')
         if status != 'OK':
-            print u'Error fetching mail {}'.format(mail_id)
+            log.error(u'Error fetching mail {}'.format(mail_id))
             continue
         flag_match = flags_re.match(mail_data[0][0])
         mail = email.message_from_string(mail_data[0][1])
@@ -77,7 +77,8 @@ def main():
 
     helpers.connect(ctx)
     for mail_info in list(ctx, directory=args['<directory>']):
-        print ctx.format_list.format(**mail_info)
+        sys.stdout.write(ctx.format_list.format(**mail_info))
+        sys.stdout.write('\n')
     return 0
 
 

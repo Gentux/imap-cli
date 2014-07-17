@@ -44,8 +44,9 @@ def flag(ctx, mail_id=None, flags_str=''):
     if mail_id is None:
         log.error('Can\'t set flag on email {}'.format(mail_id))
         return None
+    # TODO(rsoufflet)
     truc = ctx.mail_account.store(mail_id, '+FLAGS', flags_str)
-    print repr(truc)
+    log.debug(repr(truc))
 
 
 def list_dir(ctx):

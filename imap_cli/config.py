@@ -47,17 +47,11 @@ def new_context_from_file(config_filename=None):
     if config.has_option('display', 'limit'):
         ctx.limit = config.getint('display', 'limit')
 
-    ctx.format_status = config.get(
-        'display',
-        'format_status',
-        ) \
+    ctx.format_status = config.get('display', 'format_status') \
         if config.has_option('display', 'format_status') \
         else u'{directory}:{unseen} Unseen - {count} Mails - {recent} Recent'
 
-    ctx.format_list = config.get(
-        'display',
-        'format_list',
-        ) \
+    ctx.format_list = config.get('display', 'format_list') \
         if config.has_option('display', 'format_list') \
         else u'From: {mail_from:<30} To: {to:<20} Subjetc: {subject}'
     return ctx

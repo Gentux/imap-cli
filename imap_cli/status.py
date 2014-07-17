@@ -24,7 +24,10 @@ import logging
 import re
 import sys
 
-from imap_cli import config, helpers
+from imap_cli import (
+    config,
+    helpers,
+)
 
 
 log = logging.getLogger('imap-cli-status')
@@ -34,7 +37,7 @@ STATUS_RE = r'{dirname} \({messages_count} {recent} {unseen}\)'.format(
     messages_count=r'MESSAGES (?P<mail_count>\d{1,5})',
     recent=r'RECENT (?P<mail_recent>\d{1,5})',
     unseen=r'UNSEEN (?P<mail_unseen>\d{1,5})',
-    )
+)
 
 
 def status(ctx):
@@ -67,7 +70,8 @@ def main():
 
     helpers.connect(ctx)
     for directory_info in status(ctx):
-        print ctx.format_status.format(**directory_info)
+        sys.stdout.write(ctx.format_status.format(**directory_info))
+        sys.stdout.write('\n')
     return 0
 
 
