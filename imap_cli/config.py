@@ -7,7 +7,7 @@
 import logging
 import os
 
-from six.moves import ConfigParser
+from six.moves import configparser
 
 from imap_cli import const
 
@@ -34,7 +34,7 @@ def new_context_from_file(config_filename=None):
         config_filename = const.DEFAULT_CONFIG_FILE
     config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(config_filename)
     log.debug("Reading configuration file '{}'".format(config_filename))
 

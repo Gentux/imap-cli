@@ -5,7 +5,8 @@
 
 Usage: list [options] [<directory>] <mail_id> <flag>...
 
-    -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
+    -c, --config-file=<FILE>    Configuration file
+                                (`~/.config/imap-cli` by default)
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
