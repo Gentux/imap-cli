@@ -7,13 +7,10 @@
 Set of high level mail management functions. All managed in CLI"""
 
 
-from setuptools import (
-    setup,
-    find_packages,
-)
+import setuptools
 
 
-setup(
+setuptools.setup(
     author="Romain Soufflet",
     author_email="romain@soufflet.io",
     classifiers=[
@@ -44,7 +41,7 @@ setup(
     license = "MIT License",
     long_description = __doc__.split('\n')[0],
     name = "Imap-CLI",
-    packages = find_packages(),
+    packages = setuptools.find_packages(),
     platforms = ["OS Independent"],
     scripts = ["imapcli"],
     test_suite = "imap_cli.tests",

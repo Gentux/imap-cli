@@ -18,11 +18,14 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
-from docopt import docopt
 import logging
 import sys
 
-from imap_cli import config, const, helpers
+import docopt
+
+from imap_cli import config
+from imap_cli import const
+from imap_cli import helpers
 
 
 log = logging.getLogger('imap-cli-flag')
@@ -38,7 +41,7 @@ def flag(ctx, mail_id, flags, directory=const.DEFAULT_DIRECTORY):
 
 
 def main():
-    args = docopt('\n'.join(__doc__.split('\n')[2:]))
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.WARNING,
         stream=sys.stdout,

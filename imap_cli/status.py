@@ -19,15 +19,14 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
-from docopt import docopt
 import logging
 import re
 import sys
 
-from imap_cli import (
-    config,
-    helpers,
-)
+import docopt
+
+from imap_cli import config
+from imap_cli import helpers
 
 
 log = logging.getLogger('imap-cli-status')
@@ -58,7 +57,7 @@ def status(ctx):
 
 
 def main():
-    args = docopt('\n'.join(__doc__.split('\n')[2:]))
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.WARNING,
         stream=sys.stdout,
