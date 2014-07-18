@@ -15,8 +15,10 @@ library:
 * Flag mail (Read, Unread, Delete… etc…_
 * Reply, Forward, Bounce mails
 
-
 NOTE: Some of these commands aren't working yet. The project is in a development phase.
+
+You can read about my initial motivation to write this software
+[here](http://romain.soufflet.io/bash/2014/07/11/Mail-Mail-and-mail-again-my-head-will-explode.html).
 
 
 ## Quickstart ##
