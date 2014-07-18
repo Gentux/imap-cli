@@ -10,6 +10,22 @@
 DEFAULT_DIRECTORY = 'INBOX'
 STATUS_OK = 'OK'
 
+IMAP_SPECIAL_FLAGS = [
+    'DELETED',
+    'SEEN',
+    'ANSWERED',
+    'FLAGGED',
+    'DRAFT',
+    'RECENT',
+]
+
+FLAG_DELETED = r'\Deleted'
+FLAG_SEEN = r'\Seen'
+FLAG_ANSWERED = r'\Answered'
+FLAG_FLAGGED = r'\Flagged'
+FLAG_DRAFT = r'\Draft'
+FLAG_RECENT = r'\Recent'
+
 
 # CLI Constant
 DEFAULT_CONFIG_FILE = '~/.config/imap-cli'

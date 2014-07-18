@@ -58,5 +58,59 @@ def list_dir(ctx):
 
 
 def list_mail(ctx, limit=None, search_criterion='ALL'):
+    """
+    <sequence set>
+    ALL
+    ANSWERED
+    BCC <string>
+    BEFORE <date>
+    BODY <string>
+    CC <string>
+    DELETED
+    DRAFT
+    FLAGGED
+    FROM <string>
+    HEADER <field-name> <string>
+    KEYWORD <flag>
+    LARGER <n>
+    NEW
+    NOT <search-key>
+    OLD
+    ON <date>
+    OR <search-key1> <search-key2>
+    RECENT
+    SEEN
+    SENTBEFORE <date>
+    SENTON <date>
+    SENTSINCE <date>
+    SINCE <date>
+    SMALLER <n>
+    SUBJECT <string>
+    TEXT <string>
+    TO <string>
+    UID <sequence set>
+    UNANSWERED
+    UNDELETED
+    UNDRAFT
+    UNFLAGGED
+    UNKEYWORD <flag>
+    UNSEEN
+
+    Example:    C: A282 SEARCH FLAGGED SINCE 1-Feb-1994 NOT FROM "Smith"
+                S: * SEARCH 2 84 882
+                S: A282 OK SEARCH completed
+                C: A283 SEARCH TEXT "string not in mailbox"
+                S: * SEARCH
+                S: A283 OK SEARCH completed
+                C: A284 SEARCH CHARSET UTF-8 TEXT {6}
+                C: XXXXXX
+                S: * SEARCH 43
+                S: A284 OK SEARCH completed
+
+         Note: Since this document is restricted to 7-bit ASCII
+         text, it is not possible to show actual UTF-8 data.  The
+         "XXXXXX" is a placeholder for what would be 6 octets of
+         8-bit data in an actual transaction.
+    """
     typ, data = ctx.mail_account.search(None, search_criterion)
     return data[0].split() if limit is None else data[0].split()[-limit:]
