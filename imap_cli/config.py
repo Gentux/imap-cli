@@ -4,9 +4,10 @@
 """Configurator"""
 
 
-import ConfigParser
 import logging
 import os
+
+from six.moves import ConfigParser
 
 from imap_cli import const
 
