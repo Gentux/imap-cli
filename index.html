@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Imap-cli by Gentux</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Imap-cli</h1>
+        <p>Command line interface for imap account</p>
+
+        <p class="view"><a href="https://github.com/Gentux/imap-cli">View the Project on GitHub <small>Gentux/imap-cli</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Gentux/imap-cli/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Gentux/imap-cli/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Gentux/imap-cli">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="imap-cli" class="anchor" href="#imap-cli"><span class="octicon octicon-link"></span></a>Imap-CLI</h1>
+
+<p>Travis :
+<a href="https://travis-ci.org/Gentux/imap-cli"><img src="https://travis-ci.org/Gentux/imap-cli.svg?branch=master" alt="Build Status"></a></p>
+
+<h2>
+<a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h2>
+
+<p>Command line interface and API for imap accounts. It provide the following actions through a minial python
+library:</p>
+
+<ul>
+<li>Get imap account status (New mails, mail counting… etc…)</li>
+<li>Get list of mails in INBOX (or any other directory)</li>
+<li>Read mail</li>
+<li>Flag mail (Read, Unread, Delete… etc…_</li>
+<li>Reply, Forward, Bounce mails</li>
+</ul><p>NOTE: Some of these commands aren't working yet. The project is in a development phase.</p>
+
+<p>You can read about my initial motivation to write this software
+<a href="http://romain.soufflet.io/bash/2014/07/11/Mail-Mail-and-mail-again-my-head-will-explode.html">here</a>.</p>
+
+<h2>
+<a name="quickstart" class="anchor" href="#quickstart"><span class="octicon octicon-link"></span></a>Quickstart</h2>
+
+<p>Install imap-cli with the following command :</p>
+
+<pre><code>pip install imap-cli
+</code></pre>
+
+<p>Then, configure imap-cli creating a configuration file in <code>~/.config/imap-cli</code> containing :</p>
+
+<pre><code>imap_account="imaps://imap.gentux.io/"
+imap_pass = 'secret'
+imap_user = userName
+</code></pre>
+
+<p>If you want to add a minimal autocompletion, you can copy <code>imapcli_bash_completion.sh</code> in the file
+<code>/etc/bash_completion.d/imapcli</code></p>
+
+<h2>
+<a name="usage-cli" class="anchor" href="#usage-cli"><span class="octicon octicon-link"></span></a>Usage CLI</h2>
+
+<pre><code>Usage:
+    imap-cli status
+    imap-cli list [&lt;directory&gt;]
+    imap-cli read [&lt;directory&gt;] &lt;mail-id&gt;
+    imap-cli flag &lt;mail-id&gt;
+    imap-cli delete &lt;mail-id&gt;
+    imap-cli reply &lt;mail-id&gt;
+    imap-cli forward &lt;mail-id&gt;
+    imap-cli bounce &lt;mail-id&gt;
+
+    -f, --format=&lt;FMT&gt;    Output format
+    -v, --verbose         Generate verbose messages
+    -V, --python-verbose  Generate verbose messages in python script
+    -h, --help            Show help options.
+    --version             Print program version.
+----
+imap-cli 0.1.0
+Copyright (C) 2014 Romain Soufflet
+License MIT
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+</code></pre>
+
+<h2>
+<a name="usage-python-api" class="anchor" href="#usage-python-api"><span class="octicon octicon-link"></span></a>Usage Python API</h2>
+
+<pre><code>from imap_cli import config, helpers
+
+config_filename = '~/.config/imap-cli'
+ctx = config.new_context_from_file(config_filename)
+
+helpers.connect(ctx)
+for directory_info in status(ctx):
+    print ctx.format_status.format(**directory_info)
+</code></pre>
+
+<h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>The file <code>config-example.ini</code> show you available parameters and their default value when they have one.</p>
+
+<p>You can also find in this file some comment describing all possibilities about each parameters.</p>
+
+<p>File configuration is not the only possibility. As the package imap-cli is designed to be an API, all configuration data
+are shared in a <em>context</em> object. You can load this context progamatically if you want.</p>
+
+<h2>
+<a name="further-documentation" class="anchor" href="#further-documentation"><span class="octicon octicon-link"></span></a>Further documentation</h2>
+
+<p>Full documentation available soon.</p>
+
+<h2>
+<a name="legal-notices" class="anchor" href="#legal-notices"><span class="octicon octicon-link"></span></a>Legal notices</h2>
+
+<p>Released under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Gentux">Gentux</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
