@@ -19,6 +19,8 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
+import email
+from email import header
 import logging
 import sys
 
@@ -48,7 +50,10 @@ def main():
         ctx.format_status = args['--format']
 
     helpers.connect(ctx)
-    sys.stdout.write(read(ctx, args['<mail_id>'], directory=args['<directory>']))
+    mail = email.message_from_string(read(ctx, args['<mail_id>'], directory=args['<directory>']))
+    for header_name, header_value in mail.items():
+        mail.replace_header(header_name, header.decode_header(header_value)[0][0])
+    sys.stdout.write(mail.as_string())
     return 0
 
 if __name__ == '__main__':
