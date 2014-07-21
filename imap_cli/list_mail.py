@@ -40,7 +40,7 @@ FLAGS_RE = r'^{mail_id} \(FLAGS \({flags}'.format(
 )
 
 
-def list(ctx, directory=None):
+def list_mail(ctx, directory=None, mail_set=None):
     if directory is None:
         directory = const.DEFAULT_DIRECTORY
     flags_re = re.compile(FLAGS_RE)
@@ -49,7 +49,12 @@ def list(ctx, directory=None):
         log.warn(u'Cannot access directory {}'.format(directory))
         return
 
-    for mail_id in helpers.list_mail(ctx, limit=ctx.limit):
+    if mail_set is None:
+        mail_set = helpers.list_mail(ctx, limit=ctx.limit)
+    elif isinstance(mail_set, basestring):
+        mail_set = mail_set.split()
+
+    for mail_id in mail_set:
         status, mail_data = ctx.mail_account.fetch(mail_id, '(BODY.PEEK[HEADER] FLAGS)')
         if status != 'OK':
             log.error(u'Error fetching mail {}'.format(mail_id))
@@ -79,7 +84,7 @@ def main():
         ctx.format_status = args['--format']
 
     helpers.connect(ctx)
-    for mail_info in list(ctx, directory=args['<directory>']):
+    for mail_info in list_mail(ctx, directory=args['<directory>']):
         sys.stdout.write(ctx.format_list.format(**mail_info))
         sys.stdout.write('\n')
     return 0
