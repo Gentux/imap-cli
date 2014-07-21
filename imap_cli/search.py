@@ -22,9 +22,10 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
-from docopt import docopt
 import logging
 import sys
+
+import docopt
 
 from imap_cli import config, const, helpers
 
@@ -62,7 +63,7 @@ def search(ctx, directory=None, tags=None, headers=None):
 
 
 def main():
-    args = docopt('\n'.join(__doc__.split('\n')[2:]))
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.WARNING,
         stream=sys.stdout,

@@ -58,7 +58,8 @@ def list_dir(ctx):
 
 
 def list_mail(ctx, limit=None, search_criterion='ALL'):
-    """
+    """Different possibility offers by IMAP protocole are listed below
+
     <sequence set>
     ALL
     ANSWERED
