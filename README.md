@@ -35,8 +35,8 @@ Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` c
     imap_pass = 'secret'
     imap_user = userName
 
-If you want to add a minimal autocompletion, you can copy `imapcli_bash_completion.sh` in the file
-`/etc/bash_completion.d/imapcli` or simply source.
+If you want to add a minimal autocompletion, you can copy **imapcli_bash_completion.sh** in the file
+**/etc/bash_completion.d/imapcli** or simply source.
 
 
 ## Usage CLI ##
@@ -64,7 +64,6 @@ Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
-EOF
 ```
 
 
@@ -72,7 +71,7 @@ EOF
 
 This is work in progress. Python API aims to be as complete as possible to ease the creation of API and clients.
 
-```
+```python
 from imap_cli import config, helpers
 
 config_filename = '~/.config/imap-cli'
@@ -86,7 +85,7 @@ for directory_info in status(ctx):
 
 ## Configuration ##
 
-The file `config-example.ini` show you available parameters and their default value when they have one.
+The file **config-example.ini** show you available parameters and their default value when they have one.
 
 You can also find in this file some comment describing all possibilities about each parameters.
 
