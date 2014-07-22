@@ -3,16 +3,18 @@
 
 """Functions returning an IMAP account state
 
-Usage: list [options] [<directory>]
+Usage: imap-cli-list [options] [<directory>]
 
+Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
     -f, --format=<FMT>          Output format
     -l, --limit=<limit>         Limit number of mail displayed
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
+
 ----
-imap-cli-status 0.1.0
+imap-cli-status 0.2
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.

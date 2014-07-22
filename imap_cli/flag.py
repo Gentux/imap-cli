@@ -3,15 +3,16 @@
 
 """Set flags on a set of mails
 
-Usage: list [options] [<directory>] <mail_id> <flag>...
+Usage: imap-cli-flag [options] [<directory>] <mail_id> <flag>...
 
+Options:
     -c, --config-file=<FILE>    Configuration file
-                                (`~/.config/imap-cli` by default)
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
+
 ----
-imap-cli-flag 0.1.0
+imap-cli-flag 0.2
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.

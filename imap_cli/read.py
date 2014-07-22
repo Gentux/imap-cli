@@ -3,15 +3,16 @@
 
 """Functions returning an IMAP account state
 
-Usage: read [options] [<directory>] <mail_id>
+Usage: imap-cli-read [options] [<directory>] <mail_id>
 
+Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
-    -f, --format=<FMT>          Output format
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
+
 ----
-imap-cli-read 0.1.0
+imap-cli-read 0.2
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
@@ -46,8 +47,6 @@ def main():
     )
 
     ctx = config.new_context_from_file(args['--config-file'])
-    if args['--format'] is not None:
-        ctx.format_status = args['--format']
 
     helpers.connect(ctx)
     mail = email.message_from_string(read(ctx, args['<mail_id>'], directory=args['<directory>']))

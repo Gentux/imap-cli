@@ -3,18 +3,19 @@
 
 """Functions searching in IMAP account
 
-Usage: search [options] [-t <tags>] [-T <full-text>] [<directory>]
+Usage: imap-cli-search [options] [-t <tags>] [-T <full-text>] [<directory>]
 
+Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
     -f, --format=<FMT>          Output format
-    -l, --limit=<limit>         Limit number of mail displayed
     -t, --tags=<tags>           Searched tags (Comma separated values)
     -T, --full-text=<text>      Searched tags (Comma separated values)
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
+
 ----
-imap-cli-status 0.1.0
+imap-cli-status 0.2
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
