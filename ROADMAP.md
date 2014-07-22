@@ -7,14 +7,14 @@ Impa-CLI aims to map all IMAP protocols functionnality within a simple python AP
 below
 
 
-## v0.1 (actual) ##
+## v0.1 ##
 
 * Status (list directory and new mail per directory)
 * List (list content of a directory
 * Read (display content of specified email)
 
 
-## v0.2 ##
+## v0.2 (actual) ##
 
 * Basic Search (search amongs tag, subject and full text within mails)
 * Tags (Add or Remove tag from mails)
@@ -22,6 +22,11 @@ below
 
 ## v0.3 ##
 
-* Advanced Search
+* Rewrite code structure to ease the creation of API
 * Map all feature on REST API
 * Documentation
+
+
+## v0.4 ##
+
+* Advanced Search

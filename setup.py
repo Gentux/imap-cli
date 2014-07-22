@@ -31,7 +31,6 @@ setuptools.setup(
             'imap-cli-search=imap_cli.search:main',
             'imap-cli-read=imap_cli.read:main',
             'imap-cli-flag=imap_cli.flag:main',
-            'imap-cli-reply=imap_cli.reply:main',
             ],
         },
     install_requires=[
@@ -46,6 +45,6 @@ setuptools.setup(
     platforms = ["OS Independent"],
     scripts = ["imapcli"],
     test_suite = "imap_cli.tests",
-    url = "https://github.com/gentux/imap-cli",
-    version = "0.1",
+    url = "http://gentux.github.io/imap-cli/",
+    version = "0.2",
 )

@@ -11,14 +11,14 @@ library:
 
 * Get imap account status (New mails, mail counting… etc…)
 * Get list of mails in INBOX (or any other directory)
+* Search through mail
 * Read mail
 * Flag mail (Read, Unread, Delete… etc…_
-* Reply, Forward, Bounce mails
-
-NOTE: Some of these commands aren't working yet. The project is in a development phase.
 
 You can read about my initial motivation to write this software
 [here](http://romain.soufflet.io/bash/2014/07/11/Mail-Mail-and-mail-again-my-head-will-explode.html).
+
+A presentation of Imap-CLI is available [here](http://gentux.github.io/imap-cli/)
 
 
 ## Quickstart ##
@@ -36,35 +36,41 @@ Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` c
     imap_user = userName
 
 If you want to add a minimal autocompletion, you can copy `imapcli_bash_completion.sh` in the file
-`/etc/bash_completion.d/imapcli`
+`/etc/bash_completion.d/imapcli` or simply source.
+
 
 ## Usage CLI ##
 
 ```
-Usage:
-    imap-cli status
-    imap-cli list [<directory>]
-    imap-cli read [<directory>] <mail-id>
-    imap-cli flag <mail-id>
-    imap-cli delete <mail-id>
-    imap-cli reply <mail-id>
-    imap-cli forward <mail-id>
-    imap-cli bounce <mail-id>
+Usage: imapcli [options] <command> [<args>]
 
-    -f, --format=<FMT>    Output format
-    -v, --verbose         Generate verbose messages
-    -V, --python-verbose  Generate verbose messages in python script
-    -h, --help            Show help options.
-    --version             Print program version.
+Available commands are:
+    status      List unseen, recent and total number of mail per directory in IMAP account
+    list        List mail within a specified directory
+    search      Search for mail
+    read        Display Header and Body of specified mail(s)
+    flag        Set or unset flag on specified mail(s)
+
+Options:
+    -v, --verbose           Generate verbose messages
+    -h, --help              Show help options
+    --version               Print program version
+
+See 'imapcli help <command>' to get further information about specified command
+
 ----
-imap-cli 0.1.0
+imap-cli 0.2
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
+EOF
 ```
 
+
 ## Usage Python API ##
+
+This is work in progress. Python API aims to be as complete as possible to ease the creation of API and clients.
 
 ```
 from imap_cli import config, helpers
@@ -76,6 +82,7 @@ helpers.connect(ctx)
 for directory_info in status(ctx):
     print ctx.format_status.format(**directory_info)
 ```
+
 
 ## Configuration ##
 
@@ -90,6 +97,7 @@ are shared in a *context* object. You can load this context progamatically if yo
 ## Further documentation ##
 
 Full documentation available soon.
+
 
 ## Legal notices ##
 

@@ -1,1 +1,5 @@
+v0.2, 07-22-2014 --
+    Add basic search
+    Handle IMAP flags
+
 v0.1, 07-10-2014 -- Initial release.
