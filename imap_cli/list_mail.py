@@ -26,7 +26,7 @@ import re
 import sys
 
 import docopt
-from six import string_types
+import six
 
 from imap_cli import config
 from imap_cli import const
@@ -52,7 +52,7 @@ def list_mail(ctx, directory=None, mail_set=None):
 
     if mail_set is None:
         mail_set = helpers.list_mail(ctx, limit=ctx.limit)
-    elif isinstance(mail_set, string_types):
+    elif isinstance(mail_set, six.string_types):
         mail_set = mail_set.split()
 
     for mail_id in mail_set:
