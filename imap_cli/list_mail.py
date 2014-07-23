@@ -23,6 +23,7 @@ There is NO WARRANTY, to the extent permitted by law.
 
 
 import email
+from email import header
 import logging
 import re
 import sys
@@ -62,17 +63,19 @@ def list_mail(ctx, directory=None, mail_set=None):
         if status != 'OK':
             log.error(u'Error fetching mail {}'.format(mail_id))
             continue
+
         flag_match = flags_re.match(mail_data[0][0])
         mail = email.message_from_string(mail_data[0][1])
         flags = flag_match.groupdict().get('flags').split()
-        yield {
-            'flags': flags,
-            'mail_id': mail_id,
-            'mail_from': mail['from'],
-            'to': mail['to'],
-            'date': mail['date'],
-            'subject': mail.get('subject', '').decode('utf-8'),
-        }
+
+        yield dict([
+            ('flags', flags),
+            ('mail_id', mail_id),
+            ('mail_from', mail['from']),
+            ('to', mail['to']),
+            ('date', mail['date']),
+            ('subject', mail.get('subject', '')),
+        ])
 
 
 def main():
@@ -88,7 +91,8 @@ def main():
 
     helpers.connect(ctx)
     for mail_info in list_mail(ctx, directory=args['<directory>']):
-        sys.stdout.write(ctx.format_list.format(**mail_info))
+        printable_mail_info = dict(map(lambda t: (t[0], header.decode_header(t[1])[0][0]), mail_info.iteritems()))
+        sys.stdout.write(ctx.format_list.format(**printable_mail_info))
         sys.stdout.write('\n')
     return 0
 
