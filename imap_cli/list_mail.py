@@ -88,6 +88,11 @@ def main():
     ctx = config.new_context_from_file(args['--config-file'])
     if args['--format'] is not None:
         ctx.format_status = args['--format']
+    if args['--limit'] is not None:
+        try:
+            ctx.limit = int(args['--limit'])
+        except ValueError:
+            pass
 
     helpers.connect(ctx)
     for mail_info in list_mail(ctx, directory=args['<directory>']):
