@@ -14,7 +14,7 @@ below
 * Read (display content of specified email)
 
 
-## v0.2 (actual) ##
+## v0.2 (current) ##
 
 * Basic Search (search amongs tag, subject and full text within mails)
 * Tags (Add or Remove tag from mails)
