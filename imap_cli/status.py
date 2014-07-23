@@ -28,7 +28,9 @@ import sys
 import docopt
 
 from imap_cli import config
-from imap_cli import helpers
+from imap_cli import const
+from imap_cli.imap import connection
+from imap_cli.imap import search
 
 
 log = logging.getLogger('imap-cli-status')
@@ -43,9 +45,9 @@ STATUS_RE = r'{dirname} \({messages_count} {recent} {unseen}\)'.format(
 
 def status(ctx):
     status_cre = re.compile(STATUS_RE)
-    for tags, delimiter, dirname in helpers.list_dir(ctx):
+    for tags, delimiter, dirname in search.list_dir(ctx):
         status, data = ctx.mail_account.status(dirname, '(MESSAGES RECENT UNSEEN)')
-        if status != 'OK':
+        if status != const.STATUS_OK:
             continue
         status_match = status_cre.match(data[0])
         if status_match is not None:
@@ -69,10 +71,11 @@ def main():
     if args['--format'] is not None:
         ctx.format_status = args['--format']
 
-    helpers.connect(ctx)
+    connection.connect(ctx)
     for directory_info in status(ctx):
         sys.stdout.write(ctx.format_status.format(**directory_info))
         sys.stdout.write('\n')
+    connection.disconnect(ctx)
     return 0
 
 

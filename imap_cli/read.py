@@ -28,15 +28,17 @@ import sys
 import docopt
 
 from imap_cli import config
-from imap_cli import helpers
+from imap_cli.imap import connection
+from imap_cli.imap import fetch
 
 
 log = logging.getLogger('imap-cli-read')
 
 
 def read(ctx, mail_id, directory=None):
+    # TODO(rsoufflet)  this is realy ugly, thinking of an elegant solution
     status, mail_count = ctx.mail_account.select(directory, True)
-    return helpers.fetch(ctx, mail_id)[0][1]
+    return fetch.fetch(ctx, [mail_id])[0][1]
 
 
 def main():
@@ -48,7 +50,7 @@ def main():
 
     ctx = config.new_context_from_file(args['--config-file'])
 
-    helpers.connect(ctx)
+    connection.connect(ctx)
     mail = email.message_from_string(read(ctx, args['<mail_id>'], directory=args['<directory>']))
     for header_name, header_value in mail.items():
         mail.replace_header(header_name, header.decode_header(header_value)[0][0])

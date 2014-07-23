@@ -28,6 +28,7 @@ import docopt
 from imap_cli import config
 from imap_cli import const
 from imap_cli import helpers
+from imap_cli.imap import connection
 
 
 log = logging.getLogger('imap-cli-flag')
@@ -35,7 +36,7 @@ log = logging.getLogger('imap-cli-flag')
 
 def flag(ctx, mail_id, flags, directory=const.DEFAULT_DIRECTORY):
     status, mail_count = ctx.mail_account.select(directory)
-    if status != 'OK':
+    if status != const.STATUS_OK:
         log.warn(u'Cannot access directory {}'.format(directory))
         return
     for flag in flags:
@@ -50,8 +51,9 @@ def main():
     )
 
     ctx = config.new_context_from_file(args['--config-file'])
-    helpers.connect(ctx)
+    connection.connect(ctx)
     flag(ctx, args['<mail_id>'], args['<flag>'], directory=args['<directory>'])
+    connection.disconnect(ctx)
     return 0
 
 

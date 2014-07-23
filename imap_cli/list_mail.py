@@ -33,7 +33,9 @@ import six
 
 from imap_cli import config
 from imap_cli import const
-from imap_cli import helpers
+from imap_cli.imap import connection
+from imap_cli.imap import fetch
+from imap_cli.imap import search
 
 
 log = logging.getLogger('imap-cli-list')
@@ -49,24 +51,27 @@ def list_mail(ctx, directory=None, mail_set=None):
         directory = const.DEFAULT_DIRECTORY
     flags_re = re.compile(FLAGS_RE)
     status, mail_count = ctx.mail_account.select(directory, True)
-    if status != 'OK':
+    if status != const.STATUS_OK:
         log.warn(u'Cannot access directory {}'.format(directory))
         return
 
     if mail_set is None:
-        mail_set = helpers.list_mail(ctx, limit=ctx.limit)
+        mail_set = search.search(ctx, limit=ctx.limit)
     elif isinstance(mail_set, six.string_types):
         mail_set = mail_set.split()
 
-    for mail_id in mail_set:
-        status, mail_data = ctx.mail_account.fetch(mail_id, '(BODY.PEEK[HEADER] FLAGS)')
-        if status != 'OK':
-            log.error(u'Error fetching mail {}'.format(mail_id))
+    mails_data = fetch.fetch(ctx, mail_set, ['BODY.PEEK[HEADER]', 'FLAGS'])
+    if mails_data is None:
+        return
+
+    for mail_data in mails_data:
+        flag_match = flags_re.match(mail_data[0])
+        if flag_match is None:
             continue
 
-        flag_match = flags_re.match(mail_data[0][0])
-        mail = email.message_from_string(mail_data[0][1])
+        mail = email.message_from_string(mail_data[1])
         flags = flag_match.groupdict().get('flags').split()
+        mail_id = flag_match.groupdict().get('mail_id').split()
 
         yield dict([
             ('flags', flags),
@@ -94,11 +99,12 @@ def main():
         except ValueError:
             pass
 
-    helpers.connect(ctx)
+    connection.connect(ctx)
     for mail_info in list_mail(ctx, directory=args['<directory>']):
         printable_mail_info = dict(map(lambda t: (t[0], header.decode_header(t[1])[0][0]), mail_info.iteritems()))
         sys.stdout.write(ctx.format_list.format(**printable_mail_info))
         sys.stdout.write('\n')
+    connection.disconnect(ctx)
     return 0
 
 

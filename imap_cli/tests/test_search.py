@@ -24,7 +24,7 @@ class HelpersTest(unittest.TestCase):
             assert mail_info == {
                 'date': 'Tue, 03 Jan 1989 09:42:34 +0200',
                 'flags': ['\\Seen', 'NonJunk'],
-                'mail_id': '1',
+                'mail_id': ['1'],
                 'mail_from': 'exampleFrom <example@from.org>',
                 'subject': u'Mocking IMAP Protocols',
                 'to': 'exampleTo <example@to.org>',
