@@ -11,12 +11,12 @@ DEFAULT_DIRECTORY = 'INBOX'
 STATUS_OK = 'OK'
 
 IMAP_SPECIAL_FLAGS = [
-    'DELETED',
-    'SEEN',
     'ANSWERED',
-    'FLAGGED',
+    'DELETED',
     'DRAFT',
+    'FLAGGED',
     'RECENT',
+    'SEEN',
 ]
 
 FLAG_DELETED = r'\Deleted'

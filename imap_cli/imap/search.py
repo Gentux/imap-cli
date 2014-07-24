@@ -33,13 +33,16 @@ def create_search_criteria_by_text(text):
 
 def create_search_criteria_by_tag(tags):
     """Return a search criteria for specified tags."""
-    tags = list(
-        tag
-        if tag.upper() not in const.IMAP_SPECIAL_FLAGS
-        else tag.upper()
-        for tag in tags
-    )
-    return 'KEYWORD "{}"'.format(' '.join(tags))
+    if len(tags) == 0:
+        return ''
+
+    criterion = []
+    for tag in tags:
+        if tag.upper() in const.IMAP_SPECIAL_FLAGS:
+            criterion.append(tag.upper())
+        else:
+            criterion.append('KEYWORD "{}"'.format(tag))
+    return '({})'.format(' '.join(criterion)) if len(criterion) > 1 else criterion[0]
 
 
 def search(ctx, charset=None, limit=None, search_criterion=None):

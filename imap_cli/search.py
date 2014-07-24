@@ -53,8 +53,7 @@ def prepare_search(ctx, directory=None, tags=None, text=None):
     if text is not None:
         search_criterion = [search.create_search_criteria_by_text(text)]
 
-    for result in search.search(ctx, search_criterion=search_criterion):
-        yield result
+    return search_criterion
 
 
 def main():
@@ -71,9 +70,9 @@ def main():
         args['--tags'] = args['--tags'].split(',')
 
     connection.connect(ctx)
-    mail_set = prepare_search(ctx, directory=args['<directory>'], tags=args['--tags'], text=args['--full-text'])
 
-    # TODO(rsoufflet) Use the new module imap
+    search_criterion = prepare_search(ctx, directory=args['<directory>'], tags=args['--tags'], text=args['--full-text'])
+    mail_set = search.search(ctx, search_criterion=search_criterion)
     for mail_info in list_mail.list_mail(ctx, directory=args['<directory>'], mail_set=mail_set):
         sys.stdout.write(ctx.format_list.format(**mail_info))
         sys.stdout.write('\n')
