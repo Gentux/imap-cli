@@ -102,18 +102,17 @@ There is NO WARRANTY, to the extent permitted by law.
 
 <p>This is work in progress. Python API aims to be as complete as possible to ease the creation of API and clients.</p>
 
-<p>```python
-    from imap_cli import config, helpers</p>
+<pre><code>from imap_cli import config
+from imap_cli.imap import connection
+from imap_cli import status
 
-<pre><code>config_filename = &#39;~/.config/imap-cli&#39;
+config_filename = &#39;~/.config/imap-cli&#39;
 ctx = config.new_context_from_file(config_filename)
 
-helpers.connect(ctx)
-for directory_info in status(ctx):
+connection.connect(ctx)
+for directory_info in status.status(ctx):
     print ctx.format_status.format(**directory_info)
 </code></pre>
-
-<p>```</p>
 
 <h2>Configuration</h2>
 
