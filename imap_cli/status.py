@@ -75,7 +75,6 @@ def main():
     for directory_info in status(ctx):
         sys.stdout.write(ctx.format_status.format(**directory_info))
         sys.stdout.write('\n')
-    connection.disconnect(ctx)
     return 0
 
 
