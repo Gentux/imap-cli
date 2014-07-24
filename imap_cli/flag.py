@@ -27,8 +27,8 @@ import docopt
 
 from imap_cli import config
 from imap_cli import const
-from imap_cli import helpers
 from imap_cli.imap import connection
+from imap_cli.imap import flag as imap_flag
 
 
 log = logging.getLogger('imap-cli-flag')
@@ -40,7 +40,7 @@ def flag(ctx, mail_id, flags, directory=const.DEFAULT_DIRECTORY):
         log.warn(u'Cannot access directory {}'.format(directory))
         return
     for flag in flags:
-        helpers.flag(ctx, mail_id, r'({})'.format(flag))
+        imap_flag.flag(ctx, mail_id, r'({})'.format(flag))
 
 
 def main():
