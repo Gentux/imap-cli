@@ -14,7 +14,7 @@ from imap_cli import tests
 
 class ReadTest(unittest.TestCase):
     def setUp(self):
-        self.ctx = config.new_context_from_file('config-example.ini')
+        self.ctx = config.new_context()
         imaplib.IMAP4_SSL = tests.ImapConnectionMock()
 
     def test_status(self):
