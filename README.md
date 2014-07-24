@@ -69,13 +69,15 @@ If you want to add a minimal autocompletion, you can copy **imapcli_bash_complet
 
 This is work in progress. Python API aims to be as complete as possible to ease the creation of API and clients.
 
-    from imap_cli import config, helpers
+    from imap_cli import config
+    from imap_cli.imap import connection
+    from imap_cli import status
 
     config_filename = '~/.config/imap-cli'
     ctx = config.new_context_from_file(config_filename)
 
-    helpers.connect(ctx)
-    for directory_info in status(ctx):
+    connection.connect(ctx)
+    for directory_info in status.status(ctx):
         print ctx.format_status.format(**directory_info)
 
 
