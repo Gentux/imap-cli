@@ -30,7 +30,7 @@ class SearchTests(unittest.TestCase):
 
         tags = ['seen']
         search_criterion = search.prepare_search(self.ctx, directory='INBOX', tags=tags)
-        assert search_criterion == ['KEYWORD "SEEN"']
+        assert search_criterion == ['SEEN']
 
         tags = ['testTag']
         search_criterion = search.prepare_search(self.ctx, directory='INBOX', tags=tags)
@@ -38,7 +38,7 @@ class SearchTests(unittest.TestCase):
 
         tags = ['seen', 'testTag']
         search_criterion = search.prepare_search(self.ctx, directory='INBOX', tags=tags)
-        assert search_criterion == ['KEYWORD "SEEN testTag"']
+        assert search_criterion == ['(SEEN KEYWORD "testTag")']
 
     def test_prepare_search_by_text(self):
         self.ctx.mail_account = imaplib.IMAP4_SSL()
