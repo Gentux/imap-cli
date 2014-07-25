@@ -12,7 +12,7 @@ Options:
     --version                   Print program version.
 
 ----
-imap-cli-read 0.2
+imap-cli-read 0.3
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.

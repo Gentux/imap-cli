@@ -58,7 +58,7 @@ If you want to add a minimal autocompletion, you can copy **imapcli_bash_complet
     See 'imapcli help <command>' to get further information about specified command
 
     ----
-    imap-cli 0.2
+    imap-cli 0.3
     Copyright (C) 2014 Romain Soufflet
     License MIT
     This is free software: you are free to change and redistribute it.
@@ -103,7 +103,7 @@ You can also [open new issues](https://github.com/Gentux/imap-cli/issues/new) fo
 
 ## Roadmap ##
 
-The actual version of Imap-CLI is 0.2.
+The actual version of Imap-CLI is 0.3.
 
 Impa-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
 below
@@ -114,12 +114,12 @@ below
 * List (list content of a directory
 * Read (display content of specified email)
 
-### v0.2 (current) ###
+### v0.2 ###
 
 * Basic Search (search amongs tag, subject and full text within mails)
 * Tags (Add or Remove tag from mails)
 
-### v0.3 ###
+### v0.3 (current) ###
 
 * Rewrite code structure to ease the creation of API
 * Map all feature on REST API (separate project)
@@ -142,7 +142,6 @@ below
 ## Further documentation ##
 
 Full documentation available [here](http://imap-cli.readthedocs.org/en/latest/).
-
 
 
 ## Legal notices ##

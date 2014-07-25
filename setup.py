@@ -46,5 +46,5 @@ setuptools.setup(
     scripts = ["imapcli"],
     test_suite = "imap_cli.tests",
     url = "http://gentux.github.io/imap-cli/",
-    version = "0.2",
+    version = "0.3",
 )

@@ -21,7 +21,7 @@ Options:
 See 'imapcli help <command>' to get further information about specified command
 
 ----
-imap-cli 0.2
+imap-cli 0.3
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
