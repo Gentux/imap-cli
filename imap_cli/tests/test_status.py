@@ -12,7 +12,7 @@ from imap_cli import status
 from imap_cli import tests
 
 
-class ReadTest(unittest.TestCase):
+class StatusTest(unittest.TestCase):
     def setUp(self):
         self.ctx = config.new_context()
         imaplib.IMAP4_SSL = tests.ImapConnectionMock()

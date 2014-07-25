@@ -23,7 +23,7 @@ below
 ## v0.3 ##
 
 * Rewrite code structure to ease the creation of API
-* Map all feature on REST API
+* Map all feature on REST API (separate project)
 * Documentation
 
 
