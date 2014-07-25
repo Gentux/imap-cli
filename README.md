@@ -91,6 +91,43 @@ File configuration is not the only possibility. As the package imap-cli is desig
 are shared in a *context* object. You can load this context progamatically if you want.
 
 
+## Roadmap ##
+
+The actual version of Imap-CLI is 0.2.
+
+Impa-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
+below
+
+### v0.1 ###
+
+* Status (list directory and new mail per directory)
+* List (list content of a directory
+* Read (display content of specified email)
+
+### v0.2 (current) ###
+
+* Basic Search (search amongs tag, subject and full text within mails)
+* Tags (Add or Remove tag from mails)
+
+### v0.3 ###
+
+* Rewrite code structure to ease the creation of API
+* Map all feature on REST API (separate project)
+* Documentation
+
+### v0.4 ###
+
+* Advanced Search
+
+## Creator ##
+
+### Romain Soufflet ###
+
+* [Twitter](http://twitter.com/Romain_Soufflet)
+* [Github](http://github.com/Gentux
+* [http://romain.soufflet.io](http://romain.soufflet.io
+
+
 ## Further documentation ##
 
 Full documentation available soon.
