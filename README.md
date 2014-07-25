@@ -135,8 +135,8 @@ below
 ### Romain Soufflet ###
 
 * [Twitter](http://twitter.com/Romain_Soufflet)
-* [Github](http://github.com/Gentux
-* [http://romain.soufflet.io](http://romain.soufflet.io
+* [Github](http://github.com/Gentux)
+* [http://romain.soufflet.io](http://romain.soufflet.io)
 
 
 ## Further documentation ##
