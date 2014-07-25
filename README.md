@@ -91,6 +91,16 @@ File configuration is not the only possibility. As the package imap-cli is desig
 are shared in a *context* object. You can load this context progamatically if you want.
 
 
+## Contributing ##
+
+All contributions are welcome.
+
+If your patche(s) contain new features, ensure you have written correspondig unit test. Also ensure all tests pass using
+*tox*
+
+You can also [open new issues](https://github.com/Gentux/imap-cli/issues/new) for questions, bugs or new feature.
+
+
 ## Roadmap ##
 
 The actual version of Imap-CLI is 0.2.
@@ -118,6 +128,7 @@ below
 ### v0.4 ###
 
 * Advanced Search
+
 
 ## Creator ##
 
