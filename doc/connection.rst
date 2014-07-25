@@ -32,4 +32,3 @@ Once :ref:configuration is done, you can connect to your imap account
         connection.disconnect(ctx)
 
     .. versionadded:: 0.1
-    .. node:: You can't use disconnect method if you have not selected a directory (python imaplib)

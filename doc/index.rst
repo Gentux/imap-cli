@@ -20,6 +20,9 @@ consult and manage IMAP accounts:
 * Read mail
 * Flag mail (Read, Unread, Delete… etc…)
 
+.. _Imap-CLI: http://gentux.github.io/imap-cli
+
+
 Contents:
 
 .. toctree::
@@ -30,8 +33,6 @@ Contents:
     connection
     status
     search
-    read
-    flag
     roadmap
     contribute
 
@@ -41,6 +42,3 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
-
-.. _Imap-CLI: http://gentux.github.io/imap-cli
