@@ -53,8 +53,12 @@ def new_context(config=None):
         config = DEFAULT_CONFIG
     else:
         log.debug("Loading custom configuration")
+
     for key, value in config.items():
         setattr(ctx, key, value)
+    for key, value in DEFAULT_CONFIG.items():
+        if getattr(ctx, key) is None:
+            setattr(ctx, key, value)
     return ctx
 
 
