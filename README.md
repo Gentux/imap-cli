@@ -141,7 +141,8 @@ below
 
 ## Further documentation ##
 
-Full documentation available soon.
+Full documentation available [here](http://imap-cli.readthedocs.org/en/latest/).
+
 
 
 ## Legal notices ##
