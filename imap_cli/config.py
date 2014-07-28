@@ -88,5 +88,5 @@ def new_context_from_file(config_filename=None):
 
     ctx.format_list = config.get('display', 'format_list') \
         if config.has_option('display', 'format_list') \
-        else u'From: {mail_from:<30} To: {to:<20} Subjetc: {subject}'
+        else u'From: {mail_from:<30} To: {to:<20} Subject: {subject}'
     return ctx
