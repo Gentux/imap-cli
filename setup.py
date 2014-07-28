@@ -35,6 +35,7 @@ setuptools.setup(
         },
     install_requires=[
         "docopt>=0.6",
+        "docopts>=0.6",
         "mock>=1.0.1",
         ],
     keywords = "imap cli high level",
