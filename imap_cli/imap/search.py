@@ -61,6 +61,6 @@ def search(ctx, charset=None, limit=None, search_criterion=None):
     else:
         request_search_criterion = '({})'.format(' '.join(search_criterion))
 
-    status, data = ctx.mail_account.search(charset, request_search_criterion)
+    status, data = ctx.mail_account.uid('search', charset, request_search_criterion)
     if status == const.STATUS_OK:
         return data[0].split() if limit is None else data[0].split()[-limit:]

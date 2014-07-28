@@ -40,17 +40,17 @@ from imap_cli.imap import search
 
 log = logging.getLogger('imap-cli-list')
 
-FLAGS_RE = r'^{mail_id} \(FLAGS \({flags}\) UID {uid}'.format(
-    mail_id=r'(?P<mail_id>\d+)',
-    flags=r'(?P<flags>[^\)]*)',
-    uid=r'(?P<uid>[^\s)]*)',
-)
+FLAGS_RE = r'.*FLAGS \((?P<flags>[^\)]*)\)'
+MAIL_ID_RE = r'^(?P<mail_id>\d+) \('
+UID_RE = r'.*UID (?P<uid>[^ ]*)'
 
 
 def list_mail(ctx, directory=None, mail_set=None):
     if directory is None:
         directory = const.DEFAULT_DIRECTORY
     flags_re = re.compile(FLAGS_RE)
+    mail_id_re = re.compile(MAIL_ID_RE)
+    uid_re = re.compile(UID_RE)
     status, mail_count = ctx.mail_account.select(directory, True)
     if status != const.STATUS_OK:
         log.warn(u'Cannot access directory {}'.format(directory))
@@ -66,14 +66,16 @@ def list_mail(ctx, directory=None, mail_set=None):
         return
 
     for mail_data in mails_data:
-        flag_match = flags_re.match(mail_data[0])
-        if flag_match is None:
+        flags_match = flags_re.match(mail_data[0])
+        mail_id_match = mail_id_re.match(mail_data[0])
+        uid_match = uid_re.match(mail_data[0])
+        if mail_id_match is None or flags_match is None or uid_match is None:
             continue
 
         mail = email.message_from_string(mail_data[1])
-        flags = flag_match.groupdict().get('flags').split()
-        mail_id = flag_match.groupdict().get('mail_id').split()
-        mail_uid = flag_match.groupdict().get('uid').split()
+        flags = flags_match.groupdict().get('flags').split()
+        mail_id = mail_id_match.groupdict().get('mail_id').split()
+        mail_uid = uid_match.groupdict().get('uid').split()
 
         yield dict([
             ('flags', flags),
