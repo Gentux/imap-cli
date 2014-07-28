@@ -40,9 +40,10 @@ from imap_cli.imap import search
 
 log = logging.getLogger('imap-cli-list')
 
-FLAGS_RE = r'^{mail_id} \(FLAGS \({flags}'.format(
+FLAGS_RE = r'^{mail_id} \(FLAGS \({flags}\) UID {uid}'.format(
     mail_id=r'(?P<mail_id>\d+)',
     flags=r'(?P<flags>[^\)]*)',
+    uid=r'(?P<uid>[^\s)]*)',
 )
 
 
@@ -60,7 +61,7 @@ def list_mail(ctx, directory=None, mail_set=None):
     elif isinstance(mail_set, six.string_types):
         mail_set = mail_set.split()
 
-    mails_data = fetch.fetch(ctx, mail_set, ['BODY.PEEK[HEADER]', 'FLAGS'])
+    mails_data = fetch.fetch(ctx, mail_set, ['BODY.PEEK[HEADER]', 'FLAGS', 'UID'])
     if mails_data is None:
         return
 
@@ -72,10 +73,12 @@ def list_mail(ctx, directory=None, mail_set=None):
         mail = email.message_from_string(mail_data[1])
         flags = flag_match.groupdict().get('flags').split()
         mail_id = flag_match.groupdict().get('mail_id').split()
+        mail_uid = flag_match.groupdict().get('uid').split()
 
         yield dict([
             ('flags', flags),
             ('mail_id', mail_id),
+            ('mail_uid', mail_uid),
             ('mail_from', mail['from']),
             ('to', mail['to']),
             ('date', mail['date']),
