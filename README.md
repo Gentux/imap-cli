@@ -128,6 +128,7 @@ below
 ### v0.4 ###
 
 * Advanced Search
+* Use UID instead of volatil mails id
 
 
 ## Creator ##
