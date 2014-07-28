@@ -32,7 +32,7 @@ Contents:
     configuration
     connection
     status
-    search
+    imap-search
     roadmap
     contribute
 
