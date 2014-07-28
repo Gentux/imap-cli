@@ -34,6 +34,6 @@ def fetch(ctx, message_set=None, message_parts=None):
     request_message_parts = '({})'.format(' '.join(message_parts)
                                           if isinstance(message_parts, collections.Iterable)
                                           else message_parts)
-    typ, data = ctx.mail_account.fetch(request_message_set, request_message_parts)
+    typ, data = ctx.mail_account.uid('fetch', request_message_set, request_message_parts)
     if typ == const.STATUS_OK:
         return data
