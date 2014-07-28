@@ -38,3 +38,6 @@ class ImapConnectionMock(mock.Mock):
 
     def status(self, *args):
         return ('OK', ['"Directory_name" (MESSAGES 1 RECENT 1 UNSEEN 0)'])
+
+    def uid(self, command, mails_id_set, request):
+        return ('OK', [('1 (FLAGS (\\Seen NonJunk) BODY[HEADER] {1621}', example_email_content), ')'])
