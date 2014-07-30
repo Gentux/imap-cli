@@ -45,7 +45,7 @@ MAIL_ID_RE = r'^(?P<mail_id>\d+) \('
 UID_RE = r'.*UID (?P<uid>[^ ]*)'
 
 
-def list_mail(ctx, directory=None, mail_set=None):
+def list_mail(ctx, directory=None, mail_set=None, decode=True):
     if directory is None:
         directory = const.DEFAULT_DIRECTORY
     flags_re = re.compile(FLAGS_RE)
@@ -72,10 +72,17 @@ def list_mail(ctx, directory=None, mail_set=None):
         if mail_id_match is None or flags_match is None or uid_match is None:
             continue
 
-        mail = email.message_from_string(mail_data[1])
         flags = flags_match.groupdict().get('flags').split()
         mail_id = mail_id_match.groupdict().get('mail_id').split()
         mail_uid = uid_match.groupdict().get('uid').split()
+
+        mail = email.message_from_string(mail_data[1])
+        if decode is True:
+            for header_name, header_value in mail.items():
+                header_new_value = []
+                for value, encoding in header.decode_header(header_value):
+                    header_new_value.append(value.decode(encoding or 'utf-8'))
+                mail.replace_header(header_name, ' '.join(header_new_value))
 
         yield dict([
             ('flags', flags),
@@ -106,8 +113,7 @@ def main():
 
     connection.connect(ctx)
     for mail_info in list_mail(ctx, directory=args['<directory>']):
-        printable_mail_info = dict(map(lambda t: (t[0], header.decode_header(t[1])[0][0]), mail_info.iteritems()))
-        sys.stdout.write(ctx.format_list.format(**printable_mail_info))
+        sys.stdout.write(ctx.format_list.format(**mail_info))
         sys.stdout.write('\n')
     connection.disconnect(ctx)
     return 0
