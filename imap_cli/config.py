@@ -22,7 +22,7 @@ DEFAULT_CONFIG = {
     'limit': 10,
     'format_list': "".join([
         "\n",
-        "ID:         {mail_id}\n",
+        "ID:         {uid}\n",
         "Flags:      {flags}\n",
         "From:       {mail_from}\n",
         "To:         {to}\n",
