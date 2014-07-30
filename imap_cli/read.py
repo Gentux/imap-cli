@@ -3,7 +3,7 @@
 
 """Functions returning an IMAP account state
 
-Usage: imap-cli-read [options] [<directory>] <mail_id>
+Usage: imap-cli-read [options] <mail_uid>
 
 Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
@@ -35,10 +35,10 @@ from imap_cli.imap import fetch
 log = logging.getLogger('imap-cli-read')
 
 
-def read(ctx, mail_id, directory=None):
+def read(ctx, mail_uid, directory=None):
     # TODO(rsoufflet)  this is realy ugly, thinking of an elegant solution
     status, mail_count = ctx.mail_account.select(directory, True)
-    return fetch.fetch(ctx, [mail_id])[0][1]
+    return fetch.fetch(ctx, [mail_uid])[0][1]
 
 
 def main():
@@ -51,7 +51,7 @@ def main():
     ctx = config.new_context_from_file(args['--config-file'])
 
     connection.connect(ctx)
-    mail = email.message_from_string(read(ctx, args['<mail_id>'], directory=args['<directory>']))
+    mail = email.message_from_string(read(ctx, args['<mail_uid>']))
     for header_name, header_value in mail.items():
         mail.replace_header(header_name, header.decode_header(header_value)[0][0])
     sys.stdout.write(mail.as_string())
