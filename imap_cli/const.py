@@ -17,6 +17,7 @@ IMAP_SPECIAL_FLAGS = [
     'FLAGGED',
     'RECENT',
     'SEEN',
+    'UNSEEN',
 ]
 
 FLAG_DELETED = r'\Deleted'
