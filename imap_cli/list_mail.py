@@ -79,8 +79,8 @@ def list_mail(ctx, directory=None, mail_set=None):
 
         yield dict([
             ('flags', flags),
-            ('mail_id', mail_id),
-            ('mail_uid', mail_uid),
+            ('id', mail_id),
+            ('uid', mail_uid),
             ('mail_from', mail['from']),
             ('to', mail['to']),
             ('date', mail['date']),
