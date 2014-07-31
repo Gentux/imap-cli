@@ -4,6 +4,7 @@
 """Configurator"""
 
 
+import codecs
 import logging
 import os
 
@@ -14,22 +15,22 @@ from imap_cli import const
 
 app_name = os.path.splitext(os.path.basename(__file__))[0]
 DEFAULT_CONFIG = {
-    'hostname': 'imap.example.org',
-    'username': 'username',
-    'password': 'secret',
-    'ssl': True,
+    u'hostname': u'imap.example.org',
+    u'username': u'username',
+    u'password': u'secret',
+    u'ssl': True,
 
-    'limit': 10,
-    'format_list': "".join([
-        "\n",
-        "ID:         {uid}\n",
-        "Flags:      {flags}\n",
-        "From:       {mail_from}\n",
-        "To:         {to}\n",
-        "Date:       {date}\n",
-        "Subject:    {subject}",
+    u'limit': 10,
+    u'format_list': u''.join([
+        u'\n',
+        u'ID:         {uid}\n',
+        u'Flags:      {flags}\n',
+        u'From:       {mail_from}\n',
+        u'To:         {to}\n',
+        u'Date:       {date}\n',
+        u'Subject:    {subject}',
     ]),
-    'format_status': "{directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent"
+    u'format_status': u'{directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent'
 }
 log = logging.getLogger(app_name)
 
@@ -49,10 +50,10 @@ class Ctx(object):
 def new_context(config=None):
     ctx = Ctx()
     if config is None:
-        log.debug("Loading default configuration")
+        log.debug(u'Loading default configuration')
         config = DEFAULT_CONFIG
     else:
-        log.debug("Loading custom configuration")
+        log.debug(u'Loading custom configuration')
 
     for key, value in config.items():
         setattr(ctx, key, value)
@@ -62,15 +63,15 @@ def new_context(config=None):
     return ctx
 
 
-def new_context_from_file(config_filename=None):
+def new_context_from_file(config_filename=None, encoding='utf-8'):
     ctx = Ctx()
     if config_filename is None:
         config_filename = const.DEFAULT_CONFIG_FILE
     config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
 
     config = configparser.RawConfigParser()
-    config.read(config_filename)
-    log.debug("Reading configuration file '{}'".format(config_filename))
+    config.readfp(codecs.open(config_filename, 'r', encoding))
+    log.debug(u'Reading configuration file \'{}\''.format(config_filename))
 
     # Account
     ctx.username = config.get('imap', 'username')
