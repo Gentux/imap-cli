@@ -13,6 +13,7 @@ import sys
 
 from imap_cli import config
 from imap_cli.imap import connection
+from imap_cli.imap import directories
 from imap_cli.imap import search
 from imap_cli import list_mail
 from imap_cli import status
@@ -52,14 +53,14 @@ def main():
             sys.stdout.write(directory_status['directory'])
             sys.stdout.write('\n')
 
-            ctx.mail_account.select(directory_status['directory'], True)
+            directories.change_dir(ctx, directory_status['directory'])
             mail_set = search.search(ctx, search_criterion=[search.create_search_criteria_by_tag(['unseen'])])
 
-            for mail_info in list_mail.list_mail(ctx, mail_set=mail_set):
-                sys.stdout.write(u'    From : {:<35} To : {:<35} Subject : {}\n'.format(
-                    truncate_string(mail_info['mail_from'], 35),
-                    truncate_string(mail_info['to'], 35),
-                    mail_info['subject'],
+            for mail_info in list_mail.list_mail(ctx, directory=directory_status['directory'], mail_set=mail_set):
+                sys.stdout.write(u'    From : {:<30} \tTo : {:<30} \tSubject : {}\n'.format(
+                    truncate_string(mail_info['mail_from'], 30),
+                    truncate_string(mail_info['to'], 30),
+                    truncate_string(mail_info['subject'], 30),
                 ))
     connection.disconnect(ctx)
 
