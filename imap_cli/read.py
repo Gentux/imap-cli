@@ -38,8 +38,8 @@ log = logging.getLogger('imap-cli-read')
 
 
 def read(ctx, mail_uid, directory=None):
-    """Return mail information within a dict"""
-    assert directories.change_dir(ctx, directory or const.DEFAULT_DIRECTORY) >= 0
+    """Return mail information within a dict."""
+    directories.change_dir(ctx, directory or const.DEFAULT_DIRECTORY)
 
     raw_mail = fetch.fetch(ctx, [mail_uid])[0][1]
     mail = email.message_from_string(raw_mail)
@@ -49,8 +49,6 @@ def read(ctx, mail_uid, directory=None):
         value, encoding = header.decode_header(header_value)[0]
         if encoding is not None:
             value = value.decode(encoding)
-        elif not isinstance(value, unicode):
-            value = unicode(value)
         mail_headers[header_name] = value
 
     message_parts = []
