@@ -39,6 +39,16 @@ from imap_cli.imap import fetch
 log = logging.getLogger('imap-cli-read')
 
 
+def get_charset(message, default="ascii"):
+    """Get the message charset."""
+    if message.get_content_charset():
+        return message.get_content_charset()
+    if message.get_charset():
+        return message.get_charset()
+
+    return default
+
+
 def read(ctx, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
     directories.change_dir(ctx, directory or const.DEFAULT_DIRECTORY)
@@ -60,9 +70,11 @@ def read(ctx, mail_uid, directory=None, save_directory=None):
             continue
 
         if part.get_content_type().startswith('text'):
+            charset = get_charset(part, get_charset(mail))
             message_parts.append({
                 'content_type': part.get_content_type(),
                 'data': part.as_string(),
+                'as_string': part.get_payload(decode=True).decode(charset, 'replace'),
             })
         elif part.get_filename():
             message_parts.append({
@@ -95,21 +107,32 @@ def main():
     connection.connect(ctx)
     mail_data = read(ctx, args['<mail_uid>'], save_directory=args['--save'])
 
-    sys.stdout.write('\n'.join([
+    # Display mail
+    displayable_parts = list([
+        part.get('as_string')
+        for part in mail_data['parts']
+        if part['content_type'] == 'text/plain'
+    ])
+    if len(displayable_parts) == 0:
+        displayable_parts = list([
+            part.get('as_string')
+            for part in mail_data['parts']
+            if part['content_type'].startswith('text')
+        ])
+    output = [
         u'From       : {}'.format(mail_data['headers']['From']),
         u'Subject    : {}'.format(mail_data['headers']['Subject']),
         u'Date       : {}'.format(mail_data['headers']['Date']),
         u'',
-        u'\n\n'.join([part['data'] for part in mail_data['parts'] if part['content_type'] == 'text/plain']),
-    ]))
+        u'\n\n'.join(displayable_parts).strip(),
+    ]
     other_parts = [part for part in mail_data['parts'] if not part['content_type'].startswith('text')]
     if len(other_parts) > 0:
-        sys.stdout.write('\nAttachement :\n')
+        output.append('\nAttachement :')
         for part in other_parts:
-            sys.stdout.write('    ')
-            sys.stdout.write(part.get('filename', part.get('content_type', '')))
-            sys.stdout.write('\n')
-
+            if part.get('filename'):
+                output.append('    {}'.format(part.get('filename')))
+    sys.stdout.write(u'{}\n'.format(u'\n'.join(output)).encode('utf-8'))
     return 0
 
 if __name__ == '__main__':
