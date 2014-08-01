@@ -11,12 +11,9 @@ import logging
 import os
 import sys
 
+import imap_cli
 from imap_cli import config
-from imap_cli.imap import connection
-from imap_cli.imap import directories
-from imap_cli.imap import search
-from imap_cli import list_mail
-from imap_cli import status
+from imap_cli import search
 
 
 app_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -47,22 +44,22 @@ def main():
         'ssl': not args.no_ssl,
     })
 
-    connection.connect(ctx)
-    for directory_status in status.status(ctx):
+    imap_cli.connect(ctx)
+    for directory_status in imap_cli.status(ctx):
         if int(directory_status['unseen']) > 0:
             sys.stdout.write(directory_status['directory'])
             sys.stdout.write('\n')
 
-            directories.change_dir(ctx, directory_status['directory'])
-            mail_set = search.search(ctx, search_criterion=[search.create_search_criteria_by_tag(['unseen'])])
+            imap_cli.change_dir(ctx, directory_status['directory'])
+            mail_set = search.fetch_uids(ctx, search_criterion=[search.create_search_criteria_by_tag(['unseen'])])
 
-            for mail_info in list_mail.list_mail(ctx, directory=directory_status['directory'], mail_set=mail_set):
+            for mail_info in search.fetch_mails_info(ctx, directory=directory_status['directory'], mail_set=mail_set):
                 sys.stdout.write(u'    {:<10} From : {:<30} \tSubject : {}\n'.format(
                     mail_info['uid'],
                     truncate_string(mail_info['mail_from'], 30),
                     truncate_string(mail_info['subject'], 50),
                 ))
-    connection.disconnect(ctx)
+    imap_cli.disconnect(ctx)
 
     return 0
 

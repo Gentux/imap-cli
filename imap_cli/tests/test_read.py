@@ -8,7 +8,7 @@ import imaplib
 import unittest
 
 from imap_cli import config
-from imap_cli import read
+from imap_cli import fetch
 from imap_cli import tests
 
 
@@ -21,7 +21,7 @@ class ReadTest(unittest.TestCase):
         self.ctx.mail_account = imaplib.IMAP4_SSL()
         self.ctx.mail_account.login()
 
-        mail = read.read(self.ctx, 1, directory="INBOX")
+        mail = fetch.read(self.ctx, 1, directory="INBOX")
         reference_mail = {
             u'headers': {
                 u'From': u'exampleFrom <example@from.org>',

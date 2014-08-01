@@ -22,42 +22,22 @@ There is NO WARRANTY, to the extent permitted by law.
 
 
 import logging
-import re
 import sys
 
 import docopt
 
+import imap_cli
 from imap_cli import config
-from imap_cli import const
-from imap_cli.imap import connection
-from imap_cli.imap import directories
 
 
 log = logging.getLogger('imap-cli-status')
 
-STATUS_RE = r'{dirname} \({messages_count} {recent} {unseen}\)'.format(
-    dirname=r'"(?P<dirname>.*)"',
-    messages_count=r'MESSAGES (?P<mail_count>\d{1,5})',
-    recent=r'RECENT (?P<mail_recent>\d{1,5})',
-    unseen=r'UNSEEN (?P<mail_unseen>\d{1,5})',
-)
 
-
-def status(ctx):
-    status_cre = re.compile(STATUS_RE)
-    for tags, delimiter, dirname in directories.list_dir(ctx):
-        status, data = ctx.mail_account.status(dirname, '(MESSAGES RECENT UNSEEN)')
-        if status != const.STATUS_OK:
-            continue
-        status_match = status_cre.match(data[0])
-        if status_match is not None:
-            group_dict = status_match.groupdict()
-            yield {
-                'directory': group_dict['dirname'],
-                'unseen': group_dict['mail_unseen'],
-                'count': group_dict['mail_count'],
-                'recent': group_dict['mail_recent'],
-            }
+def truncate_string(string, length):
+    minus_than_position = string.find('<')
+    if minus_than_position > 0 and string.find('>') > minus_than_position:
+        string = string[0:minus_than_position]
+    return string if len(string) < length else u'{0}…'.format(string[0:length])
 
 
 def main():
@@ -71,10 +51,11 @@ def main():
     if args['--format'] is not None:
         ctx.format_status = args['--format']
 
-    connection.connect(ctx)
-    for directory_info in status(ctx):
-        sys.stdout.write(ctx.format_status.format(**directory_info))
+    imap_cli.connect(ctx)
+    for directory_status in imap_cli.status(ctx):
+        sys.stdout.write(ctx.format_status.format(**directory_status))
         sys.stdout.write('\n')
+
     return 0
 
 

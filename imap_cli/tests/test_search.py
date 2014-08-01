@@ -8,7 +8,6 @@ import imaplib
 import unittest
 
 from imap_cli import config
-from imap_cli import imap
 from imap_cli import search
 from imap_cli import tests
 
@@ -52,4 +51,4 @@ class SearchTests(unittest.TestCase):
         self.ctx.mail_account = imaplib.IMAP4_SSL()
         self.ctx.mail_account.login()
 
-        assert imap.search.search(self.ctx) == ['1']
+        assert search.fetch_uids(self.ctx) == ['1']

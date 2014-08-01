@@ -35,16 +35,13 @@ Moreover, a few logical combination of the above
 
     Example::
 
+        import imap_cli
         from imap_cli import config
-        from imap_cli.imap import connection
         from imap_cli import search
 
         ctx = config.new_context_from_file()
-        connection.connect(ctx)
+        imap_cli.connect(ctx)
 
         print search.prepare_search(ctx, directory="Perso", tags=["family", "unseen"])
 
     .. versionadded:: 0.2
-
-
-This method is a wrapper for **imap_cli.imap.search** methods.

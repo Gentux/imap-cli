@@ -7,6 +7,8 @@ Usage: imap-cli-read [options] <mail_uid>
 
 Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
+    -d, --directory=<DIR>       Directory in wich the search occur
+    -s, --save=<DIR>            Save attachement in specified directory
     -s, --save=<DIR>            Save attachement in specified directory
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
@@ -21,6 +23,7 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
+import collections
 import email
 from email import header
 import logging
@@ -29,14 +32,37 @@ import sys
 
 import docopt
 
+import imap_cli
 from imap_cli import config
 from imap_cli import const
-from imap_cli.imap import connection
-from imap_cli.imap import directories
-from imap_cli.imap import fetch
 
 
-log = logging.getLogger('imap-cli-read')
+app_name = os.path.splitext(os.path.basename(__file__))[0]
+log = logging.getLogger(app_name)
+
+
+def fetch(ctx, message_set=None, message_parts=None):
+    """Return mails corresponding to mails_id.
+
+    Keyword arguments:
+    message_set     -- Iterable containing mails ID (integers)
+    message_parts   -- Iterable of message part names or IMAP protocoles ENVELOP string
+
+    Avalable message_parts are listed in const.MESSAGE_PARTS, for more information checkout RFC3501
+    """
+    if message_set is None or not isinstance(message_set, collections.Iterable):
+        log.error('Can\'t fetch email {}'.format(message_set))
+        return None
+    if message_parts is None:
+        message_parts = ['RFC822']
+
+    request_message_set = ','.join(str(mail_id) for mail_id in message_set)
+    request_message_parts = '({})'.format(' '.join(message_parts)
+                                          if isinstance(message_parts, collections.Iterable)
+                                          else message_parts)
+    typ, data = ctx.mail_account.uid('FETCH', request_message_set, request_message_parts)
+    if typ == const.STATUS_OK:
+        return data
 
 
 def get_charset(message, default="ascii"):
@@ -51,10 +77,13 @@ def get_charset(message, default="ascii"):
 
 def read(ctx, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
-    directories.change_dir(ctx, directory or const.DEFAULT_DIRECTORY)
+    imap_cli.change_dir(ctx, directory or const.DEFAULT_DIRECTORY)
 
-    raw_mail = fetch.fetch(ctx, [mail_uid])[0][1]
-    mail = email.message_from_string(raw_mail)
+    raw_mail = fetch(ctx, [mail_uid])[0]
+    if raw_mail is None:
+        log.error('Server didn\'t sent this email')
+        return None
+    mail = email.message_from_string(raw_mail[1])
 
     mail_headers = {}
     for header_name, header_value in mail.items():
@@ -104,8 +133,12 @@ def main():
 
     ctx = config.new_context_from_file(args['--config-file'])
 
-    connection.connect(ctx)
-    mail_data = read(ctx, args['<mail_uid>'], save_directory=args['--save'])
+    imap_cli.connect(ctx)
+    mail_data = read(ctx, args['<mail_uid>'], directory=args['--directory'], save_directory=args['--save'])
+    if mail_data is None:
+        # Mail is not fetched, an error occured
+        return 1
+    imap_cli.disconnect(ctx)
 
     # Display mail
     displayable_parts = list([

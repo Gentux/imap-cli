@@ -20,14 +20,13 @@ directories
 
     Example::
 
+        import imap_cli
         from imap_cli import config
-        from imap_cli.imap import connection
-        from imap_cli import status
 
         ctx = config.new_context_from_file()
-        connection.connect(ctx)
+        imap_cli.connect(ctx)
 
-        for directory_status in status.status(ctx):
+        for directory_status in imap_cli.status(ctx):
             print directory_status
 
     .. versionadded:: 0.1

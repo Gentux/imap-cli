@@ -9,11 +9,11 @@ Once :ref:configuration is done, you can connect to your imap account
     Set IMAP account object in context
     Example::
 
+        import imap_cli
         from imap_cli import config
-        from imap_cli.imap import connection
 
         ctx = config.new_context_from_file()
-        connection.connect(ctx)
+        imap_cli.connect(ctx)
 
     .. versionadded:: 0.1
 
@@ -23,12 +23,12 @@ Once :ref:configuration is done, you can connect to your imap account
     Disconnect IMAP account object in context
     Example::
 
+        import imap_cli
         from imap_cli import config
-        from imap_cli.imap import connection
 
         ctx = config.new_context_from_file()
-        connection.connect(ctx)
+        imap_cli.connect(ctx)
         ctx.mail_account.select('INBOX')
-        connection.disconnect(ctx)
+        imap_cli.disconnect(ctx)
 
     .. versionadded:: 0.1

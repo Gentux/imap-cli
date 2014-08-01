@@ -26,10 +26,10 @@ setuptools.setup(
     description=('\n'.join(__doc__.split('\n')[2:])),
     entry_points={
         'console_scripts': [
-            'imap-cli-status=imap_cli.status:main',
+            'imap-cli-status=imap_cli.summary:main',
             'imap-cli-list=imap_cli.list_mail:main',
             'imap-cli-search=imap_cli.search:main',
-            'imap-cli-read=imap_cli.read:main',
+            'imap-cli-read=imap_cli.fetch:main',
             'imap-cli-flag=imap_cli.flag:main',
             ],
         },
