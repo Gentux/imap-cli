@@ -7,6 +7,7 @@ Usage: imap-cli-read [options] <mail_uid>
 
 Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
+    -s, --save=<DIR>            Save attachement in specified directory
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
@@ -23,6 +24,7 @@ There is NO WARRANTY, to the extent permitted by law.
 import email
 from email import header
 import logging
+import os
 import sys
 
 import docopt
@@ -37,7 +39,7 @@ from imap_cli.imap import fetch
 log = logging.getLogger('imap-cli-read')
 
 
-def read(ctx, mail_uid, directory=None):
+def read(ctx, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
     directories.change_dir(ctx, directory or const.DEFAULT_DIRECTORY)
 
@@ -68,6 +70,12 @@ def read(ctx, mail_uid, directory=None):
                 'filename': part.get_filename(),
                 'data': part.get_payload(decode=True),
             })
+            if save_directory is not None and os.path.isdir(save_directory):
+                attachment_full_filename = os.path.join(save_directory, part.get_filename())
+                with open(attachment_full_filename, 'wb') as attachement_file:
+                    attachement_file.write(part.get_payload(decode=True))
+            elif save_directory is not None:
+                log.error('Can\'t save attachment, directory {} does not exist'.format(save_directory))
 
     return {
         'headers': mail_headers,
@@ -85,7 +93,7 @@ def main():
     ctx = config.new_context_from_file(args['--config-file'])
 
     connection.connect(ctx)
-    mail_data = read(ctx, args['<mail_uid>'])
+    mail_data = read(ctx, args['<mail_uid>'], save_directory=args['--save'])
 
     sys.stdout.write('\n'.join([
         u'From       : {}'.format(mail_data['headers']['From']),
