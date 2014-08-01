@@ -57,7 +57,8 @@ def main():
             mail_set = search.search(ctx, search_criterion=[search.create_search_criteria_by_tag(['unseen'])])
 
             for mail_info in list_mail.list_mail(ctx, directory=directory_status['directory'], mail_set=mail_set):
-                sys.stdout.write(u'    From : {:<30} \tSubject : {}\n'.format(
+                sys.stdout.write(u'    {:<10} From : {:<30} \tSubject : {}\n'.format(
+                    mail_info['uid'],
                     truncate_string(mail_info['mail_from'], 30),
                     truncate_string(mail_info['subject'], 50),
                 ))
