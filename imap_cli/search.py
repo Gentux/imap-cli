@@ -122,7 +122,7 @@ def prepare_search(ctx, directory=None, tags=None, text=None):
         log.error('No such direcotory on IMAP account')
         return
 
-    search_criterion = 'ALL'
+    search_criterion = ['ALL']
     if tags is not None:
         search_criterion = [create_search_criteria_by_tag(tags)]
 
