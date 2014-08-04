@@ -166,6 +166,9 @@ def main():
     mail_data = read(ctx, args['<mail_uid>'], directory=args['--directory'], save_directory=args['--save'])
     if mail_data is None:
         # Mail is not fetched, an error occured
+    fetched_mail = read(ctx, args['<mail_uid>'], save_directory=args['--save'])
+    if fetched_mail is None:
+        log.error("Mail was not fetched, an error occured")
         return 1
     imap_cli.disconnect(ctx)
 
