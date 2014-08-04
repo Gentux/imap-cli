@@ -40,6 +40,7 @@ def read_controller(req):
     imap_cli.change_dir(ctx, inputs['directory'] or const.DEFAULT_DIRECTORY)
     fetched_mail = fetch.read(ctx, inputs['uid'])
     if fetched_mail is None:
+        # TODO(rsoufflet) Handle this error with HTTP
         return 'Mail was not fetched, an error occured'
 
     return_json = copy.deepcopy(fetched_mail)
@@ -73,7 +74,7 @@ def search_controller(req):
 
 @wsgify
 def status_controller(req):
-    return json.dumps(list(imap_cli.status(ctx)), indent=2,)
+    return json.dumps(list(imap_cli.status(ctx)), indent=2)
 
 
 routings = [
@@ -118,4 +119,5 @@ if __name__ == '__main__':
     imap_cli.connect(ctx)
 
     httpd = simple_server.make_server('127.0.0.1', 8000, router)
+    log.info('Serving on http://127.0.0.1:8000')
     httpd.serve_forever()

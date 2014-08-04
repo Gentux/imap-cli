@@ -9,7 +9,6 @@ Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
     -d, --directory=<DIR>       Directory in wich the search occur
     -s, --save=<DIR>            Save attachement in specified directory
-    -s, --save=<DIR>            Save attachement in specified directory
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
