@@ -41,6 +41,35 @@ app_name = os.path.splitext(os.path.basename(__file__))[0]
 log = logging.getLogger(app_name)
 
 
+def display(fetched_mail):
+    displayable_parts = list([
+        part.get('as_string')
+        for part in fetched_mail['parts']
+        if part['content_type'] == 'text/plain'
+    ])
+    if len(displayable_parts) == 0:
+        displayable_parts = list([
+            part.get('as_string')
+            for part in fetched_mail['parts']
+            if part['content_type'].startswith('text')
+        ])
+    output = [
+        u'From       : {}'.format(fetched_mail['headers']['From']),
+        u'Subject    : {}'.format(fetched_mail['headers']['Subject']),
+        u'Date       : {}'.format(fetched_mail['headers']['Date']),
+        u'',
+        u'\n\n'.join(displayable_parts).strip(),
+    ]
+    other_parts = [part for part in fetched_mail['parts'] if not part['content_type'].startswith('text')]
+    if len(other_parts) > 0:
+        output.append('\nAttachement :')
+        for part in other_parts:
+            if part.get('filename'):
+                output.append('    {}'.format(part.get('filename')))
+
+    return u'{}\n'.format(u'\n'.join(output))
+
+
 def fetch(ctx, message_set=None, message_parts=None):
     """Return mails corresponding to mails_id.
 
@@ -140,32 +169,7 @@ def main():
         return 1
     imap_cli.disconnect(ctx)
 
-    # Display mail
-    displayable_parts = list([
-        part.get('as_string')
-        for part in mail_data['parts']
-        if part['content_type'] == 'text/plain'
-    ])
-    if len(displayable_parts) == 0:
-        displayable_parts = list([
-            part.get('as_string')
-            for part in mail_data['parts']
-            if part['content_type'].startswith('text')
-        ])
-    output = [
-        u'From       : {}'.format(mail_data['headers']['From']),
-        u'Subject    : {}'.format(mail_data['headers']['Subject']),
-        u'Date       : {}'.format(mail_data['headers']['Date']),
-        u'',
-        u'\n\n'.join(displayable_parts).strip(),
-    ]
-    other_parts = [part for part in mail_data['parts'] if not part['content_type'].startswith('text')]
-    if len(other_parts) > 0:
-        output.append('\nAttachement :')
-        for part in other_parts:
-            if part.get('filename'):
-                output.append('    {}'.format(part.get('filename')))
-    sys.stdout.write(u'{}\n'.format(u'\n'.join(output)).encode('utf-8'))
+    sys.stdout.write(display(fetched_mail).encode('utf-8'))
     return 0
 
 if __name__ == '__main__':
