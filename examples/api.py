@@ -1,0 +1,120 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+"""Simple REST API for Imap-CLI."""
+
+
+import copy
+import json
+import logging
+import re
+from wsgiref import simple_server
+
+from webob.dec import wsgify
+from webob.exc import status_map
+
+import imap_cli
+from imap_cli import config
+from imap_cli import const
+from imap_cli import fetch
+from imap_cli import search
+
+
+ctx = config.new_context_from_file()
+log = logging.getLogger('Imap-CLI API')
+
+
+@wsgify
+def read_controller(req):
+    params = req.params
+    inputs = {
+        'directory': params.get('directory') or const.DEFAULT_DIRECTORY,
+        'uid': req.urlvars.get('uid'),
+    }
+
+    if inputs['uid'] is None:
+        return 'You need to specify an UID'
+
+    imap_cli.change_dir(ctx, inputs['directory'] or const.DEFAULT_DIRECTORY)
+    fetched_mail = fetch.read(ctx, inputs['uid'])
+    if fetched_mail is None:
+        return 'Mail was not fetched, an error occured'
+
+    return_json = copy.deepcopy(fetched_mail)
+    for part in return_json['parts']:
+        if not part['content_type'].startswith('text'):
+            del part['data']
+    return json.dumps(return_json, indent=2)
+
+
+@wsgify
+def search_controller(req):
+    params = req.params
+    inputs = {
+        'directory': params.get('directory') or const.DEFAULT_DIRECTORY,
+        'tags': params.getall('tag') or None,
+        'text': params.get('text') or None,
+    }
+
+    search_criterion = search.prepare_search(
+        ctx,
+        directory=inputs['directory'],
+        tags=inputs['tags'],
+        text=inputs['text'],
+    )
+    mail_set = search.fetch_uids(ctx, search_criterion=search_criterion or [])
+    mails_info = list(
+        search.fetch_mails_info(ctx, directory=inputs['directory'], mail_set=mail_set)
+    )
+    return json.dumps(mails_info, indent=2)
+
+
+@wsgify
+def status_controller(req):
+    return json.dumps(list(imap_cli.status(ctx)), indent=2,)
+
+
+routings = [
+    ('GET', '^/v1/status.json$', status_controller),
+    ('GET', '^/v1/list/?$', search_controller),
+    ('GET', '^/v1/search/?$', search_controller),
+    ('GET', '^/v1/read/(?P<uid>.+)?$', read_controller),
+]
+
+
+@wsgify
+def router(req):
+    """Dispatch request to controllers."""
+    split_path_info = req.path_info.split('/')
+    assert not split_path_info[0], split_path_info
+    for methods, regex, app, vars in routes:
+        if methods is None or req.method in methods:
+            match = regex.match(req.path_info)
+            if match is not None:
+                if getattr(req, 'urlvars', None) is None:
+                    req.urlvars = {}
+                req.urlvars.update(dict(
+                    (name, value.decode('utf-8') if value is not None else None)
+                    for name, value in match.groupdict().iteritems()
+                ))
+                req.urlvars.update(vars)
+                req.script_name += req.path_info[:match.end()]
+                req.path_info = req.path_info[match.end():]
+                return req.get_response(app)
+    return status_map[404]()
+
+
+if __name__ == '__main__':
+    routes = []
+    for routing in routings:
+        methods, regex, app = routing[:3]
+        if isinstance(methods, basestring):
+            methods = (methods,)
+        vars = routing[3] if len(routing) >= 4 else {}
+        routes.append((methods, re.compile(regex), app, vars))
+
+    imap_cli.connect(ctx)
+
+    httpd = simple_server.make_server('127.0.0.1', 8000, router)
+    httpd.serve_forever()
