@@ -8,6 +8,8 @@
 # All those value are documented in RFC 3501
 # http://tools.ietf.org/html/rfc3501#section-2.3.2
 DEFAULT_DIRECTORY = 'INBOX'
+DEFAULT_PORT = 143
+DEFAULT_SSL_PORT = 993
 STATUS_OK = 'OK'
 
 IMAP_SPECIAL_FLAGS = [

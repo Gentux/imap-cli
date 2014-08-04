@@ -35,12 +35,15 @@ def change_dir(ctx, directory, read_only=True):
 
 
 def connect(ctx):
+    if ctx.port is None:
+        ctx.port = const.DEFAULT_PORT if ctx.ssl is False else const.DEFAULT_SSL_PORT
+
     if ctx.ssl is True:
         log.debug('Connecting with SSL on {}'.format(ctx.hostname))
-        ctx.mail_account = imaplib.IMAP4_SSL(ctx.hostname, 993)
+        ctx.mail_account = imaplib.IMAP4_SSL(ctx.hostname, ctx.port)
     else:
         log.debug('Connecting on {}'.format(ctx.hostname))
-        ctx.mail_account = imaplib.IMAP4(ctx.hostname)
+        ctx.mail_account = imaplib.IMAP4(ctx.hostname, ctx.port)
     ctx.mail_account.login(ctx.username, ctx.password)
 
 
