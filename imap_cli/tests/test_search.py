@@ -21,7 +21,7 @@ class SearchTests(unittest.TestCase):
         self.ctx.mail_account = imaplib.IMAP4_SSL()
         self.ctx.mail_account.login()
 
-        assert search.prepare_search(self.ctx, directory='INBOX') == 'ALL'
+        assert search.prepare_search(self.ctx, directory='INBOX') == ['ALL']
 
     def test_prepare_search_by_tag(self):
         self.ctx.mail_account = imaplib.IMAP4_SSL()
