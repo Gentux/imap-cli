@@ -89,6 +89,9 @@ def fetch(ctx, message_set=None, message_parts=None):
     request_message_parts = '({})'.format(' '.join(message_parts)
                                           if isinstance(message_parts, collections.Iterable)
                                           else message_parts)
+    if ctx.mail_account.state != 'SELECTED':
+        log.warning(u'No directory specified, selecting {}'.format(const.DEFAULT_DIRECTORY))
+        imap_cli.change_dir(ctx, const.DEFAULT_DIRECTORY)
     typ, data = ctx.mail_account.uid('FETCH', request_message_set, request_message_parts)
     if typ == const.STATUS_OK:
         return data
@@ -106,8 +109,6 @@ def get_charset(message, default="ascii"):
 
 def read(ctx, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
-    imap_cli.change_dir(ctx, directory or const.DEFAULT_DIRECTORY)
-
     raw_mail = fetch(ctx, [mail_uid])[0]
     if raw_mail is None:
         log.error('Server didn\'t sent this email')
@@ -163,9 +164,7 @@ def main():
     ctx = config.new_context_from_file(args['--config-file'])
 
     imap_cli.connect(ctx)
-    mail_data = read(ctx, args['<mail_uid>'], directory=args['--directory'], save_directory=args['--save'])
-    if mail_data is None:
-        # Mail is not fetched, an error occured
+    imap_cli.change_dir(ctx, args['--directory'] or const.DEFAULT_DIRECTORY)
     fetched_mail = read(ctx, args['<mail_uid>'], save_directory=args['--save'])
     if fetched_mail is None:
         log.error("Mail was not fetched, an error occured")
