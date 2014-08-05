@@ -29,6 +29,7 @@ import docopt
 
 import imap_cli
 from imap_cli import config
+from imap_cli import const
 from imap_cli import search
 
 
@@ -42,20 +43,22 @@ def main():
         stream=sys.stdout,
     )
 
-    ctx = config.new_context_from_file(args['--config-file'])
+    connect_conf = config.new_context_from_file(args['--config-file'], section='imap')
+    display_conf = config.new_context_from_file(args['--config-file'], section='display')
     if args['--format'] is not None:
-        ctx.format_status = args['--format']
+        display_conf['format_status'] = args['--format']
     if args['--limit'] is not None:
         try:
-            ctx.limit = int(args['--limit'])
+            display_conf['limit'] = int(args['--limit'])
         except ValueError:
             pass
 
-    imap_cli.connect(ctx)
-    for mail_info in search.fetch_mails_info(ctx, directory=args['<directory>']):
-        sys.stdout.write(ctx.format_list.format(**mail_info))
+    imap_account = imap_cli.connect(**connect_conf)
+    imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
+    for mail_info in search.fetch_mails_info(imap_account):
+        sys.stdout.write(display_conf['format_list'].format(**mail_info))
         sys.stdout.write('\n')
-    imap_cli.disconnect(ctx)
+    imap_cli.disconnect(imap_account)
     return 0
 
 

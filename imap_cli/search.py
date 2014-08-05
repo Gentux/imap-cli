@@ -64,23 +64,19 @@ def create_search_criteria_by_tag(tags):
     return '({})'.format(' '.join(criterion)) if len(criterion) > 1 else criterion[0]
 
 
-def fetch_mails_info(ctx, directory=None, mail_set=None, decode=True):
+def fetch_mails_info(imap_account, directory=None, mail_set=None, decode=True, limit=None, **kw):
     if directory is None:
         directory = const.DEFAULT_DIRECTORY
     flags_re = re.compile(FLAGS_RE)
     mail_id_re = re.compile(MAIL_ID_RE)
     uid_re = re.compile(UID_RE)
-    status, mail_count = ctx.mail_account.select(directory, True)
-    if status != const.STATUS_OK:
-        log.warn(u'Cannot access directory {}'.format(directory))
-        return
 
     if mail_set is None:
-        mail_set = fetch_uids(ctx, limit=ctx.limit)
+        mail_set = fetch_uids(imap_account, limit=limit, **kw)
     elif isinstance(mail_set, six.string_types):
         mail_set = mail_set.split()
 
-    mails_data = fetch.fetch(ctx, mail_set, ['BODY.PEEK[HEADER]', 'FLAGS', 'UID'])
+    mails_data = fetch.fetch(imap_account, mail_set, ['BODY.PEEK[HEADER]', 'FLAGS', 'UID'], **kw)
     if mails_data is None:
         return
 
@@ -114,14 +110,7 @@ def fetch_mails_info(ctx, directory=None, mail_set=None, decode=True):
         ])
 
 
-def prepare_search(ctx, directory=None, tags=None, text=None):
-    if directory is None:
-        directory = const.DEFAULT_DIRECTORY
-    status, mail_count = ctx.mail_account.select(directory, True)
-    if status != const.STATUS_OK:
-        log.error('No such direcotory on IMAP account')
-        return
-
+def create_search_criterion(tags=None, text=None):
     search_criterion = ['ALL']
     if tags is not None:
         search_criterion = [create_search_criteria_by_tag(tags)]
@@ -132,7 +121,7 @@ def prepare_search(ctx, directory=None, tags=None, text=None):
     return search_criterion
 
 
-def fetch_uids(ctx, charset=None, limit=None, search_criterion=None):
+def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None, **kw):
     """Return a list of mails id corresponding to specified search.
 
     Keyword arguments:
@@ -148,7 +137,11 @@ def fetch_uids(ctx, charset=None, limit=None, search_criterion=None):
     else:
         request_search_criterion = '({})'.format(' '.join(search_criterion))
 
-    status, data = ctx.mail_account.uid('SEARCH', charset, request_search_criterion)
+    if imap_account.state != 'SELECTED':
+        log.warning(u'No directory specified, selecting {}'.format(const.DEFAULT_DIRECTORY))
+        imap_cli.change_dir(imap_account, const.DEFAULT_DIRECTORY)
+
+    status, data = imap_account.uid('SEARCH', charset, request_search_criterion)
     if status == const.STATUS_OK:
         return data[0].split() if limit is None else data[0].split()[-limit:]
 
@@ -160,21 +153,25 @@ def main():
         stream=sys.stdout,
     )
 
-    ctx = config.new_context_from_file(args['--config-file'])
+    connect_conf = config.new_context_from_file(args['--config-file'], section='imap')
+    display_conf = config.new_context_from_file(args['--config-file'], section='display')
     if args['--format'] is not None:
-        ctx.format_status = args['--format']
+        display_conf['format_status'] = args['--format']
     if args.get('--tags') is not None:
         args['--tags'] = args['--tags'].split(',')
 
-    imap_cli.connect(ctx)
-
-    search_criterion = prepare_search(ctx, directory=args['<directory>'], tags=args['--tags'], text=args['--full-text'])
-    mail_set = fetch_uids(ctx, search_criterion=search_criterion)
-    for mail_info in fetch_mails_info(ctx, directory=args['<directory>'], mail_set=mail_set):
-        sys.stdout.write(ctx.format_list.format(**mail_info))
+    imap_account = imap_cli.connect(**connect_conf)
+    imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
+    search_criterion = create_search_criterion(
+        tags=args['--tags'],
+        text=args['--full-text'],
+    )
+    mail_set = fetch_uids(imap_account, search_criterion=search_criterion)
+    for mail_info in fetch_mails_info(imap_account, directory=args['<directory>'], mail_set=mail_set):
+        sys.stdout.write(display_conf['format_list'].format(**mail_info))
         sys.stdout.write('\n')
 
-    imap_cli.disconnect(ctx)
+    imap_cli.disconnect(imap_account)
     return 0
 
 

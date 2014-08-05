@@ -69,7 +69,7 @@ def display(fetched_mail):
     return u'{}\n'.format(u'\n'.join(output))
 
 
-def fetch(ctx, message_set=None, message_parts=None):
+def fetch(imap_account, message_set=None, message_parts=None):
     """Return mails corresponding to mails_id.
 
     Keyword arguments:
@@ -88,10 +88,10 @@ def fetch(ctx, message_set=None, message_parts=None):
     request_message_parts = '({})'.format(' '.join(message_parts)
                                           if isinstance(message_parts, collections.Iterable)
                                           else message_parts)
-    if ctx.mail_account.state != 'SELECTED':
+    if imap_account.state != 'SELECTED':
         log.warning(u'No directory specified, selecting {}'.format(const.DEFAULT_DIRECTORY))
-        imap_cli.change_dir(ctx, const.DEFAULT_DIRECTORY)
-    typ, data = ctx.mail_account.uid('FETCH', request_message_set, request_message_parts)
+        imap_cli.change_dir(imap_account, const.DEFAULT_DIRECTORY)
+    typ, data = imap_account.uid('FETCH', request_message_set, request_message_parts)
     if typ == const.STATUS_OK:
         return data
 
@@ -106,9 +106,9 @@ def get_charset(message, default="ascii"):
     return default
 
 
-def read(ctx, mail_uid, directory=None, save_directory=None):
+def read(imap_account, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
-    raw_mail = fetch(ctx, [mail_uid])[0]
+    raw_mail = fetch(imap_account, [mail_uid])[0]
     if raw_mail is None:
         log.error('Server didn\'t sent this email')
         return None
@@ -160,15 +160,15 @@ def main():
         stream=sys.stdout,
     )
 
-    ctx = config.new_context_from_file(args['--config-file'])
+    conf = config.new_context_from_file(args['--config-file'], section='imap')
 
-    imap_cli.connect(ctx)
-    imap_cli.change_dir(ctx, args['--directory'] or const.DEFAULT_DIRECTORY)
-    fetched_mail = read(ctx, args['<mail_uid>'], save_directory=args['--save'])
+    imap_account = imap_cli.connect(**conf)
+    imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY)
+    fetched_mail = read(imap_account, args['<mail_uid>'], save_directory=args['--save'])
     if fetched_mail is None:
         log.error("Mail was not fetched, an error occured")
         return 1
-    imap_cli.disconnect(ctx)
+    imap_cli.disconnect(imap_account)
 
     sys.stdout.write(display(fetched_mail).encode('utf-8'))
     return 0

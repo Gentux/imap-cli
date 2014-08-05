@@ -5,6 +5,7 @@
 
 
 import codecs
+import itertools
 import logging
 import os
 
@@ -35,59 +36,46 @@ DEFAULT_CONFIG = {
 log = logging.getLogger(app_name)
 
 
-class Ctx(object):
-    # Account
-    username = None
-    password = None
-    hostname = None
-    ssl = True
-    # Display
-    limit = None
-    format_status = None
-    format_list = None
-
-
 def new_context(config=None):
-    ctx = Ctx()
     if config is None:
         log.debug(u'Loading default configuration')
         config = DEFAULT_CONFIG
     else:
         log.debug(u'Loading custom configuration')
 
-    for key, value in config.items():
-        setattr(ctx, key, value)
-    for key, value in DEFAULT_CONFIG.items():
-        if getattr(ctx, key) is None:
-            setattr(ctx, key, value)
-    return ctx
+    return dict(
+        (key, value)
+        for key, value in itertools.chain(DEFAULT_CONFIG.items(), config.items())
+    )
 
 
-def new_context_from_file(config_filename=None, encoding='utf-8'):
-    ctx = Ctx()
+def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
     if config_filename is None:
         config_filename = const.DEFAULT_CONFIG_FILE
     config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
 
-    config = configparser.RawConfigParser()
-    config.readfp(codecs.open(config_filename, 'r', encoding))
+    config_reader = configparser.RawConfigParser()
+    config_reader.readfp(codecs.open(config_filename, 'r', encoding))
     log.debug(u'Reading configuration file \'{}\''.format(config_filename))
 
-    # Account
-    ctx.username = config.get('imap', 'username')
-    ctx.password = config.get('imap', 'password')
-    ctx.hostname = config.get('imap', 'hostname')
-    ctx.ssl = config.getboolean('imap', 'ssl')
+    config = {}
+    if section is None or section == 'imap':
+        # Account
+        config['username'] = config_reader.get('imap', 'username')
+        config['password'] = config_reader.get('imap', 'password')
+        config['hostname'] = config_reader.get('imap', 'hostname')
+        config['ssl'] = config_reader.getboolean('imap', 'ssl')
 
-    # Display
-    if config.has_option('display', 'limit'):
-        ctx.limit = config.getint('display', 'limit')
+    if section is None or section == 'display':
+        # Display
+        if config_reader.has_option('display', 'limit'):
+            config['limit'] = config_reader.getint('display', 'limit')
 
-    ctx.format_status = config.get('display', 'format_status') \
-        if config.has_option('display', 'format_status') \
-        else u'{directory}:{unseen} Unseen - {count} Mails - {recent} Recent'
+        config['format_status'] = config_reader.get('display', 'format_status') \
+            if config_reader.has_option('display', 'format_status') \
+            else u'{directory}:{unseen} Unseen - {count} Mails - {recent} Recent'
 
-    ctx.format_list = config.get('display', 'format_list') \
-        if config.has_option('display', 'format_list') \
-        else u'From: {mail_from:<30} To: {to:<20} Subject: {subject}'
-    return ctx
+        config['format_list'] = config_reader.get('display', 'format_list') \
+            if config_reader.has_option('display', 'format_list') \
+            else u'From: {mail_from:<30} To: {to:<20} Subject: {subject}'
+    return config

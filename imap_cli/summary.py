@@ -47,13 +47,14 @@ def main():
         stream=sys.stdout,
     )
 
-    ctx = config.new_context_from_file(args['--config-file'])
+    connect_conf = config.new_context_from_file(args['--config-file'], section='imap')
+    display_conf = config.new_context_from_file(args['--config-file'], section='display')
     if args['--format'] is not None:
-        ctx.format_status = args['--format']
+        display_conf['format_status'] = args['--format']
 
-    imap_cli.connect(ctx)
-    for directory_status in imap_cli.status(ctx):
-        sys.stdout.write(ctx.format_status.format(**directory_status))
+    imap_account = imap_cli.connect(**connect_conf)
+    for directory_status in imap_cli.status(imap_account):
+        sys.stdout.write(display_conf['format_status'].format(**directory_status))
         sys.stdout.write('\n')
 
     return 0

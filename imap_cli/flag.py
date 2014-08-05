@@ -33,17 +33,17 @@ from imap_cli import const
 log = logging.getLogger('imap-cli-flag')
 
 
-def unset_flag(ctx, mail_id=None, flags_str=''):
+def unset_flag(imap_account, mail_id=None, flags_str=''):
     if mail_id is None:
         log.error('Can\'t set flag on email {}'.format(mail_id))
         return None
     # TODO(rsoufflet)
-    truc = ctx.mail_account.store(mail_id, '+FLAGS', flags_str)
+    truc = imap_account.store(mail_id, '+FLAGS', flags_str)
     log.debug(repr(truc))
 
 
-def flag(ctx, mail_id, flags, directory=const.DEFAULT_DIRECTORY):
-    status, mail_count = ctx.mail_account.select(directory)
+def flag(imap_account, mail_id, flags, directory=const.DEFAULT_DIRECTORY):
+    status, mail_count = imap_account.select(directory)
     if status != const.STATUS_OK:
         log.warn(u'Cannot access directory {}'.format(directory))
         return
@@ -52,7 +52,7 @@ def flag(ctx, mail_id, flags, directory=const.DEFAULT_DIRECTORY):
             log.error('Can\'t set flag on email {}'.format(mail_id))
             continue
         # TODO(rsoufflet)
-        truc = ctx.mail_account.store(mail_id, '+FLAGS', r'({})'.format(flag))
+        truc = imap_account.store(mail_id, '+FLAGS', r'({})'.format(flag))
         log.debug(repr(truc))
 
 
@@ -63,10 +63,10 @@ def main():
         stream=sys.stdout,
     )
 
-    ctx = config.new_context_from_file(args['--config-file'])
-    imap_cli.connect(ctx)
-    flag(ctx, args['<mail_id>'], args['<flag>'], directory=args['<directory>'])
-    imap_cli.disconnect(ctx)
+    conf = config.new_context_from_file(args['--config-file'], section='imap')
+    imap_account = imap_cli.connect(**conf)
+    flag(imap_account, args['<mail_id>'], args['<flag>'], directory=args['<directory>'])
+    imap_cli.disconnect(imap_account)
     return 0
 
 

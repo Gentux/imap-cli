@@ -23,10 +23,10 @@ STATUS_RE = r'{dirname} \({messages_count} {recent} {unseen}\)'.format(
 )
 
 
-def change_dir(ctx, directory, read_only=True):
-    if ctx.mail_account.state == 'SELECTED':
-        ctx.mail_account.close()
-    status, mail_count = ctx.mail_account.select(directory, read_only)
+def change_dir(imap_account, directory, read_only=True):
+    if imap_account.state == 'SELECTED':
+        imap_account.close()
+    status, mail_count = imap_account.select(directory, read_only)
     if status == const.STATUS_OK:
         return mail_count
     else:
@@ -34,37 +34,38 @@ def change_dir(ctx, directory, read_only=True):
         return -1
 
 
-def connect(ctx):
-    if ctx.port is None:
-        ctx.port = const.DEFAULT_PORT if ctx.ssl is False else const.DEFAULT_SSL_PORT
+def connect(hostname, username, password, port=None, ssl=True):
+    if port is None:
+        port = const.DEFAULT_PORT if ssl is False else const.DEFAULT_SSL_PORT
 
-    if ctx.ssl is True:
-        log.debug('Connecting with SSL on {}'.format(ctx.hostname))
-        ctx.mail_account = imaplib.IMAP4_SSL(ctx.hostname, ctx.port)
+    if ssl is True:
+        log.debug('Connecting with SSL on {}'.format(hostname))
+        imap_account = imaplib.IMAP4_SSL(hostname, port)
     else:
-        log.debug('Connecting on {}'.format(ctx.hostname))
-        ctx.mail_account = imaplib.IMAP4(ctx.hostname, ctx.port)
-    ctx.mail_account.login(ctx.username, ctx.password)
+        log.debug('Connecting on {}'.format(hostname))
+        imap_account = imaplib.IMAP4(hostname, port)
+    imap_account.login(username, password)
+    return imap_account
 
 
-def disconnect(ctx):
-    log.debug('Disconnecting from {}'.format(ctx.hostname))
-    ctx.mail_account.close()
-    ctx.mail_account.logout()
+def disconnect(imap_account):
+    log.debug('Disconnecting from {}'.format(imap_account.host))
+    imap_account.close()
+    imap_account.logout()
 
 
-def list_dir(ctx):
-    status, data = ctx.mail_account.list()
+def list_dir(imap_account):
+    status, data = imap_account.list()
     if status == const.STATUS_OK:
         for datum in data:
             parts = datum.split()
             yield parts[0], parts[1], parts[2]
 
 
-def status(ctx):
+def status(imap_account):
     status_cre = re.compile(STATUS_RE)
-    for tags, delimiter, dirname in list_dir(ctx):
-        status, data = ctx.mail_account.status(dirname, '(MESSAGES RECENT UNSEEN)')
+    for tags, delimiter, dirname in list_dir(imap_account):
+        status, data = imap_account.status(dirname, '(MESSAGES RECENT UNSEEN)')
         if status != const.STATUS_OK:
             continue
         status_match = status_cre.match(data[0])
