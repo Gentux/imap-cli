@@ -101,7 +101,7 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
             ('flags', flags),
             ('id', mail_id),
             ('uid', mail_uid),
-            ('mail_from', mail['from']),
+            ('from', mail['from']),
             ('to', mail['to']),
             ('date', mail['date']),
             ('subject', mail.get('subject', '')),
@@ -165,7 +165,7 @@ def main():
         text=args['--full-text'],
     )
     mail_set = fetch_uids(imap_account, search_criterion=search_criterion)
-    for mail_info in fetch_mails_info(imap_account, directory=args['<directory>'], mail_set=mail_set):
+    for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
         sys.stdout.write(display_conf['format_list'].format(**mail_info))
         sys.stdout.write('\n')
 

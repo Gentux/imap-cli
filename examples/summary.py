@@ -56,7 +56,7 @@ def main():
             for mail_info in search.fetch_mails_info(imap_account, mail_set=mail_set):
                 sys.stdout.write(u'    {:<10} From : {:<30} \tSubject : {}\n'.format(
                     mail_info['uid'],
-                    truncate_string(mail_info['mail_from'], 30),
+                    truncate_string(mail_info['from'], 30),
                     truncate_string(mail_info['subject'], 50),
                 ))
     imap_cli.disconnect(imap_account)

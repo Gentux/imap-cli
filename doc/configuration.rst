@@ -39,7 +39,7 @@ This file can contains the following options::
     format_list =
         ID:         {mail_id}
         Flags:      {flags}
-        From:       {mail_from}
+        From:       {from}
         To:         {to}
         Date:       {date}
         Subject:    {subject}

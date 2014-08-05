@@ -30,7 +30,7 @@ class ConfigTest(unittest.TestCase):
     def test_config_file_from_json(self):
         json_config = ''.join([
             '{"username": "username", "hostname": "imap.example.org", "format_list": "\\nID:         ',
-            '{uid}\\nFlags:      {flags}\\nFrom:       {mail_from}\\nTo:         {to}\\nDate:       ',
+            '{uid}\\nFlags:      {flags}\\nFrom:       {from}\\nTo:         {to}\\nDate:       ',
             '{date}\\nSubject:    {subject}", "ssl": true, "limit": 10, "format_status": "{directory:>20} : ',
             '{count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent", "password": "secret"}',
         ])

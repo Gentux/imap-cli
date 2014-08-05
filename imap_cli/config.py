@@ -26,7 +26,7 @@ DEFAULT_CONFIG = {
         u'\n',
         u'ID:         {uid}\n',
         u'Flags:      {flags}\n',
-        u'From:       {mail_from}\n',
+        u'From:       {from}\n',
         u'To:         {to}\n',
         u'Date:       {date}\n',
         u'Subject:    {subject}',
@@ -78,5 +78,5 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
 
         config['format_list'] = config_reader.get('display', 'format_list') \
             if config_reader.has_option('display', 'format_list') \
-            else u'From: {mail_from:<30} To: {to:<20} Subject: {subject}'
+            else u'From: {from:<30} To: {to:<20} Subject: {subject}'
     return config
