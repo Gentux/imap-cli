@@ -64,9 +64,10 @@ pip install imap-cli
 
 <p>Then, configure imap-cli creating a configuration file in <code>~/.config/imap-cli</code> containing :</p>
 
-<pre><code>imap_account=&quot;imaps://imap.gentux.io/&quot;
-imap_pass = &#39;secret&#39;
-imap_user = userName
+<pre><code>hostname = imap.example.org
+username = username
+password = secret
+ssl = True
 </code></pre>
 
 <p>If you want to add a minimal autocompletion, you can copy <strong>imapcli<em>bash</em>completion.sh</strong> in the file
@@ -102,16 +103,16 @@ There is NO WARRANTY, to the extent permitted by law.
 
 <p>This is work in progress. Python API aims to be as complete as possible to ease the creation of API and clients.</p>
 
-<pre><code>from imap_cli import config
-from imap_cli.imap import connection
-from imap_cli import status
+<pre><code>import imap_cli
+from imap_cli import config
 
 config_filename = &#39;~/.config/imap-cli&#39;
-ctx = config.new_context_from_file(config_filename)
+connect_conf = config.new_context_from_file(config_filename, section=&#39;imap&#39;)
+display_conf = config.new_context_from_file(config_filename, section=&#39;display&#39;)
 
-connection.connect(ctx)
-for directory_info in status.status(ctx):
-    print ctx.format_status.format(**directory_info)
+imap_account = imap_cli.connect(**connect_conf)
+for directory_info in imap_cli.status(imap_account):
+    print display_conf[&#39;format_status&#39;].format(**directory_info)
 </code></pre>
 
 <h2>Configuration</h2>
@@ -158,7 +159,6 @@ below</p>
 
 <ul>
 <li>Rewrite code structure to ease the creation of API</li>
-<li>Map all feature on REST API (separate project)</li>
 <li>Documentation</li>
 </ul>
 
@@ -166,6 +166,10 @@ below</p>
 
 <ul>
 <li>Advanced Search</li>
+<li>Use UID instead of volatil mails id</li>
+<li>Read all type of mail and handle attachments</li>
+<li>List mail by thread</li>
+<li>Display threads</li>
 </ul>
 
 <h2>Creator</h2>
