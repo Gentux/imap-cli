@@ -31,9 +31,10 @@ pip install imap-cli
 
 Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` containing :
 
-    imap_account="imaps://imap.gentux.io/"
-    imap_pass = 'secret'
-    imap_user = userName
+    hostname = imap.example.org
+    username = username
+    password = secret
+    ssl = True
 
 If you want to add a minimal autocompletion, you can copy **imapcli_bash_completion.sh** in the file
 **/etc/bash_completion.d/imapcli** or simply source.
@@ -73,11 +74,12 @@ This is work in progress. Python API aims to be as complete as possible to ease 
     from imap_cli import config
 
     config_filename = '~/.config/imap-cli'
-    ctx = config.new_context_from_file(config_filename)
+    connect_conf = config.new_context_from_file(config_filename, section='imap')
+    display_conf = config.new_context_from_file(config_filename, section='display')
 
-    imap_cli.connect(ctx)
-    for directory_info in imap_cli.status(ctx):
-        print ctx.format_status.format(**directory_info)
+    imap_account = imap_cli.connect(**connect_conf)
+    for directory_info in imap_cli.status(imap_account):
+        print display_conf['format_status'].format(**directory_info)
 
 
 ## Configuration ##
