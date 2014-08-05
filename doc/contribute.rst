@@ -18,12 +18,11 @@ To submit a patch
 If you're not a developper
 --------------------------
 
-You can [open new issues](https://github.com/Gentux/imap-cli/issues/new) for:
+You can `open new issues <https://github.com/Gentux/imap-cli/issues/new>`_ for:
 
 * Ask any questions
 * Report Bugs
 * Request new feature
-
 
 There are a lot to do
 ---------------------
