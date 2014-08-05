@@ -22,7 +22,8 @@ from imap_cli import fetch
 from imap_cli import search
 
 
-ctx = config.new_context_from_file()
+conf = config.new_context_from_file(section='imap')
+imap_account = None
 log = logging.getLogger('Imap-CLI API')
 
 
@@ -37,8 +38,8 @@ def read_controller(req):
     if inputs['uid'] is None:
         return 'You need to specify an UID'
 
-    imap_cli.change_dir(ctx, inputs['directory'] or const.DEFAULT_DIRECTORY)
-    fetched_mail = fetch.read(ctx, inputs['uid'])
+    imap_cli.change_dir(imap_account, inputs['directory'] or const.DEFAULT_DIRECTORY)
+    fetched_mail = fetch.read(imap_account, inputs['uid'])
     if fetched_mail is None:
         # TODO(rsoufflet) Handle this error with HTTP
         return 'Mail was not fetched, an error occured'
@@ -59,22 +60,19 @@ def search_controller(req):
         'text': params.get('text') or None,
     }
 
-    search_criterion = search.prepare_search(
-        ctx,
-        directory=inputs['directory'],
-        tags=inputs['tags'],
-        text=inputs['text'],
-    )
-    mail_set = search.fetch_uids(ctx, search_criterion=search_criterion or [])
+    imap_cli.change_dir(imap_account, inputs['directory'])
+
+    search_criterion = search.create_search_criterion(tags=inputs['tags'], text=inputs['text'])
+    mail_set = search.fetch_uids(imap_account, search_criterion=search_criterion or [])
     mails_info = list(
-        search.fetch_mails_info(ctx, directory=inputs['directory'], mail_set=mail_set)
+        search.fetch_mails_info(imap_account, mail_set=mail_set)
     )
     return json.dumps(mails_info, indent=2)
 
 
 @wsgify
 def status_controller(req):
-    return json.dumps(list(imap_cli.status(ctx)), indent=2)
+    return json.dumps(list(imap_cli.status(imap_account)), indent=2)
 
 
 routings = [
@@ -116,7 +114,7 @@ if __name__ == '__main__':
         vars = routing[3] if len(routing) >= 4 else {}
         routes.append((methods, re.compile(regex), app, vars))
 
-    imap_cli.connect(ctx)
+    imap_account = imap_cli.connect(**conf)
 
     httpd = simple_server.make_server('127.0.0.1', 8000, router)
     log.info('Serving on http://127.0.0.1:8000')

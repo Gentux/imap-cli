@@ -64,19 +64,17 @@ def create_search_criteria_by_tag(tags):
     return '({})'.format(' '.join(criterion)) if len(criterion) > 1 else criterion[0]
 
 
-def fetch_mails_info(imap_account, directory=None, mail_set=None, decode=True, limit=None, **kw):
-    if directory is None:
-        directory = const.DEFAULT_DIRECTORY
+def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
     flags_re = re.compile(FLAGS_RE)
     mail_id_re = re.compile(MAIL_ID_RE)
     uid_re = re.compile(UID_RE)
 
     if mail_set is None:
-        mail_set = fetch_uids(imap_account, limit=limit, **kw)
+        mail_set = fetch_uids(imap_account, limit=limit)
     elif isinstance(mail_set, six.string_types):
         mail_set = mail_set.split()
 
-    mails_data = fetch.fetch(imap_account, mail_set, ['BODY.PEEK[HEADER]', 'FLAGS', 'UID'], **kw)
+    mails_data = fetch.fetch(imap_account, mail_set, ['BODY.PEEK[HEADER]', 'FLAGS', 'UID'])
     if mails_data is None:
         return
 
@@ -121,7 +119,7 @@ def create_search_criterion(tags=None, text=None):
     return search_criterion
 
 
-def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None, **kw):
+def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
     """Return a list of mails id corresponding to specified search.
 
     Keyword arguments:
