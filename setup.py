@@ -22,7 +22,7 @@ setuptools.setup(
         "Topic :: Utilities",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
-        ],
+    ],
     description=('\n'.join(__doc__.split('\n')[2:])),
     entry_points={
         'console_scripts': [
@@ -31,12 +31,12 @@ setuptools.setup(
             'imap-cli-search=imap_cli.search:main',
             'imap-cli-read=imap_cli.fetch:main',
             'imap-cli-flag=imap_cli.flag:main',
-            ],
-        },
+        ],
+    },
     install_requires=[
         "docopts>=0.6",
         "mock>=1.0.1",
-        ],
+    ],
     keywords = "imap cli high level",
     license = "MIT License",
     long_description = __doc__.split('\n')[0],

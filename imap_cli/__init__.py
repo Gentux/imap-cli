@@ -50,8 +50,10 @@ def connect(hostname, username, password, port=None, ssl=True):
 
 def disconnect(imap_account):
     log.debug('Disconnecting from {}'.format(imap_account.host))
-    imap_account.close()
-    imap_account.logout()
+    if imap_account.state == 'SELECTED':
+        imap_account.close()
+    if imap_account.state != 'LOGOUT':
+        imap_account.logout()
 
 
 def list_dir(imap_account):

@@ -53,10 +53,11 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
     if config_filename is None:
         config_filename = const.DEFAULT_CONFIG_FILE
     config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
+    log.debug(u'Reading configuration file \'{}\''.format(config_filename))
 
     config_reader = configparser.RawConfigParser()
-    config_reader.readfp(codecs.open(config_filename, 'r', encoding))
-    log.debug(u'Reading configuration file \'{}\''.format(config_filename))
+    with codecs.open(config_filename, 'r', encoding) as config_file:
+        config_reader.readfp(config_file)
 
     config = {}
     if section is None or section == 'imap':
