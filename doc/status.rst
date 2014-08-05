@@ -10,7 +10,7 @@ directories
 * Number of *Unseen* mail in this directory
 
 
-.. function:: status(ctx)
+.. function:: status(imap_account)
 
     Return an interator of directory status. Each directory status provide the following key:
         u'count'    # Number of mail in directory
@@ -23,10 +23,10 @@ directories
         import imap_cli
         from imap_cli import config
 
-        ctx = config.new_context_from_file()
-        imap_cli.connect(ctx)
+        conf = config.new_context_from_file(section='imap')
+        imap_account = imap_cli.connect(**conf)
 
-        for directory_status in imap_cli.status(ctx):
+        for directory_status in imap_cli.status(imap_account):
             print directory_status
 
     .. versionadded:: 0.1

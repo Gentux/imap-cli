@@ -23,10 +23,13 @@ v0.3 (current)
 --------------
 
 * Rewrite code structure to ease the creation of API
-* Map all feature on REST API (separate project)
 * Documentation
 
 v0.4
 ----
 
 * Advanced Search
+* Use UID instead of volatil mails id
+* Read all type of mail and handle attachments
+* List mail by thread
+* Display threads

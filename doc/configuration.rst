@@ -2,25 +2,23 @@ Configuration
 =============
 
 
-Imap-CLI works with a **Context** object. This notion is importante, your context centralized your Imap account
-information and every function in this library will use it.
-
-The configuration step is quite simple, you just have to chose with way you prefer to initialize your context.
+Imap-CLI need to have information about your IMAP account to connect to it. And to do so, it provide several ways to
+retrieve those configurations.
 
 
-Loading default context
------------------------
+Loading default config
+----------------------
 
-Load an *empty* context with default values listed in file *config-example.ini*::
+Load an *empty* configuration dictionnary with default values listed in file *config-example.ini*::
 
     from imap_cli import config
-    context = config.new_context()
+    conf = config.new_context()
 
 This is usually not what you want, this configuration method is used by unit tests
 
 
-Loading context from configuration file
----------------------------------------
+Loading config from configuration file
+--------------------------------------
 
 If you intend to use command line tools, this is definitely the best method.
 
@@ -55,12 +53,12 @@ This file can contains the following options::
     It will store your IMAP Account password, allow only your own user to read this file
 
 
-Loading context from python code
---------------------------------
+Loading config from python code
+-------------------------------
 
 If you need to connect and retrieve mail information with a python script, you can load any config file
 
-.. function:: new_context_from_file(ctx, config_filename=None)
+.. function:: new_context_from_file(config_filename=None, section=None)
 
     Open and read *config_filename* (`~/.config/imapcli` by default) and parse configuration from it.
 
@@ -68,20 +66,28 @@ If you need to connect and retrieve mail information with a python script, you c
 
         from imap_cli import config
         config_file = '~/.config/imapcli'
-        context = config.new_context_from_file(config_file)
+        conf = config.new_context_from_file(config_file)
+
+    You can also load a single section of this configuration file::
+
+        from imap_cli import config
+        config_file = '~/.config/imapcli'
+        conf = config.new_context_from_file(config_file, section='imap')
 
     .. versionadded:: 0.1
 
-But you can also use a python sructure to store your information and load it from a *dict*
 
-.. function:: new_context(ctx, config=None)
+But you can also use a python sructure to store your information and load it from a *dict*. In fact, config it's just a
+dict, the following method will just "complete" your dict.
+
+.. function:: new_context(config=None)
 
     Read configuration from *config* dict.
 
     Example::
 
         from imap_cli import config
-        context = config.new_context({
+        conf = config.new_context({
             'hostname': 'another.imap-server.org',
             'password': 'another.secret',
             })

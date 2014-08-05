@@ -4,31 +4,31 @@ Connection
 Once :ref:configuration is done, you can connect to your imap account
 
 
-.. function:: connect(ctx)
+.. function:: connect(hostname, username, password, port=None, ssl=True)
 
-    Set IMAP account object in context
+    Return an IMAP account object (see imaplib documentation for details)
     Example::
 
         import imap_cli
         from imap_cli import config
 
-        ctx = config.new_context_from_file()
-        imap_cli.connect(ctx)
+        conf = config.new_context_from_file(section='imap')
+        imap_account = imap_cli.connect(**conf)
 
     .. versionadded:: 0.1
 
 
-.. function:: disconnect(ctx)
+.. function:: disconnect(imap_account)
 
-    Disconnect IMAP account object in context
+    Disconnect IMAP account object
     Example::
 
         import imap_cli
         from imap_cli import config
 
-        ctx = config.new_context_from_file()
-        imap_cli.connect(ctx)
-        ctx.mail_account.select('INBOX')
-        imap_cli.disconnect(ctx)
+        conf = config.new_context_from_file(section='imap')
+        imap_account = imap_cli.connect(**conf)
+        imap_cli.change_dir(imap_account, 'INBOX'):
+        imap_cli.disconnect(imap_account)
 
     .. versionadded:: 0.1

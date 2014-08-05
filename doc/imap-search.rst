@@ -24,10 +24,9 @@ Moreover, a few logical combination of the above
 * Or
 
 
-.. function:: prepare_search(ctx, directory=None, tags=None, text=None):
+.. function:: create_search_criterion(tags=None, text=None):
 
     Keywords arguments:
-        directory: Name of directory in wich the search is done ("INBOX" by default)
         tags: An iterable of tags string
         text: A string to search trhough all mails
 
@@ -36,12 +35,53 @@ Moreover, a few logical combination of the above
     Example::
 
         import imap_cli
-        from imap_cli import config
         from imap_cli import search
 
-        ctx = config.new_context_from_file()
-        imap_cli.connect(ctx)
+        print search.create_search_criterion(ctx, directory="Perso", tags=["family", "unseen"])
 
-        print search.prepare_search(ctx, directory="Perso", tags=["family", "unseen"])
+    .. versionadded:: 0.2
+
+
+.. function:: fetch_uids(imap_account, search_criterion=None):
+
+    Keywords arguments:
+        imap_account: Imap lib object
+        search_criterion: A list of IMAP criterion produced by search module helpers
+
+    Return a list of mail uid
+
+    Example::
+
+        import imap_cli
+        from imap_cli import search
+
+        imap_account = imap_cli.connect('hostname', 'username', 'password')
+        search_criterion = search.create_search_criterion(tags=["family", "unseen"])
+
+        mails_uid = search.fetch_uids(imap_account, search_criterion=search_criterion)
+
+    .. versionadded:: 0.2
+
+
+.. function:: fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
+
+    Keywords arguments:
+        imap_account: Imap lib object
+        mail_set: A list of mail uid to retrieve
+        decode: Decode mail content
+        limit: Return a limited number of mails
+
+    Return a list of dict with minimal information about mails
+
+    Example::
+
+        import imap_cli
+        from imap_cli import search
+
+        imap_account = imap_cli.connect('hostname', 'username', 'password')
+        search_criterion = search.create_search_criterion(tags=["family", "unseen"])
+
+        mails_uid = search.fetch_uids(imap_account, search_criterion=search_criterion)
+        mails_info = search.fetch_mails_info(imap_account, mails_uid)
 
     .. versionadded:: 0.2
