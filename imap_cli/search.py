@@ -77,6 +77,23 @@ def create_search_criterion_by_mail_address(mail_address, header_name='FROM'):
     return '{} "{}"'.format(header_name, mail_address)
 
 
+def create_search_criterion_by_size(size, relative='LARGER'):
+    """Return a search criteria by size.
+
+    Keywords:
+        relative: Can be one of 'LARGER' or 'SMALLER'
+    """
+    # TODO(rsoufflet) sannitize "size" arg
+    if relative not in ['LARGER', 'SMALLER']:
+        relative = 'LARGER'
+        log.warning('Wrong "relative" argument, taking default value "{}"'.format(relative))
+    return '{} "{}"'.format(relative, size)
+
+
+def create_search_criterion_by_subject(subject):
+    return 'SUBJECT "{}"'.format(subject)
+
+
 def create_search_criteria_by_tag(tags):
     """Return a search criteria for specified tags."""
     if len(tags) == 0:
@@ -94,23 +111,6 @@ def create_search_criteria_by_tag(tags):
 def create_search_criteria_by_text(text):
     """Return a search criteria for fulltext search."""
     return 'BODY "{}"'.format(text)
-
-
-def create_search_criterion_by_size(size, relative='LARGER'):
-    """Return a search criteria by size.
-
-    Keywords:
-        relative: Can be one of 'LARGER' or 'SMALLER'
-    """
-    # TODO(rsoufflet) sannitize "size" arg
-    if relative not in ['LARGER', 'SMALLER']:
-        relative = 'LARGER'
-        log.warning('Wrong "relative" argument, taking default value "{}"'.format(relative))
-    return '{} "{}"'.format(relative, size)
-
-
-def create_search_criterion_by_subject(subject):
-    return 'SUBJECT "{}"'.format(subject)
 
 
 def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):

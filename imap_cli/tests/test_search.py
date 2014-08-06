@@ -48,6 +48,23 @@ class SearchTests(unittest.TestCase):
         search_criterion = search.create_search_criterion_by_date(date, relative='SINCE', sent=True)
         assert search_criterion == 'SENTSINCE 03-Jan-1989'
 
+    def test_create_search_criterion_by_mail_address(self):
+        self.imap_account = imaplib.IMAP4_SSL()
+        self.imap_account.login()
+
+        mail_address = 'user@example.tld'
+        search_criterion = search.create_search_criterion(address=mail_address)
+        assert search_criterion == ['FROM "user@example.tld"']
+
+        search_criterion = search.create_search_criterion_by_mail_address(mail_address, header_name='CC')
+        assert search_criterion == 'CC "user@example.tld"'
+
+        search_criterion = search.create_search_criterion_by_mail_address(mail_address, header_name='BCC')
+        assert search_criterion == 'BCC "user@example.tld"'
+
+        search_criterion = search.create_search_criterion_by_mail_address(mail_address, header_name='TO')
+        assert search_criterion == 'TO "user@example.tld"'
+
     def test_create_search_criteria_by_size(self):
         self.imap_account = imaplib.IMAP4_SSL()
         self.imap_account.login()
@@ -64,6 +81,17 @@ class SearchTests(unittest.TestCase):
 
         search_criterion = search.create_search_criterion_by_size(size, relative='Anything')
         assert search_criterion == 'LARGER "3141592"'
+
+    def test_create_search_criterion_by_subject(self):
+        self.imap_account = imaplib.IMAP4_SSL()
+        self.imap_account.login()
+
+        subject = 'subject searched'
+        search_criterion = search.create_search_criterion(subject=subject)
+        assert search_criterion == ['SUBJECT "subject searched"']
+
+        search_criterion = search.create_search_criterion_by_subject(subject)
+        assert search_criterion == 'SUBJECT "subject searched"'
 
     def test_create_search_criteria_by_tag(self):
         self.imap_account = imaplib.IMAP4_SSL()
