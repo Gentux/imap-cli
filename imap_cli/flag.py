@@ -3,10 +3,12 @@
 
 """Set flags on a set of mails
 
-Usage: imap-cli-flag [options] [<directory>] <mail_id> <flag>...
+Usage: imap-cli-flag [options] <mail_id> <flag>...
 
 Options:
     -c, --config-file=<FILE>    Configuration file
+    -d, --directory=<DIR>       Imap folder
+    -u, --unset                 Remove flag instead of setting them
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
@@ -33,27 +35,20 @@ from imap_cli import const
 log = logging.getLogger('imap-cli-flag')
 
 
-def unset_flag(imap_account, mail_id=None, flags_str=''):
-    if mail_id is None:
-        log.error('Can\'t set flag on email {}'.format(mail_id))
-        return None
-    # TODO(rsoufflet)
-    truc = imap_account.store(mail_id, '+FLAGS', flags_str)
-    log.debug(repr(truc))
-
-
-def flag(imap_account, mail_id, flags, directory=const.DEFAULT_DIRECTORY):
-    status, mail_count = imap_account.select(directory)
-    if status != const.STATUS_OK:
-        log.warn(u'Cannot access directory {}'.format(directory))
-        return
-    for flag in flags:
-        if mail_id is None:
-            log.error('Can\'t set flag on email {}'.format(mail_id))
-            continue
-        # TODO(rsoufflet)
-        truc = imap_account.store(mail_id, '+FLAGS', r'({})'.format(flag))
-        log.debug(repr(truc))
+def flag(imap_account, message_set, flags, unset=False):
+    if message_set is None or len(message_set) == 0:
+        log.error('Invalid message set')
+    request_message_set = ','.join(str(mail_id) for mail_id in message_set)
+    status, result = imap_account.uid(
+        u'STORE',
+        request_message_set,
+        u'+FLAGS' if unset is False else '-FLAGS',
+        u'({})'.format(u' '.join(flags)),
+    )
+    if status == const.STATUS_OK:
+        log.debug('Flags "{}" have been set : {}'.format(flags, result))
+    else:
+        log.error('Flags "{}" have not been set : {}'.format(flags, result))
 
 
 def main():
@@ -64,8 +59,12 @@ def main():
     )
 
     conf = config.new_context_from_file(args['--config-file'], section='imap')
+
     imap_account = imap_cli.connect(**conf)
-    flag(imap_account, args['<mail_id>'], args['<flag>'], directory=args['<directory>'])
+    imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY, read_only=False)
+
+    flag(imap_account, [args['<mail_id>']], args['<flag>'], unset=args['--unset'])
+
     imap_cli.disconnect(imap_account)
     return 0
 
