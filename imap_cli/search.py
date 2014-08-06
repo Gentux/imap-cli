@@ -6,8 +6,12 @@
 Usage: imap-cli-search [options] [-t <tags>] [-T <full-text>] [<directory>]
 
 Options:
+    -a, --address=<address>     Search for specified "FROM" address
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
+    -d, --date=<date>           Search mail receive since the specified date (format YYYY-MM-DD)
     -f, --format=<FMT>          Output format
+    -s, --size=<SIZE>           Search mails larger than specified size (in bytes)
+    -S, --subject=<subject>     Search by subject
     -t, --tags=<tags>           Searched tags (Comma separated values)
     -T, --full-text=<text>      Searched tags (Comma separated values)
     -v, --verbose               Generate verbose messages
@@ -46,8 +50,6 @@ MAIL_ID_RE = r'^(?P<mail_id>\d+) \('
 UID_RE = r'.*UID (?P<uid>[^ ]*)'
 
 
-
-
 def create_search_criterion_by_date(datetime, relative=None, sent=False):
     """Return a search criteria by date.
 
@@ -59,6 +61,20 @@ def create_search_criterion_by_date(datetime, relative=None, sent=False):
         relative = 'SINCE'
     formated_date = datetime.strftime('%d-%h-%Y')
     return '{}{} {}'.format('SENT' if sent is True else '', relative, formated_date)
+
+
+def create_search_criterion_by_mail_address(mail_address, header_name='FROM'):
+    """Return a search criteria over mail address.
+
+    Keyword:
+        header_name: Specify in wich header address must be searched.
+                     Possible values are "FROM", "CC", "BCC" and "TO"
+    """
+    if header_name not in ['BCC', 'CC', 'FROM', 'TO']:
+        header_name = 'FROM'
+        log.warning('Wrong "header_name" value, taking default value {}'.format(header_name))
+
+    return '{} "{}"'.format(header_name, mail_address)
 
 
 def create_search_criteria_by_tag(tags):
@@ -91,6 +107,10 @@ def create_search_criterion_by_size(size, relative='LARGER'):
         relative = 'LARGER'
         log.warning('Wrong "relative" argument, taking default value "{}"'.format(relative))
     return '{} "{}"'.format(relative, size)
+
+
+def create_search_criterion_by_subject(subject):
+    return 'SUBJECT "{}"'.format(subject)
 
 
 def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
@@ -137,8 +157,12 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
         ])
 
 
-def create_search_criterion(date=None, size=None, tags=None, text=None):
+def create_search_criterion(address=None, date=None, size=None, subject=None, tags=None, text=None):
+    # TODO(rsoufflet) This method should combine every search criteria instead of overwritten each other
     search_criterion = ['ALL']
+    if address is not None:
+        search_criterion = [create_search_criterion_by_mail_address(address)]
+
     if date is not None:
         search_criterion = [create_search_criterion_by_date(date)]
 
@@ -147,6 +171,9 @@ def create_search_criterion(date=None, size=None, tags=None, text=None):
 
     if text is not None:
         search_criterion = [create_search_criteria_by_text(text)]
+
+    if subject is not None:
+        search_criterion = [create_search_criterion_by_subject(subject)]
 
     if size is not None:
         search_criterion = [create_search_criterion_by_size(size)]
@@ -193,10 +220,20 @@ def main():
     if args.get('--tags') is not None:
         args['--tags'] = args['--tags'].split(',')
 
+    if args['--date'] is not None:
+        try:
+            date = datetime.datetime.strptime(args['--date'], '%Y-%m-%d')
+        except ValueError:
+            date = None
+    else:
+        date = None
+
     imap_account = imap_cli.connect(**connect_conf)
     imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
     search_criterion = create_search_criterion(
-        date=datetime.datetime(2014, 8, 5),  # TODO(rsoufflet) args['--date'],
+        address=args['--address'],
+        date=date,
+        subject=args['--subject'],
         size=args['--size'],
         tags=args['--tags'],
         text=args['--full-text'],
