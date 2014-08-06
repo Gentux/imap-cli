@@ -21,7 +21,24 @@ class SearchTests(unittest.TestCase):
 
         assert search.create_search_criterion() == ['ALL']
 
-    def test_prepare_search_by_tag(self):
+    def test_create_search_criteria_by_size(self):
+        self.imap_account = imaplib.IMAP4_SSL()
+        self.imap_account.login()
+
+        size = 3141592
+        search_criterion = search.create_search_criterion(size=size)
+        assert search_criterion == ['LARGER "3141592"']
+
+        search_criterion = search.create_search_criterion_by_size(size, relative='SMALLER')
+        assert search_criterion == 'SMALLER "3141592"'
+
+        search_criterion = search.create_search_criterion_by_size(size, relative='LARGER')
+        assert search_criterion == 'LARGER "3141592"'
+
+        search_criterion = search.create_search_criterion_by_size(size, relative='Anything')
+        assert search_criterion == 'LARGER "3141592"'
+
+    def test_create_search_criteria_by_tag(self):
         self.imap_account = imaplib.IMAP4_SSL()
         self.imap_account.login()
 
@@ -37,7 +54,7 @@ class SearchTests(unittest.TestCase):
         search_criterion = search.create_search_criterion(tags=tags)
         assert search_criterion == ['(SEEN KEYWORD "testTag")']
 
-    def test_prepare_search_by_text(self):
+    def test_create_search_criteria_by_text(self):
         self.imap_account = imaplib.IMAP4_SSL()
         self.imap_account.login()
 

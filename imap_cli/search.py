@@ -23,6 +23,7 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
+import datetime
 import email
 from email import header
 import logging
@@ -45,9 +46,19 @@ MAIL_ID_RE = r'^(?P<mail_id>\d+) \('
 UID_RE = r'.*UID (?P<uid>[^ ]*)'
 
 
-def create_search_criteria_by_text(text):
-    """Return a search criteria for fulltext search."""
-    return 'BODY "{}"'.format(text)
+
+
+def create_search_criterion_by_date(datetime, relative=None, sent=False):
+    """Return a search criteria by date.
+
+    Keywords:
+        relative: Can be one of 'BEFORE', 'SINCE', 'ON'
+        sent: Search after "sent" date instead of "received" date
+    """
+    if relative not in ['BEFORE', 'ON', 'SINCE']:
+        relative = 'SINCE'
+    formated_date = datetime.strftime('%d-%h-%Y')
+    return '{}{} {}'.format('SENT' if sent is True else '', relative, formated_date)
 
 
 def create_search_criteria_by_tag(tags):
@@ -62,6 +73,24 @@ def create_search_criteria_by_tag(tags):
         else:
             criterion.append('KEYWORD "{}"'.format(tag))
     return '({})'.format(' '.join(criterion)) if len(criterion) > 1 else criterion[0]
+
+
+def create_search_criteria_by_text(text):
+    """Return a search criteria for fulltext search."""
+    return 'BODY "{}"'.format(text)
+
+
+def create_search_criterion_by_size(size, relative='LARGER'):
+    """Return a search criteria by size.
+
+    Keywords:
+        relative: Can be one of 'LARGER' or 'SMALLER'
+    """
+    # TODO(rsoufflet) sannitize "size" arg
+    if relative not in ['LARGER', 'SMALLER']:
+        relative = 'LARGER'
+        log.warning('Wrong "relative" argument, taking default value "{}"'.format(relative))
+    return '{} "{}"'.format(relative, size)
 
 
 def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
@@ -108,13 +137,19 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
         ])
 
 
-def create_search_criterion(tags=None, text=None):
+def create_search_criterion(date=None, size=None, tags=None, text=None):
     search_criterion = ['ALL']
+    if date is not None:
+        search_criterion = [create_search_criterion_by_date(date)]
+
     if tags is not None:
         search_criterion = [create_search_criteria_by_tag(tags)]
 
     if text is not None:
         search_criterion = [create_search_criteria_by_text(text)]
+
+    if size is not None:
+        search_criterion = [create_search_criterion_by_size(size)]
 
     return search_criterion
 
@@ -161,6 +196,8 @@ def main():
     imap_account = imap_cli.connect(**connect_conf)
     imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
     search_criterion = create_search_criterion(
+        date=datetime.datetime(2014, 8, 5),  # TODO(rsoufflet) args['--date'],
+        size=args['--size'],
         tags=args['--tags'],
         text=args['--full-text'],
     )
