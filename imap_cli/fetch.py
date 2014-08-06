@@ -81,6 +81,9 @@ def fetch(imap_account, message_set=None, message_parts=None):
     if message_set is None or not isinstance(message_set, collections.Iterable):
         log.error('Can\'t fetch email {}'.format(message_set))
         return None
+    if len(message_set) == 0:
+        log.error('No uid given')
+        return None
     if message_parts is None:
         message_parts = ['RFC822']
 

@@ -264,6 +264,9 @@ def main():
         text=args['--full-text'],
     )
     mail_set = fetch_uids(imap_account, search_criterion=search_criterion)
+    if len(mail_set) == 0:
+        log.error('No mail found')
+        return 0
     for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
         sys.stdout.write(display_conf['format_list'].format(**mail_info))
         sys.stdout.write('\n')
