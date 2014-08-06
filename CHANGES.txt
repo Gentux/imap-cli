@@ -1,3 +1,8 @@
+v0.4, 07-25-2014 --
+    Add advanced search
+    Rewrite code structures
+    Use UID instead of volatile ID
+
 v0.3, 07-25-2014 --
     Add documentation
     Rewrite code structures
