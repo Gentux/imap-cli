@@ -130,6 +130,9 @@ below
 * Advanced Search
 * Use UID instead of volatil mails id
 * Read all type of mail and handle attachments
+
+### v0.5 ###
+
 * List mail by thread
 * Display threads
 
