@@ -4,6 +4,7 @@
 """Test helpers"""
 
 
+import datetime
 import imaplib
 import unittest
 
@@ -20,6 +21,32 @@ class SearchTests(unittest.TestCase):
         self.imap_account.login()
 
         assert search.create_search_criterion() == ['ALL']
+
+    def test_create_search_criteria_by_date(self):
+        self.imap_account = imaplib.IMAP4_SSL()
+        self.imap_account.login()
+
+        date = datetime.datetime(1989, 1, 3)
+        search_criterion = search.create_search_criterion(date=date)
+        assert search_criterion == ['SINCE 03-Jan-1989']
+
+        search_criterion = search.create_search_criterion_by_date(date, relative='BEFORE')
+        assert search_criterion == 'BEFORE 03-Jan-1989'
+
+        search_criterion = search.create_search_criterion_by_date(date, relative='ON')
+        assert search_criterion == 'ON 03-Jan-1989'
+
+        search_criterion = search.create_search_criterion_by_date(date, relative='SINCE')
+        assert search_criterion == 'SINCE 03-Jan-1989'
+
+        search_criterion = search.create_search_criterion_by_date(date, relative='BEFORE', sent=True)
+        assert search_criterion == 'SENTBEFORE 03-Jan-1989'
+
+        search_criterion = search.create_search_criterion_by_date(date, relative='ON', sent=True)
+        assert search_criterion == 'SENTON 03-Jan-1989'
+
+        search_criterion = search.create_search_criterion_by_date(date, relative='SINCE', sent=True)
+        assert search_criterion == 'SENTSINCE 03-Jan-1989'
 
     def test_create_search_criteria_by_size(self):
         self.imap_account = imaplib.IMAP4_SSL()
