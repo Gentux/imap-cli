@@ -50,6 +50,46 @@ MAIL_ID_RE = r'^(?P<mail_id>\d+) \('
 UID_RE = r'.*UID (?P<uid>[^ ]*)'
 
 
+def combine_search_criterion(search_criterion, operator='AND'):
+    """Return a single IMAP search string combining all criterion given.
+
+    Keyword:
+        operator : Possible values are : 'AND', 'OR' and 'NOT'
+    """
+    if operator not in ['AND', 'OR', 'NOT']:
+        operator = 'AND'
+        log.warning('Wrong value for "operator" argument, taking default value "{}"'.format(operator))
+
+    if operator == 'AND':
+        return '({})'.format(' '.join(search_criterion))
+    if operator == 'OR':
+        return 'OR {}'.format(' '.join(search_criterion))
+    if operator == 'NOT':
+        return 'NOT {}'.format(' '.join(search_criterion))
+
+
+def create_search_criterion(address=None, date=None, size=None, subject=None, tags=None, text=None, operator='AND'):
+    """Wrapper helping developer to construct a list of search criterion with a single method."""
+    search_criterion = []
+    if address is not None:
+        search_criterion.append(create_search_criterion_by_mail_address(address))
+    if date is not None:
+        search_criterion.append(create_search_criterion_by_date(date))
+    if tags is not None:
+        search_criterion.append(create_search_criteria_by_tag(tags))
+    if text is not None:
+        search_criterion.append(create_search_criteria_by_text(text))
+    if subject is not None:
+        search_criterion.append(create_search_criterion_by_subject(subject))
+    if size is not None:
+        search_criterion.append(create_search_criterion_by_size(size))
+
+    if len(search_criterion) == 0:
+        search_criterion.append('ALL')
+
+    return search_criterion
+
+
 def create_search_criterion_by_date(datetime, relative=None, sent=False):
     """Return a search criteria by date.
 
@@ -61,6 +101,11 @@ def create_search_criterion_by_date(datetime, relative=None, sent=False):
         relative = 'SINCE'
     formated_date = datetime.strftime('%d-%h-%Y')
     return '{}{} {}'.format('SENT' if sent is True else '', relative, formated_date)
+
+
+def create_search_criterion_by_header(header_name, header_value):
+    """Return search criteria by header."""
+    return 'HEADER {} {}'.format(header_name, header_value)
 
 
 def create_search_criterion_by_mail_address(mail_address, header_name='FROM'):
@@ -113,6 +158,10 @@ def create_search_criteria_by_text(text):
     return 'BODY "{}"'.format(text)
 
 
+def create_search_criterion_by_uid(uid):
+    return 'UID {}'.format(uid)
+
+
 def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
     flags_re = re.compile(FLAGS_RE)
     mail_id_re = re.compile(MAIL_ID_RE)
@@ -157,30 +206,6 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
         ])
 
 
-def create_search_criterion(address=None, date=None, size=None, subject=None, tags=None, text=None):
-    # TODO(rsoufflet) This method should combine every search criteria instead of overwritten each other
-    search_criterion = ['ALL']
-    if address is not None:
-        search_criterion = [create_search_criterion_by_mail_address(address)]
-
-    if date is not None:
-        search_criterion = [create_search_criterion_by_date(date)]
-
-    if tags is not None:
-        search_criterion = [create_search_criteria_by_tag(tags)]
-
-    if text is not None:
-        search_criterion = [create_search_criteria_by_text(text)]
-
-    if subject is not None:
-        search_criterion = [create_search_criterion_by_subject(subject)]
-
-    if size is not None:
-        search_criterion = [create_search_criterion_by_size(size)]
-
-    return search_criterion
-
-
 def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
     """Return a list of mails id corresponding to specified search.
 
@@ -194,8 +219,8 @@ def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
     request_search_criterion = search_criterion
     if search_criterion is None:
         request_search_criterion = 'ALL'
-    else:
-        request_search_criterion = '({})'.format(' '.join(search_criterion))
+    elif isinstance(search_criterion, list):
+        request_search_criterion = combine_search_criterion(search_criterion)
 
     if imap_account.state != 'SELECTED':
         log.warning(u'No directory specified, selecting {}'.format(const.DEFAULT_DIRECTORY))
