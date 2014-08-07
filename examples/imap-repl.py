@@ -36,11 +36,11 @@ class ImapShell(cmd.Cmd):
         self.imap_account = imap_account
 
     def do_cd(self, arg):
-        '''Change selected IMAP folder'''
+        '''Change selected IMAP folder.'''
         args = docopt.docopt('Usage: cd <directory>', arg)
         cd_result = imap_cli.change_dir(self.imap_account, directory=args['<directory>'])
         if cd_result == -1:
-            print 'IMAP Folder can\'t be found'
+            sys.stdout.write('IMAP Folder can\'t be found\n')
         else:
             self.prompt = '(imap-cli "{}") '.format(args['<directory>'])
 
@@ -71,20 +71,20 @@ class ImapShell(cmd.Cmd):
         except ValueError:
             limit = 10
         for mail_info in search.fetch_mails_info(self.imap_account, limit=limit):
-            print u'UID : {:<10} From : {:<40} Subject : {}'.format(
+            sys.stdout.write(u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
                 mail_info['uid'][0],
                 truncate_string(mail_info['from'], 33),
                 truncate_string(mail_info['subject'], 50),
-            )
+            ))
 
     def do_read(self, arg):
-        '''Read mail by uid'''
+        '''Read mail by uid.'''
         args = docopt.docopt('Usage: read <mail_uid> [<save_directory>]', arg)
         fetched_mail = fetch.read(self.imap_account, args['<mail_uid>'], save_directory=args['<save_directory>'])
         if fetched_mail is None:
             log.error("Mail was not fetched, an error occured")
 
-        print fetch.display(fetched_mail)
+        sys.stdout.write(fetch.display(fetched_mail))
 
     def do_search(self, arg):
         '''Search mail.'''
@@ -124,21 +124,21 @@ class ImapShell(cmd.Cmd):
             log.error('No mail found')
             return 0
         for mail_info in search.fetch_mails_info(self.imap_account, mail_set=mail_set):
-            print u'UID : {:<10} From : {:<40} Subject : {}'.format(
+            sys.stdout.write(u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
                 mail_info['uid'][0],
                 truncate_string(mail_info['from'], 33),
                 truncate_string(mail_info['subject'], 50),
-            )
+            ))
 
     def do_status(self, arg):
         'Print status of all IMAP folder in this account'
         for directory_status in imap_cli.status(self.imap_account):
-            print u'{:<30} : {:<6} Unseen {:<6} Recent {:<6} Total'.format(
+            sys.stdout.write(u'{:<30} : {:<6} Unseen {:<6} Recent {:<6} Total\n'.format(
                 directory_status['directory'],
-                directory_status['unseenj'],
+                directory_status['unseen'],
                 directory_status['recent'],
                 directory_status['count'],
-            )
+            ))
 
     def do_quit(self, arg):
         'Exit this shell'
