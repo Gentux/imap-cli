@@ -6,14 +6,12 @@
 
 import imaplib
 import logging
-import os
 import re
 
 from imap_cli import const
 
 
-app_name = os.path.splitext(os.path.basename(__file__))[0]
-log = logging.getLogger(app_name)
+log = logging.getLogger('imap-cli')
 
 STATUS_RE = r'{dirname} \({messages_count} {recent} {unseen}\)'.format(
     dirname=r'"(?P<dirname>.*)"',

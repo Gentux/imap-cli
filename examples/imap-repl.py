@@ -5,6 +5,7 @@
 """Use IMAP CLI to gt a summary of IMAP account state."""
 
 
+import argparse
 import cmd
 import datetime
 import logging
@@ -40,16 +41,18 @@ class ImapShell(cmd.Cmd):
         cd_result = imap_cli.change_dir(self.imap_account, directory=args['<directory>'])
         if cd_result == -1:
             print 'IMAP Folder can\'t be found'
+        else:
+            self.prompt = '(imap-cli "{}") '.format(args['<directory>'])
 
     def do_flag(self, arg):
         '''Set or Unset flag on mails.'''
         args = docopt.docopt('\n'.join([
-            'Usage: flag [options] <mail_id> <flag>...',
+            'Usage: flag [options] <mail_id> <flag>',
             '',
             'Options:',
             '    -u, --unset    Remove flag instead of setting them',
             '    -h, --help     Show help options',
-        ]))
+        ]), argv=arg)
         flag.flag(self.imap_account, [args['<mail_id>']], args['<flag>'], unset=args['--unset'])
 
     def do_list(self, arg):
@@ -154,6 +157,16 @@ def truncate_string(string, length):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-v', '--verbose', action='store_true', help='increase output verbosity')
+
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.WARNING,
+        stream=sys.stdout,
+    )
+
     connection_config = config.new_context_from_file(section='imap')
     imap_account = imap_cli.connect(**connection_config)
     ImapShell(imap_account).cmdloop()
