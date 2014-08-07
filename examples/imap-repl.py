@@ -133,7 +133,7 @@ class ImapShell(cmd.Cmd):
     def do_status(self, arg):
         'Print status of all IMAP folder in this account'
         for directory_status in imap_cli.status(self.imap_account):
-            sys.stdout.write(u'{:<30} : {:<6} Unseen {:<6} Recent {:<6} Total\n'.format(
+            sys.stdout.write(u'{:<30} : Unseen {:<6}   Recent {:<6}   Total {:<6}\n'.format(
                 directory_status['directory'],
                 directory_status['unseen'],
                 directory_status['recent'],
