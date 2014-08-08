@@ -13,12 +13,13 @@ from imap_cli import const
 
 log = logging.getLogger('imap-cli')
 
-STATUS_RE = r'{dirname} \({messages_count} {recent} {unseen}\)'.format(
-    dirname=r'"(?P<dirname>.*)"',
+LIST_DIR_RE = re.compile(r'\((?P<flags>[^\)]*)\) "(?P<delimiter>[^"]*)" "(?P<directory>[^"]*)"')
+STATUS_RE = re.compile(r'{directory} \({messages_count} {recent} {unseen}\)'.format(
+    directory=r'"(?P<directory>.*)"',
     messages_count=r'MESSAGES (?P<mail_count>\d{1,5})',
     recent=r'RECENT (?P<mail_recent>\d{1,5})',
     unseen=r'UNSEEN (?P<mail_unseen>\d{1,5})',
-)
+))
 
 
 def change_dir(imap_account, directory, read_only=True):
@@ -58,22 +59,32 @@ def list_dir(imap_account):
     status, data = imap_account.list()
     if status == const.STATUS_OK:
         for datum in data:
-            parts = datum.split()
-            yield parts[0], parts[1], parts[2]
+            datum_match = LIST_DIR_RE.match(datum)
+            if datum_match is None:
+                log.warning('Ignoring "LIST" response part : {}'.format(datum))
+                continue
+            datum_dict = datum_match.groupdict()
+            yield {
+                'flags': datum_dict['flags'],
+                'delimiter': datum_dict['delimiter'],
+                'directory': datum_dict['directory'],
+            }
 
 
 def status(imap_account):
-    status_cre = re.compile(STATUS_RE)
-    for tags, delimiter, dirname in list_dir(imap_account):
-        status, data = imap_account.status(dirname, '(MESSAGES RECENT UNSEEN)')
+    for directory_info in list_dir(imap_account):
+        status, data = imap_account.status(directory_info['directory'], '(MESSAGES RECENT UNSEEN)')
         if status != const.STATUS_OK:
+            log.warning('Wrong status : {}'.format(repr(data)))
             continue
-        status_match = status_cre.match(data[0])
-        if status_match is not None:
-            group_dict = status_match.groupdict()
-            yield {
-                'directory': group_dict['dirname'],
-                'unseen': group_dict['mail_unseen'],
-                'count': group_dict['mail_count'],
-                'recent': group_dict['mail_recent'],
-            }
+        status_match = STATUS_RE.match(data[0])
+        if status_match is None:
+            log.warning('Ignoring directory : {}'.format(repr(data)))
+            continue
+        group_dict = status_match.groupdict()
+        yield {
+            'directory': group_dict['directory'],
+            'unseen': group_dict['mail_unseen'],
+            'count': group_dict['mail_count'],
+            'recent': group_dict['mail_recent'],
+        }
