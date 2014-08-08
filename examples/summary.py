@@ -42,7 +42,7 @@ def main():
         password=password,
         ssl=not args.no_ssl,
     )
-    for directory_status in imap_cli.status(imap_account):
+    for directory_status in sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']):
         if int(directory_status['unseen']) > 0:
             sys.stdout.write(directory_status['directory'])
             sys.stdout.write('\n')

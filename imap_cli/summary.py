@@ -53,7 +53,7 @@ def main():
         display_conf['format_status'] = args['--format']
 
     imap_account = imap_cli.connect(**connect_conf)
-    for directory_status in imap_cli.status(imap_account):
+    for directory_status in sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']):
         sys.stdout.write(display_conf['format_status'].format(**directory_status))
         sys.stdout.write('\n')
 

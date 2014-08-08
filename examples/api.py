@@ -72,7 +72,7 @@ def search_controller(req):
 
 @wsgify
 def status_controller(req):
-    return json.dumps(list(imap_cli.status(imap_account)), indent=2)
+    return json.dumps(sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']), indent=2)
 
 
 routings = [
