@@ -26,7 +26,7 @@ log = logging.getLogger(app_name)
 
 
 class ImapShell(cmd.Cmd):
-    completekey = False
+    completekey = 'Tab'
     intro = 'IMAP interactive Command Line Interpreter.  Type help or ? to list commands.\n'
     prompt = '(imap-cli "INBOX") '
     stdout = sys.stdout
