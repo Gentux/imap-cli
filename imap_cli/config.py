@@ -72,11 +72,15 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
         if config_reader.has_option('display', 'limit'):
             config['limit'] = config_reader.getint('display', 'limit')
 
-        config['format_status'] = config_reader.get('display', 'format_status') \
-            if config_reader.has_option('display', 'format_status') \
+        config['format_status'] = (
+            config_reader.get('display', 'format_status')
+            if config_reader.has_option('display', 'format_status')
             else u'{directory}:{unseen} Unseen - {count} Mails - {recent} Recent'
+        )
 
-        config['format_list'] = config_reader.get('display', 'format_list') \
-            if config_reader.has_option('display', 'format_list') \
+        config['format_list'] = (
+            config_reader.get('display', 'format_list')
+            if config_reader.has_option('display', 'format_list')
             else u'From: {from:<30} To: {to:<20} Subject: {subject}'
+        )
     return config
