@@ -9,6 +9,7 @@ import copy
 import json
 import logging
 import re
+import sys
 from wsgiref import simple_server
 
 import six
@@ -106,6 +107,8 @@ def router(req):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+
     routes = []
     for routing in routings:
         methods, regex, app = routing[:3]
@@ -113,9 +116,14 @@ if __name__ == '__main__':
             methods = (methods,)
         vars = routing[3] if len(routing) >= 4 else {}
         routes.append((methods, re.compile(regex), app, vars))
+        log.info('Route {} openned'.format(regex[1:-1]))
 
-    imap_account = imap_cli.connect(**conf)
+    try:
+        imap_account = imap_cli.connect(**conf)
 
-    httpd = simple_server.make_server('127.0.0.1', 8000, router)
-    log.info('Serving on http://127.0.0.1:8000')
-    httpd.serve_forever()
+        httpd = simple_server.make_server('127.0.0.1', 8000, router)
+        log.info('Serving on http://127.0.0.1:8000')
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        log.info('Interupt by user, exiting')
+        sys.exit(0)
