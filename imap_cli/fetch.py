@@ -159,21 +159,25 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
 def main():
     args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
-        level=logging.DEBUG if args['--verbose'] else logging.WARNING,
+        level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
     )
 
     conf = config.new_context_from_file(args['--config-file'], section='imap')
 
-    imap_account = imap_cli.connect(**conf)
-    imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY)
-    fetched_mail = read(imap_account, args['<mail_uid>'], save_directory=args['--save'])
-    if fetched_mail is None:
-        log.error("Mail was not fetched, an error occured")
-        return 1
-    imap_cli.disconnect(imap_account)
+    try:
+        imap_account = imap_cli.connect(**conf)
+        imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY)
+        fetched_mail = read(imap_account, args['<mail_uid>'], save_directory=args['--save'])
+        if fetched_mail is None:
+            log.error("Mail was not fetched, an error occured")
+            return 1
+        imap_cli.disconnect(imap_account)
 
-    sys.stdout.write(display(fetched_mail).encode('utf-8'))
+        sys.stdout.write(display(fetched_mail).encode('utf-8'))
+    except KeyboardInterrupt:
+        log.info('Interrupt by user, exiting')
+
     return 0
 
 if __name__ == '__main__':

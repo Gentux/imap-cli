@@ -234,7 +234,7 @@ def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
 def main():
     args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
-        level=logging.DEBUG if args['--verbose'] else logging.WARNING,
+        level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
     )
 
@@ -253,25 +253,29 @@ def main():
     else:
         date = None
 
-    imap_account = imap_cli.connect(**connect_conf)
-    imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
-    search_criterion = create_search_criterion(
-        address=args['--address'],
-        date=date,
-        subject=args['--subject'],
-        size=args['--size'],
-        tags=args['--tags'],
-        text=args['--full-text'],
-    )
-    mail_set = fetch_uids(imap_account, search_criterion=search_criterion)
-    if len(mail_set) == 0:
-        log.error('No mail found')
-        return 0
-    for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
-        sys.stdout.write(display_conf['format_list'].format(**mail_info))
-        sys.stdout.write('\n')
+    try:
+        imap_account = imap_cli.connect(**connect_conf)
+        imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
+        search_criterion = create_search_criterion(
+            address=args['--address'],
+            date=date,
+            subject=args['--subject'],
+            size=args['--size'],
+            tags=args['--tags'],
+            text=args['--full-text'],
+        )
+        mail_set = fetch_uids(imap_account, search_criterion=search_criterion)
+        if len(mail_set) == 0:
+            log.error('No mail found')
+            return 0
+        for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
+            sys.stdout.write(display_conf['format_list'].format(**mail_info))
+            sys.stdout.write('\n')
 
-    imap_cli.disconnect(imap_account)
+        imap_cli.disconnect(imap_account)
+    except KeyboardInterrupt:
+        log.info('Interrupt by user, exiting')
+
     return 0
 
 

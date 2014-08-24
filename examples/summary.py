@@ -36,33 +36,37 @@ def main():
     args = parser.parse_args()
     password = getpass.getpass()
 
-    imap_account = imap_cli.connect(
-        hostname=args.imap_server,
-        username=args.login,
-        password=password,
-        ssl=not args.no_ssl,
-    )
-    for directory_status in sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']):
-        if int(directory_status['unseen']) > 0:
-            sys.stdout.write(directory_status['directory'])
-            sys.stdout.write('\n')
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
-            imap_cli.change_dir(imap_account, directory_status['directory'])
-            mail_set = search.fetch_uids(
-                imap_account,
-                search_criterion=[search.create_search_criteria_by_tag(['unseen'])],
-            )
+    try:
+        imap_account = imap_cli.connect(
+            hostname=args.imap_server,
+            username=args.login,
+            password=password,
+            ssl=not args.no_ssl,
+        )
+        for directory_status in sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']):
+            if int(directory_status['unseen']) > 0:
+                sys.stdout.write(directory_status['directory'])
+                sys.stdout.write('\n')
 
-            for mail_info in search.fetch_mails_info(imap_account, mail_set=mail_set):
-                sys.stdout.write(u'    {:<10} From : {:<30} \tSubject : {}\n'.format(
-                    mail_info['uid'],
-                    truncate_string(mail_info['from'], 30),
-                    truncate_string(mail_info['subject'], 50),
-                ))
-    imap_cli.disconnect(imap_account)
+                imap_cli.change_dir(imap_account, directory_status['directory'])
+                mail_set = search.fetch_uids(
+                    imap_account,
+                    search_criterion=[search.create_search_criteria_by_tag(['unseen'])],
+                )
+
+                for mail_info in search.fetch_mails_info(imap_account, mail_set=mail_set):
+                    sys.stdout.write(u'    {:<10} From : {:<30} \tSubject : {}\n'.format(
+                        mail_info['uid'],
+                        truncate_string(mail_info['from'], 30),
+                        truncate_string(mail_info['subject'], 50),
+                    ))
+        imap_cli.disconnect(imap_account)
+    except KeyboardInterrupt:
+        log.info('Interrupt by user, exiting')
 
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

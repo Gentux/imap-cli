@@ -43,19 +43,22 @@ def truncate_string(string, length):
 def main():
     args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
-        level=logging.DEBUG if args['--verbose'] else logging.WARNING,
+        level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
     )
 
-    connect_conf = config.new_context_from_file(args['--config-file'], section='imap')
-    display_conf = config.new_context_from_file(args['--config-file'], section='display')
-    if args['--format'] is not None:
-        display_conf['format_status'] = args['--format']
+    try:
+        connect_conf = config.new_context_from_file(args['--config-file'], section='imap')
+        display_conf = config.new_context_from_file(args['--config-file'], section='display')
+        if args['--format'] is not None:
+            display_conf['format_status'] = args['--format']
 
-    imap_account = imap_cli.connect(**connect_conf)
-    for directory_status in sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']):
-        sys.stdout.write(display_conf['format_status'].format(**directory_status))
-        sys.stdout.write('\n')
+        imap_account = imap_cli.connect(**connect_conf)
+        for directory_status in sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']):
+            sys.stdout.write(display_conf['format_status'].format(**directory_status))
+            sys.stdout.write('\n')
+    except KeyboardInterrupt:
+        log.info('Interrupt by user, exiting')
 
     return 0
 

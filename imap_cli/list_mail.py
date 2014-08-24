@@ -39,7 +39,7 @@ log = logging.getLogger('imap-cli-list')
 def main():
     args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
-        level=logging.DEBUG if args['--verbose'] else logging.WARNING,
+        level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
     )
 
@@ -53,12 +53,16 @@ def main():
         except ValueError:
             pass
 
-    imap_account = imap_cli.connect(**connect_conf)
-    imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
-    for mail_info in search.fetch_mails_info(imap_account):
-        sys.stdout.write(display_conf['format_list'].format(**mail_info))
-        sys.stdout.write('\n')
-    imap_cli.disconnect(imap_account)
+    try:
+        imap_account = imap_cli.connect(**connect_conf)
+        imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
+        for mail_info in search.fetch_mails_info(imap_account):
+            sys.stdout.write(display_conf['format_list'].format(**mail_info))
+            sys.stdout.write('\n')
+        imap_cli.disconnect(imap_account)
+    except KeyboardInterrupt:
+        log.info('Interrupt by user, exiting')
+
     return 0
 
 
