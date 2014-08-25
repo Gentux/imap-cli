@@ -26,6 +26,7 @@ from imap_cli import search
 conf = config.new_context_from_file(section='imap')
 imap_account = None
 log = logging.getLogger('Imap-CLI API')
+routes = []
 
 
 @wsgify
@@ -106,10 +107,12 @@ def router(req):
     return status_map[404]()
 
 
-if __name__ == '__main__':
+def main():
+    global imap_account
+    global routes
+
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
-    routes = []
     for routing in routings:
         methods, regex, app = routing[:3]
         if isinstance(methods, six.string_types):
@@ -126,4 +129,8 @@ if __name__ == '__main__':
         httpd.serve_forever()
     except KeyboardInterrupt:
         log.info('Interupt by user, exiting')
-        sys.exit(0)
+
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())
