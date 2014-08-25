@@ -33,6 +33,7 @@ Contents:
     connection
     status
     imap-search
+    REPL
     roadmap
     contribute
 

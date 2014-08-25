@@ -14,11 +14,13 @@ Or install it from its source code::
 
 This installation will provide command line tools allowing you to do simple task an IMAP account::
 
+* imap-api: Provide a simple REST API to access your mailbox information
 * imap-cli-status: List directories and display count of mail *seen*, *unseen* and *recent* [#f1]_
 * imap-cli-list: List mail in specified directory
 * imap-cli-search: Search throug specified directory for tag or plain text
 * imap-cli-read: Display a mail on standard output
 * imap-cli-flag: Set or Unset flag on specified set of mail
+* imap-repl: A little shell to query mailbox informations
 
 Each one of these command has its own *documentation* with the *--help* options
 
