@@ -77,6 +77,11 @@ class ImapShell(cmd.Cmd):
                 truncate_string(mail_info['subject'], 50),
             ))
 
+    def do_quit(self, arg):
+        'Exit this shell'
+        print('Bye')
+        return True
+
     def do_read(self, arg):
         '''Read mail by uid.'''
         args = docopt.docopt('Usage: read <mail_uid> [<save_directory>]', arg)
@@ -141,10 +146,19 @@ class ImapShell(cmd.Cmd):
                 directory_status['count'],
             ))
 
-    def do_quit(self, arg):
-        'Exit this shell'
-        print('Bye')
-        return True
+    def do_unseen(self, arg):
+        '''List Unseen mail (equivalent to "search -t unseen").'''
+        search_criterion = search.create_search_criterion(tags=['unseen'])
+        mail_set = search.fetch_uids(self.imap_account, search_criterion=search_criterion)
+        if len(mail_set) == 0:
+            log.error('No unseen mail found')
+        else:
+            for mail_info in search.fetch_mails_info(self.imap_account, mail_set=mail_set):
+                sys.stdout.write(u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
+                    mail_info['uid'][0],
+                    truncate_string(mail_info['from'], 33),
+                    truncate_string(mail_info['subject'], 50),
+                ))
 
     def emptyline(self):
         pass
