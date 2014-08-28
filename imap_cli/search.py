@@ -27,6 +27,7 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
+import codecs
 import datetime
 import email
 from email import header
@@ -192,7 +193,14 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
             for header_name, header_value in mail.items():
                 header_new_value = []
                 for value, encoding in header.decode_header(header_value):
-                    header_new_value.append(value.decode(encoding or 'utf-8'))
+                    if value is None:
+                        continue
+                    try:
+                        decoded_value = codecs.decode(value, encoding or 'utf-8')
+                    except TypeError:
+                        log.debug(u'Can\'t decode {} with {} encoding'.format(value, encoding))
+                        decoded_value = value
+                    header_new_value.append(decoded_value)
                 mail.replace_header(header_name, ' '.join(header_new_value))
 
         yield dict([
