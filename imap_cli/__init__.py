@@ -27,7 +27,7 @@ def change_dir(imap_account, directory, read_only=True):
         imap_account.close()
     status, mail_count = imap_account.select(directory, read_only)
     if status == const.STATUS_OK:
-        return mail_count
+        return mail_count[0]
     else:
         log.error('Can\'t select directory {}'.format(directory))
         return -1

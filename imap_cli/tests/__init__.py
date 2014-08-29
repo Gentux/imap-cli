@@ -21,6 +21,8 @@ example_email_content = u'\r\n'.join([
 
 
 class ImapConnectionMock(mock.Mock):
+    state = None
+
     def fetch(self, mails_id_set, request):
         flag_str = ""
         if request.find('FLAG') >= 0:
@@ -38,7 +40,14 @@ class ImapConnectionMock(mock.Mock):
     def login(self, *args):
         return (u'OK', [u'Logged in'])
 
+    def logout(self, *args):
+        self.state = 'LOGOUT'
+
     def select(self, *args):
+        if args[0] not in ['INBOX', 'Test', 'Directory_name']:
+            self.state = 'LOGOUT'
+            return (u'NO', None)
+        self.state = 'SELECTED'
         return (u'OK', [u'1'])
 
     def search(self, *args):
