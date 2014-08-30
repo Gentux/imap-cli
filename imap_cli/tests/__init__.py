@@ -21,6 +21,8 @@ example_email_content = u'\r\n'.join([
 
 
 class ImapConnectionMock(mock.Mock):
+    fail = False
+    error = False
     state = None
 
     def fetch(self, mails_id_set, request):
@@ -35,6 +37,8 @@ class ImapConnectionMock(mock.Mock):
         return (u'OK', [(imap_header, example_email_content), ')'])
 
     def list(self, *args):
+        if self.fail is True:
+            return (u'OK', [u'(\\HasNoChildren) ) "." "Directory_name"', u'(\\HasNoChildren) "." "INBOX"'])
         return (u'OK', [u'(\\HasNoChildren) "." "Directory_name"', u'(\\HasNoChildren) "." "INBOX"'])
 
     def login(self, *args):
@@ -54,6 +58,10 @@ class ImapConnectionMock(mock.Mock):
         return (u'OK', [u'1'])
 
     def status(self, *args):
+        if self.fail is True:
+            return (u'NO', None)
+        if self.error is True:
+            return (u'OK', [u'"Directory_name"" ((MESSAGES 1 RECENT 1 UNSEEN 0)'])
         return (u'OK', [u'"Directory_name" (MESSAGES 1 RECENT 1 UNSEEN 0)'])
 
     def uid(self, command, *args):
