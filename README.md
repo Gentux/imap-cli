@@ -92,6 +92,11 @@ File configuration is not the only possibility. As the package imap-cli is desig
 are shared in a *context* object. You can load this context progamatically if you want.
 
 
+## Further documentation ##
+
+Full documentation available [here](http://imap-cli.readthedocs.org/en/master/).
+
+
 ## Contributing ##
 
 All contributions are welcome.
@@ -144,11 +149,6 @@ below
 * [Twitter](http://twitter.com/Romain_Soufflet)
 * [Github](http://github.com/Gentux)
 * [http://romain.soufflet.io](http://romain.soufflet.io)
-
-
-## Further documentation ##
-
-Full documentation available [here](http://imap-cli.readthedocs.org/en/master/).
 
 
 ## Legal notices ##
