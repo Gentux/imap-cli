@@ -30,13 +30,13 @@ EOF
 )"
 
 
-if [ $verbose = "true" ]; then
+if [ "$verbose" = "true" ]; then
     verbose="-v"
 else
     verbose=""
 fi
 
-if [ $command = "help" ]; then
+if [ "$command" = "help" ]; then
     help="--help"
     command=${args[0]}
 else
@@ -44,11 +44,11 @@ else
 fi
 
 case ${command} in
-    "status" ) imap-cli-status ${verbose} ${help} ${args} ;;
-    "list" ) imap-cli-list ${verbose} ${help} ${args} ;;
-    "search" ) imap-cli-search ${verbose} ${help} ${args} ;;
-    "read" ) imap-cli-read ${verbose} ${help} ${args} ;;
-    "flag" ) imap-cli-flag ${verbose} ${help} ${args} ;;
+    "status" ) imap-cli-status ${verbose} ${help} "${args}" ;;
+    "list" ) imap-cli-list ${verbose} ${help} "${args}" ;;
+    "search" ) imap-cli-search ${verbose} ${help} "${args}" ;;
+    "read" ) imap-cli-read ${verbose} ${help} "${args}" ;;
+    "flag" ) imap-cli-flag ${verbose} ${help} "${args}" ;;
 esac
 
 exit $?
