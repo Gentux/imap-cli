@@ -43,6 +43,7 @@ This file can contains the following options::
         To:         {to}
         Date:       {date}
         Subject:    {subject}
+    format_thread = {uid:<7} {subject} <<< FROM {from}
     format_status = {directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent
     limit = 10
 

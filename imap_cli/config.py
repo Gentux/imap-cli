@@ -31,6 +31,7 @@ DEFAULT_CONFIG = {
         u'Date:       {date}\n',
         u'Subject:    {subject}',
     ]),
+    u'format_thread': u'{uid:<7} {subject} <<< FROM {from}',
     u'format_status': u'{directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent'
 }
 log = logging.getLogger(app_name)
@@ -72,15 +73,22 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
         if config_reader.has_option('display', 'limit'):
             config['limit'] = config_reader.getint('display', 'limit')
 
+        config['format_list'] = (
+            config_reader.get('display', 'format_list')
+            if config_reader.has_option('display', 'format_list')
+            else u'From: {from:<30} To: {to:<20} Subject: {subject}'
+        )
+
         config['format_status'] = (
             config_reader.get('display', 'format_status')
             if config_reader.has_option('display', 'format_status')
             else u'{directory}:{unseen} Unseen - {count} Mails - {recent} Recent'
         )
 
-        config['format_list'] = (
-            config_reader.get('display', 'format_list')
-            if config_reader.has_option('display', 'format_list')
-            else u'From: {from:<30} To: {to:<20} Subject: {subject}'
+        config['format_thread'] = (
+            config_reader.get('display', 'format_thread')
+            if config_reader.has_option('display', 'format_thread')
+            else u'{uid:<7} {subject} <<< FROM {from}'
         )
+
     return config
