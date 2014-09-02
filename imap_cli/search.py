@@ -14,6 +14,7 @@ Options:
     -S, --subject=<subject>     Search by subject
     -t, --tags=<tags>           Searched tags (Comma separated values)
     -T, --full-text=<text>      Searched tags (Comma separated values)
+    --thread                    Display mail by thread
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
@@ -27,6 +28,7 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
+import ast
 import codecs
 import datetime
 import email
@@ -163,6 +165,30 @@ def create_search_criterion_by_uid(uid):
     return 'UID {}'.format(uid)
 
 
+def display_mail_by_thread(imap_account, threads, mail_info_by_uid=None, depth=0, format_thread=None):
+    if mail_info_by_uid is None:
+        mail_set = list(threads_to_mail_set(threads))
+        if len(mail_set) == 0:
+            log.error('No mail found')
+
+        mail_info_by_uid = {}
+        for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
+            mail_info_by_uid[int(mail_info['uid'][0])] = mail_info
+
+    for thread in threads:
+        if isinstance(thread, list):
+            for output in display_mail_by_thread(
+                    imap_account,
+                    thread,
+                    mail_info_by_uid=mail_info_by_uid,
+                    depth=depth + 1,
+                    format_thread=format_thread):
+                yield output
+        else:
+            real_depth = (depth - 1) * 4
+            yield u'{}{}'.format(' ' * real_depth, format_thread.format(**mail_info_by_uid.get(thread)))
+
+
 def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
     flags_re = re.compile(FLAGS_RE)
     mail_id_re = re.compile(MAIL_ID_RE)
@@ -214,6 +240,34 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
         ])
 
 
+def fetch_threads(imap_account, charset=None, limit=None, search_criterion=None):
+    """Return a list of thread corresponding to specified search.
+
+    Keyword arguments:
+    charset             -- Request a particular charset from IMAP server
+    limit               -- Limit the number of mail returned
+    search_criterion    -- Iterable containing criterion
+
+    Search criterion avalaible are listed in const.SEARH_CRITERION
+    """
+    request_search_criterion = search_criterion
+    if search_criterion is None or search_criterion == ['ALL']:
+        request_search_criterion = 'ALL'
+    if charset is None:
+        charset = 'UTF-8'
+    elif isinstance(search_criterion, list):
+        request_search_criterion = combine_search_criterion(search_criterion)
+
+    if imap_account.state != 'SELECTED':
+        log.warning(u'No directory specified, selecting {}'.format(const.DEFAULT_DIRECTORY))
+        imap_cli.change_dir(imap_account, const.DEFAULT_DIRECTORY)
+
+    status, data = imap_account.uid('THREAD', 'REFERENCES', charset, request_search_criterion)
+    if status != const.STATUS_OK:
+        return None
+    return parse_thread_response(data[0])
+
+
 def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
     """Return a list of mails id corresponding to specified search.
 
@@ -237,6 +291,27 @@ def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
     status, data = imap_account.uid('SEARCH', charset, request_search_criterion)
     if status == const.STATUS_OK:
         return data[0].split() if limit is None else data[0].split()[-limit:]
+
+
+def parse_thread_response(thread_string):
+    """Parse IMAP THREAD response into a list of thread.
+
+    We define thread as list of mail UID (int) which can contain other thread (nested list)
+    Example:
+        >>> repr(parse_thread_response(imap_response))
+        '[[[6], [7]], [14, 19], [23, 58, 60, 61, 62, 63, 68, 69, 70]]'
+    """
+    # FIXME(rsoufflet) Not sure the use of "ast" module is the right solution here. Any ideas are welcome here
+    return ast.literal_eval('[{}]'.format(thread_string.replace(' ', ', ').replace('(', '[').replace(')', '] ,')))
+
+
+def threads_to_mail_set(threads):
+    for value in threads:
+        if isinstance(value, list):
+            for sub_value in threads_to_mail_set(value):
+                yield sub_value
+        else:
+            yield value
 
 
 def main():
@@ -272,13 +347,19 @@ def main():
             tags=args['--tags'],
             text=args['--full-text'],
         )
-        mail_set = fetch_uids(imap_account, search_criterion=search_criterion)
-        if len(mail_set) == 0:
-            log.error('No mail found')
-            return 0
-        for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
-            sys.stdout.write(display_conf['format_list'].format(**mail_info))
-            sys.stdout.write('\n')
+        if args['--thread'] is False:
+            mail_set = fetch_uids(imap_account, search_criterion=search_criterion)
+            if len(mail_set) == 0:
+                log.error('No mail found')
+                return 0
+            for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
+                sys.stdout.write(display_conf['format_list'].format(**mail_info))
+                sys.stdout.write('\n')
+        else:
+            threads = fetch_threads(imap_account, search_criterion=search_criterion)
+            for output in display_mail_by_thread(imap_account, threads, format_thread=display_conf['format_thread']):
+                sys.stdout.write(output)
+                sys.stdout.write('\n')
 
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:
