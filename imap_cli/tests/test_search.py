@@ -18,13 +18,11 @@ class SearchTests(unittest.TestCase):
 
     def test_basic_search(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         assert search.create_search_criterion() == ['ALL']
 
     def test_create_search_criteria_by_date(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         date = datetime.datetime(1989, 1, 3)
         search_criterion = search.create_search_criterion(date=date)
@@ -50,7 +48,6 @@ class SearchTests(unittest.TestCase):
 
     def test_create_search_criterion_by_mail_address(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         mail_address = 'user@example.tld'
         search_criterion = search.create_search_criterion(address=mail_address)
@@ -67,7 +64,6 @@ class SearchTests(unittest.TestCase):
 
     def test_create_search_criteria_by_size(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         size = 3141592
         search_criterion = search.create_search_criterion(size=size)
@@ -84,7 +80,6 @@ class SearchTests(unittest.TestCase):
 
     def test_create_search_criterion_by_subject(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         subject = 'subject searched'
         search_criterion = search.create_search_criterion(subject=subject)
@@ -95,7 +90,6 @@ class SearchTests(unittest.TestCase):
 
     def test_create_search_criteria_by_tag(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         tags = ['seen']
         search_criterion = search.create_search_criterion(tags=tags)
@@ -111,7 +105,6 @@ class SearchTests(unittest.TestCase):
 
     def test_create_search_criteria_by_text(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         text = 'CONTENT'
         search_criterion = search.create_search_criterion(text=text)
@@ -119,13 +112,11 @@ class SearchTests(unittest.TestCase):
 
     def test_execute_simple_search(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         assert search.fetch_uids(self.imap_account) == ['1']
 
     def test_fetch_mails_info(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
 
         reference_mails_info = [{
             'from': u'exampleFrom <example@from.org>',
@@ -137,3 +128,13 @@ class SearchTests(unittest.TestCase):
             'uid': [u'1'],
         }]
         assert list(search.fetch_mails_info(self.imap_account)) == reference_mails_info
+
+    def test_fetch_uids(self):
+        self.imap_account = imaplib.IMAP4_SSL()
+
+        assert list(search.fetch_uids(self.imap_account)) == ['1']
+
+    def test_fetch_threads(self):
+        self.imap_account = imaplib.IMAP4_SSL()
+
+        assert list(search.fetch_threads(self.imap_account)) == [[[1], [2]], [3, 4]]

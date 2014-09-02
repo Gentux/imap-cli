@@ -70,3 +70,8 @@ class ImapConnectionMock(mock.Mock):
             return self.fetch(*args)
         if command_upper == 'SEARCH':
             return self.search(*args)
+        if command_upper == 'THREAD':
+            return self.thread(*args)
+
+    def thread(self, *args):
+        return (u'OK', [u'((1)(2))(3 4)'])
