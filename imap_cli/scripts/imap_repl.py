@@ -98,7 +98,7 @@ class ImapShell(cmd.Cmd):
 
         if args['--browser'] is True:
             temp_file = tempfile.NamedTemporaryFile(delete=False)
-            temp_file.write(fetch.display(fetched_mail, browser = True).encode('utf-8'))
+            temp_file.write(fetch.display(fetched_mail, browser=True).encode('utf-8'))
 
             webbrowser.open_new_tab(temp_file.name)
 
