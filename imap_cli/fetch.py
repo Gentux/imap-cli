@@ -40,7 +40,7 @@ app_name = os.path.splitext(os.path.basename(__file__))[0]
 log = logging.getLogger(app_name)
 
 
-def display(fetched_mail):
+def display(fetched_mail, browser=False):
     displayable_parts = list([
         part.get('as_string')
         for part in fetched_mail['parts']
@@ -52,6 +52,10 @@ def display(fetched_mail):
             for part in fetched_mail['parts']
             if part['content_type'].startswith('text')
         ])
+
+    if browser is True:
+        return u'<br><br>'.join(displayable_parts).strip()
+
     output = [
         u'From       : {}'.format(fetched_mail['headers']['From']),
         u'Subject    : {}'.format(fetched_mail['headers']['Subject']),

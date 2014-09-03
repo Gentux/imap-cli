@@ -11,6 +11,8 @@ import datetime
 import logging
 import os
 import sys
+import tempfile
+import webbrowser
 
 import docopt
 
@@ -84,12 +86,25 @@ class ImapShell(cmd.Cmd):
 
     def do_read(self, arg):
         '''Read mail by uid.'''
-        args = docopt.docopt('Usage: read <mail_uid> [<save_directory>]', arg)
+        args = docopt.docopt(u'\n'.join([
+            u'Usage: read [options] <mail_uid> [<save_directory>]',
+            u'',
+            u'Options:',
+            u'    -b, --browser     Open mail in browser',
+        ]), arg)
         fetched_mail = fetch.read(self.imap_account, args['<mail_uid>'], save_directory=args['<save_directory>'])
         if fetched_mail is None:
             log.error("Mail was not fetched, an error occured")
 
-        sys.stdout.write(fetch.display(fetched_mail))
+        if args['--browser'] is True:
+            temp_file = tempfile.NamedTemporaryFile(delete=False)
+            temp_file.write(fetch.display(fetched_mail, browser = True).encode('utf-8'))
+
+            webbrowser.open_new_tab(temp_file.name)
+
+            temp_file.close()
+        else:
+            sys.stdout.write(fetch.display(fetched_mail))
 
     def do_search(self, arg):
         '''Search mail.'''
