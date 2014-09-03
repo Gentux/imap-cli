@@ -7,6 +7,7 @@
 import copy
 import email
 import imaplib
+import sys
 import unittest
 
 import six
@@ -83,3 +84,7 @@ class FetchTest(unittest.TestCase):
         for header_name, header_value in mail['headers'].items():
             assert self.reference_mail['headers'][header_name] == header_value
         assert len(mail['parts']) == len(self.reference_mail['parts'])
+
+    def test_fetch_cli_tool(self):
+        sys.argv = ['imap-cli-read', '1']
+        assert fetch.main() == 0

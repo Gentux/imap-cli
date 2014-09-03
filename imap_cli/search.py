@@ -30,7 +30,6 @@ There is NO WARRANTY, to the extent permitted by law.
 
 import ast
 import codecs
-import copy
 import datetime
 import email
 from email import header

@@ -174,7 +174,7 @@ def main():
             return 1
         imap_cli.disconnect(imap_account)
 
-        sys.stdout.write(display(fetched_mail).encode('utf-8'))
+        sys.stdout.write(display(fetched_mail))
     except KeyboardInterrupt:
         log.info('Interrupt by user, exiting')
 

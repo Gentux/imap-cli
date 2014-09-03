@@ -6,6 +6,7 @@
 
 import datetime
 import imaplib
+import sys
 import unittest
 
 from imap_cli import search
@@ -138,3 +139,13 @@ class SearchTests(unittest.TestCase):
         self.imap_account = imaplib.IMAP4_SSL()
 
         assert list(search.fetch_threads(self.imap_account)) == [[[1], [2]], [3, 4]]
+
+    def test_search_cli_tools(self):
+        sys.argv = ['imap-cli-search']
+        assert search.main() == 0
+
+        sys.argv = ['imap-cli-search --thread']
+        assert search.main() == 0
+
+        sys.argv = ['imap-cli-search -t testTag -T testText']
+        assert search.main() == 0
