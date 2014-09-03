@@ -141,11 +141,11 @@ class SearchTests(unittest.TestCase):
         assert list(search.fetch_threads(self.imap_account)) == [[[1], [2]], [3, 4]]
 
     def test_search_cli_tools(self):
-        sys.argv = ['imap-cli-search']
+        sys.argv = ['imap-cli-search', '-c', 'config-example.ini']
         assert search.main() == 0
 
-        sys.argv = ['imap-cli-search --thread']
+        sys.argv = ['imap-cli-search --thread', '-c', 'config-example.ini']
         assert search.main() == 0
 
-        sys.argv = ['imap-cli-search -t testTag -T testText']
+        sys.argv = ['imap-cli-search -t testTag -T testText', '-c', 'config-example.ini']
         assert search.main() == 0

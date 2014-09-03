@@ -86,5 +86,5 @@ class FetchTest(unittest.TestCase):
         assert len(mail['parts']) == len(self.reference_mail['parts'])
 
     def test_fetch_cli_tool(self):
-        sys.argv = ['imap-cli-read', '1']
+        sys.argv = ['imap-cli-read', '-c', 'config-example.ini', '1']
         assert fetch.main() == 0
