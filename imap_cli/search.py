@@ -30,6 +30,7 @@ There is NO WARRANTY, to the extent permitted by law.
 
 import ast
 import codecs
+import copy
 import datetime
 import email
 from email import header
@@ -165,7 +166,7 @@ def create_search_criterion_by_uid(uid):
     return 'UID {}'.format(uid)
 
 
-def display_mail_by_thread(imap_account, threads, mail_info_by_uid=None, depth=0, format_thread=None):
+def display_mail_tree(imap_account, threads, mail_info_by_uid=None, depth=0, format_thread=None):
     if mail_info_by_uid is None:
         mail_set = list(threads_to_mail_set(threads))
         if len(mail_set) == 0:
@@ -175,18 +176,18 @@ def display_mail_by_thread(imap_account, threads, mail_info_by_uid=None, depth=0
         for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
             mail_info_by_uid[int(mail_info['uid'][0])] = mail_info
 
-    for thread in threads:
-        if isinstance(thread, list):
-            for output in display_mail_by_thread(
+    for idx, thread in enumerate(threads):
+        if isinstance(thread, int):
+            indent = depth if idx > 0 else depth - 1
+            yield u'{}{}'.format('  ' * indent, format_thread.format(**mail_info_by_uid.get(thread)))[0:140]
+        else:
+            for output in display_mail_tree(
                     imap_account,
                     thread,
                     mail_info_by_uid=mail_info_by_uid,
                     depth=depth + 1,
                     format_thread=format_thread):
                 yield output
-        else:
-            real_depth = (depth - 1) * 4
-            yield u'{}{}'.format(' ' * real_depth, format_thread.format(**mail_info_by_uid.get(thread)))
 
 
 def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
@@ -314,6 +315,19 @@ def threads_to_mail_set(threads):
             yield value
 
 
+def threads_to_mail_tree(threads):
+    mail_tree = []
+    for thread in threads:
+        if isinstance(thread, list):
+            if len(thread) == 1:
+                mail_tree.append(thread[0])
+            else:
+                mail_tree.append(threads_to_mail_tree(thread))
+        else:
+            mail_tree.append(thread)
+    return mail_tree
+
+
 def main():
     args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
     logging.basicConfig(
@@ -357,7 +371,8 @@ def main():
                 sys.stdout.write('\n')
         else:
             threads = fetch_threads(imap_account, search_criterion=search_criterion)
-            for output in display_mail_by_thread(imap_account, threads, format_thread=display_conf['format_thread']):
+            mail_tree = threads_to_mail_tree(threads)
+            for output in display_mail_tree(imap_account, mail_tree, format_thread=display_conf['format_thread']):
                 sys.stdout.write(output)
                 sys.stdout.write('\n')
 
