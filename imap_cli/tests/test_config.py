@@ -29,9 +29,9 @@ class ConfigTest(unittest.TestCase):
 
     def test_config_file_from_default_config_file(self):
         self.conf = config.new_context_from_file()
-
-        for key, value in config.DEFAULT_CONFIG.items():
-            assert self.conf[key] == value
+        if self.conf is not None:
+            for key, value in config.DEFAULT_CONFIG.items():
+                assert self.conf[key] == value
 
     def test_config_file_from_json(self):
         json_config = ''.join([
