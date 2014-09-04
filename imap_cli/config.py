@@ -54,6 +54,9 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
     if config_filename is None:
         config_filename = const.DEFAULT_CONFIG_FILE
     config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
+    if not os.path.isfile(config_filename):
+        log.error(u'Configuration file \'{}\' not found.'.format(config_filename))
+        return None
     log.debug(u'Reading configuration file \'{}\''.format(config_filename))
 
     config_reader = configparser.RawConfigParser()

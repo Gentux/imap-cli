@@ -111,6 +111,8 @@ def main():
     global imap_account
     global routes
 
+    if conf is None:
+        return 1
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
     for routing in routings:

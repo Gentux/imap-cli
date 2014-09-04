@@ -168,6 +168,8 @@ def main():
     )
 
     conf = config.new_context_from_file(args['--config-file'], section='imap')
+    if conf is None:
+        return 1
 
     try:
         imap_account = imap_cli.connect(**conf)

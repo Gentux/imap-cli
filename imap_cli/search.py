@@ -335,6 +335,8 @@ def main():
     )
 
     connect_conf = config.new_context_from_file(args['--config-file'], section='imap')
+    if connect_conf is None:
+        return 1
     display_conf = config.new_context_from_file(args['--config-file'], section='display')
     if args['--format'] is not None:
         display_conf['format_status'] = args['--format']

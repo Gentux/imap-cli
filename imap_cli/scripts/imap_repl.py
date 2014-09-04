@@ -198,6 +198,8 @@ def main():
     )
 
     connection_config = config.new_context_from_file(section='imap')
+    if connection_config is None:
+        return 1
     imap_account = imap_cli.connect(**connection_config)
     ImapShell(imap_account).cmdloop()
 
