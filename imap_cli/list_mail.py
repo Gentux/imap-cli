@@ -9,6 +9,7 @@ Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
     -f, --format=<FMT>          Output format
     -l, --limit=<limit>         Limit number of mail displayed
+    -t, --thread                Display mail by thread
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
@@ -58,9 +59,18 @@ def main():
     try:
         imap_account = imap_cli.connect(**connect_conf)
         imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
-        for mail_info in search.fetch_mails_info(imap_account):
-            sys.stdout.write(display_conf['format_list'].format(**mail_info))
-            sys.stdout.write('\n')
+        if args['--thread'] is False:
+            for mail_info in search.fetch_mails_info(imap_account):
+                sys.stdout.write(display_conf['format_list'].format(**mail_info))
+                sys.stdout.write('\n')
+        else:
+            threads = search.fetch_threads(imap_account)
+            mail_tree = search.threads_to_mail_tree(threads)
+            for output in search.display_mail_tree(imap_account,
+                                                   mail_tree,
+                                                   format_thread=display_conf['format_thread']):
+                sys.stdout.write(output)
+                sys.stdout.write('\n')
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:
         log.info('Interrupt by user, exiting')
