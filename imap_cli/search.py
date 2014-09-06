@@ -298,6 +298,8 @@ def parse_thread_response(thread_string):
 
     We define thread as list of mail UID (int) which can contain other thread (nested list)
     Example:
+        >>> imap_account = imap_cli.connect('serveur', 'login', 'password')
+        >>> imap_response = fetch_threads(imap_account)
         >>> repr(parse_thread_response(imap_response))
         '[[[6], [7]], [14, 19], [23, 58, 60, 61, 62, 63, 68, 69, 70]]'
     """
