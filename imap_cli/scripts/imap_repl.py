@@ -12,6 +12,8 @@ import logging
 import os
 import sys
 import tempfile
+import threading
+import time
 import webbrowser
 
 import docopt
@@ -24,6 +26,7 @@ from imap_cli import search
 
 
 app_name = os.path.splitext(os.path.basename(__file__))[0]
+keep_alive_bool = True
 log = logging.getLogger(app_name)
 
 
@@ -81,7 +84,10 @@ class ImapShell(cmd.Cmd):
 
     def do_quit(self, arg):
         'Exit this shell'
-        print('Bye')
+        global keep_alive_bool
+        keep_alive_bool = False
+        imap_cli.disconnect(self.imap_account)
+        sys.stdout.write('Bye\n')
         return True
 
     def do_read(self, arg):
@@ -179,6 +185,17 @@ class ImapShell(cmd.Cmd):
         pass
 
 
+def keep_alive(imap_account):
+    time_count = 0
+    while keep_alive_bool is True:
+        time_count += 1
+        if time_count % 3 == 0:
+            log.debug('NOOP send')
+            imap_account.noop()
+        time.sleep(1)
+    log.debug('Keep alive thread terminated')
+
+
 def truncate_string(string, length):
     minus_than_position = string.find('<')
     if minus_than_position > 0 and string.find('>') > minus_than_position:
@@ -200,8 +217,14 @@ def main():
     connection_config = config.new_context_from_file(section='imap')
     if connection_config is None:
         return 1
+
     imap_account = imap_cli.connect(**connection_config)
-    ImapShell(imap_account).cmdloop()
+    imap_shell = ImapShell(imap_account)
+    keep_alive_thread = threading.Thread(target=keep_alive, args=(imap_account,))
+
+    keep_alive_thread.start()
+    imap_shell.cmdloop()
+    keep_alive_thread.join()
 
     return 0
 
