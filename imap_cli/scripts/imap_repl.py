@@ -27,6 +27,7 @@ from imap_cli import search
 
 app_name = os.path.splitext(os.path.basename(__file__))[0]
 keep_alive_bool = True
+keep_alive_timer = 30
 log = logging.getLogger(app_name)
 
 
@@ -189,7 +190,7 @@ def keep_alive(imap_account):
     time_count = 0
     while keep_alive_bool is True:
         time_count += 1
-        if time_count % 3 == 0:
+        if time_count % keep_alive_timer == 0:
             log.debug('NOOP send')
             imap_account.noop()
         time.sleep(1)
