@@ -32,7 +32,7 @@ setuptools.setup(
             'imap-cli-search=imap_cli.search:main',
             'imap-cli-read=imap_cli.fetch:main',
             'imap-cli-flag=imap_cli.flag:main',
-            'imap-repl=imap_cli.scripts.imap_repl:main',
+            'imap-shell=imap_cli.scripts.imap_shell:main',
         ],
     },
     install_requires=[

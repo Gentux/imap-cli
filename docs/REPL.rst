@@ -1,7 +1,7 @@
-REPL
-====
+IMAP Shell
+==========
 
-The *imap-repl* provide you a minimalist shell to query your IMAP account.
+The *imap-shell* provide you a minimalist shell to query your IMAP account.
 
 As the other commands, it will use the default configuration file if no other is specified.
 
