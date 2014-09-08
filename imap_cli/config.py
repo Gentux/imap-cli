@@ -31,7 +31,7 @@ DEFAULT_CONFIG = {
         u'Date:       {date}\n',
         u'Subject:    {subject}',
     ]),
-    u'format_thread': u'{uid:<7} {subject} <<< FROM {from}',
+    u'format_thread': u'{uid} {subject} <<< FROM {from}',
     u'format_status': u'{directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent'
 }
 log = logging.getLogger(app_name)
