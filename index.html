@@ -31,10 +31,11 @@
       </header>
 
       <section>
-        <h1>Imap-CLI</h1>
 
-<p>Travis :
-<a href="https://travis-ci.org/Gentux/imap-cli"><img src="https://travis-ci.org/Gentux/imap-cli.svg?branch=master" alt="Build Status"></a></p>
+<h1>Imap-CLI</h1>
+
+<p><a href="https://travis-ci.org/Gentux/imap-cli"><img src="https://travis-ci.org/Gentux/imap-cli.svg?branch=master" alt="Build Status" title="" /></a>
+<a href="https://readthedocs.org/projects/imap-cli/?badge=master"><img src="https://readthedocs.org/projects/imap-cli/badge/?version=master" alt="Documentation Status" title="" /></a></p>
 
 <h2>Description</h2>
 
@@ -46,7 +47,7 @@ library:</p>
 <li>Get list of mails in INBOX (or any other directory)</li>
 <li>Search through mail</li>
 <li>Read mail</li>
-<li>Flag mail (Read, Unread, Delete… etc…_</li>
+<li>Flag mail (Read, Unread, Delete, etc…)</li>
 </ul>
 
 <p>You can read about my initial motivation to write this software
@@ -73,9 +74,11 @@ ssl = True
 <p>If you want to add a minimal autocompletion, you can copy <strong>imapcli<em>bash</em>completion.sh</strong> in the file
 <strong>/etc/bash_completion.d/imapcli</strong> or simply source.</p>
 
+<p>If you want to benefit from the wrapper script described below, copy the script <code>imapcli</code> in your PATH</p>
+
 <h2>Usage CLI</h2>
 
-<pre><code>Usage: imapcli [options] &lt;command&gt; [&lt;args&gt;]
+<pre><code>Usage: imapcli [options] &lt;command&gt; [&lt;command_options&gt;...]
 
 Available commands are:
     status      List unseen, recent and total number of mail per directory in IMAP account
@@ -85,14 +88,13 @@ Available commands are:
     flag        Set or unset flag on specified mail(s)
 
 Options:
-    -v, --verbose           Generate verbose messages
     -h, --help              Show help options
     --version               Print program version
 
-See &#39;imapcli help &lt;command&gt;&#39; to get further information about specified command
+See 'imapcli help &lt;command&gt;' to get further information about specified command"
 
 ----
-imap-cli 0.4
+imap-cli 0.5
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
@@ -101,18 +103,19 @@ There is NO WARRANTY, to the extent permitted by law.
 
 <h2>Usage Python API</h2>
 
-<p>This is work in progress. Python API aims to be as complete as possible to ease the creation of API and clients.</p>
+<p>This is work in progress, so API migth change. Python API aims to be as complete as possible to ease the creation of
+API, caching system and clients. You can find example in <code>examples</code> directory.</p>
 
 <pre><code>import imap_cli
 from imap_cli import config
 
-config_filename = &#39;~/.config/imap-cli&#39;
-connect_conf = config.new_context_from_file(config_filename, section=&#39;imap&#39;)
-display_conf = config.new_context_from_file(config_filename, section=&#39;display&#39;)
+config_filename = '~/.config/imap-cli'
+connect_conf = config.new_context_from_file(config_filename, section='imap')
+display_conf = config.new_context_from_file(config_filename, section='display')
 
 imap_account = imap_cli.connect(**connect_conf)
 for directory_info in imap_cli.status(imap_account):
-    print display_conf[&#39;format_status&#39;].format(**directory_info)
+    print display_conf['format_status'].format(**directory_info)
 </code></pre>
 
 <h2>Configuration</h2>
@@ -123,6 +126,10 @@ for directory_info in imap_cli.status(imap_account):
 
 <p>File configuration is not the only possibility. As the package imap-cli is designed to be an API, all configuration data
 are shared in a <em>context</em> object. You can load this context progamatically if you want.</p>
+
+<h2>Further documentation</h2>
+
+<p>Full documentation available <a href="http://imap-cli.readthedocs.org/en/master/">here</a>.</p>
 
 <h2>Contributing</h2>
 
@@ -135,9 +142,9 @@ are shared in a <em>context</em> object. You can load this context progamaticall
 
 <h2>Roadmap</h2>
 
-<p>The actual version of Imap-CLI is 0.4.</p>
+<p>The actual version of Imap-CLI is 0.5.</p>
 
-<p>Impa-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
+<p>Imap-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
 below</p>
 
 <h3>v0.1</h3>
@@ -162,7 +169,7 @@ below</p>
 <li>Documentation</li>
 </ul>
 
-<h3>v0.4 (current)</h3>
+<h3>v0.4</h3>
 
 <ul>
 <li>Advanced Search</li>
@@ -170,7 +177,7 @@ below</p>
 <li>Read all type of mail and handle attachments</li>
 </ul>
 
-<h3>v0.5</h3>
+<h3>v0.5 (current)</h3>
 
 <ul>
 <li>List mail by thread</li>
@@ -187,14 +194,9 @@ below</p>
 <li><a href="http://romain.soufflet.io">http://romain.soufflet.io</a></li>
 </ul>
 
-<h2>Further documentation</h2>
-
-<p>Full documentation available <a href="http://imap-cli.readthedocs.org/en/latest/">here</a>.</p>
-
 <h2>Legal notices</h2>
 
 <p>Released under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a>.</p>
-
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/Gentux">Gentux</a></p>
