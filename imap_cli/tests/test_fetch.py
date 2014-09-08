@@ -12,6 +12,7 @@ import unittest
 
 import six
 
+from imap_cli import const
 from imap_cli import fetch
 from imap_cli import tests
 
@@ -86,5 +87,13 @@ class FetchTest(unittest.TestCase):
         assert len(mail['parts']) == len(self.reference_mail['parts'])
 
     def test_fetch_cli_tool(self):
+        const.DEFAULT_CONFIG_FILE = 'config-example.ini'
+
         sys.argv = ['imap-cli-read', '-c', 'config-example.ini', '1']
+        assert fetch.main() == 0
+
+        sys.argv = ['imap-cli-read', '-d', 'INBOX', '1']
+        assert fetch.main() == 0
+
+        sys.argv = ['imap-cli-read', '-d', 'INBOX', '1', '-s', '.']
         assert fetch.main() == 0

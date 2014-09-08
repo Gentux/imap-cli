@@ -49,12 +49,14 @@ def main():
         return 1
     display_conf = config.new_context_from_file(args['--config-file'], section='display')
     if args['--format'] is not None:
-        display_conf['format_status'] = args['--format']
+        config_key = 'format_thread' if args['--thread'] else 'format_list'
+        display_conf[config_key] = args['--format']
     if args['--limit'] is not None:
         try:
             display_conf['limit'] = int(args['--limit'])
         except ValueError:
-            pass
+            log.error('Invalid argument limit : {}'.format(args['--limit']))
+            return 1
 
     try:
         imap_account = imap_cli.connect(**connect_conf)

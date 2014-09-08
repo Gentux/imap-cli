@@ -149,3 +149,9 @@ class SearchTests(unittest.TestCase):
 
         sys.argv = ['imap-cli-search -t testTag -T testText', '-c', 'config-example.ini']
         assert search.main() == 0
+
+        sys.argv = ['imap-cli-search', '-a', 'user@exemple.org']
+        assert search.main() == 0
+
+        sys.argv = ['imap-cli-search', '-f', '{from}']
+        assert search.main() == 0
