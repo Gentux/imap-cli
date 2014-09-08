@@ -36,6 +36,12 @@ class ImapConnectionMock(mock.Mock):
         imap_header = u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(flag_str=flag_str, uid_str=uid_str)
         return (u'OK', [(imap_header, example_email_content), ')'])
 
+    def store(self, mails_id_set, request, flags):
+        flags = [u'\\\\Answered', u'\\\\Seen', 'NonJunk']
+        if '+FLAGS' in request:
+            flags.append('testFlag')
+        return (u'OK', [u'1 (UID 1 FLAGS ({}))'.format(' '.join(flags))])
+
     def list(self, *args):
         if self.fail is True:
             return (u'OK', [u'(\\HasNoChildren) ) "." "Directory_name"', u'(\\HasNoChildren) "." "INBOX"'])
@@ -70,6 +76,8 @@ class ImapConnectionMock(mock.Mock):
             return self.fetch(*args)
         if command_upper == 'SEARCH':
             return self.search(*args)
+        if command_upper == 'STORE':
+            return self.store(*args)
         if command_upper == 'THREAD':
             return self.thread(*args)
 
