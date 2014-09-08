@@ -34,13 +34,6 @@ from imap_cli import const
 log = logging.getLogger('imap-cli-status')
 
 
-def truncate_string(string, length):
-    minus_than_position = string.find('<')
-    if minus_than_position > 0 and string.find('>') > minus_than_position:
-        string = string[0:minus_than_position]
-    return string if len(string) < length else u'{0}…'.format(string[0:length])
-
-
 def main():
     args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
     logging.basicConfig(
