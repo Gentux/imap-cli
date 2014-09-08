@@ -31,6 +31,10 @@ while [[ $# -gt 0 ]]; do
     shift
 
     case $key in
+        status|list|search|read|flag|help)
+            COMMAND="${key}"
+            break
+            ;;
         -h|--help)
             HELP="true"
             shift
@@ -38,10 +42,6 @@ while [[ $# -gt 0 ]]; do
         --version)
             VERSION="true"
             shift
-            ;;
-        status|list|search|read|flag|help)
-            COMMAND="${key}"
-            break
             ;;
         *)
             echo "${HELP_MESSAGE}"
