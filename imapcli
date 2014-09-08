@@ -58,7 +58,8 @@ if [ "${COMMAND}" = "help" ]; then
     exit $?
 fi
 
+
 COMMAND="imap-cli-${COMMAND}"
-${COMMAND} $@
+${COMMAND} "$@"
 
 exit $?
