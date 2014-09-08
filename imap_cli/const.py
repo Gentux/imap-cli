@@ -4,7 +4,7 @@
 """Constant used by Imap_CLI packages """
 
 # IMAP CLI version number
-VERSION = 0.4
+VERSION = 0.5
 
 # IMAP Constant
 #

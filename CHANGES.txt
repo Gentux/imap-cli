@@ -1,4 +1,9 @@
-v0.4, 07-25-2014 --
+v0.5, 09-08-2014 --
+    Add IMAP Shell in scripts directory
+    Display search and list by thread
+    Add tests and tests coverage
+
+v0.4, 08-06-2014 --
     Add advanced search
     Rewrite code structures
     Use UID instead of volatile ID

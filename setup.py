@@ -48,5 +48,5 @@ setuptools.setup(
     scripts=["imapcli"],
     test_suite="nose.collector",
     url="http://gentux.github.io/imap-cli/",
-    version="0.4",
+    version="0.5",
 )
