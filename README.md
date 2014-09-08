@@ -13,7 +13,7 @@ library:
 * Get list of mails in INBOX (or any other directory)
 * Search through mail
 * Read mail
-* Flag mail (Read, Unread, Delete… etc…_
+* Flag mail (Read, Unread, Delete, etc…)
 
 You can read about my initial motivation to write this software
 [here](http://romain.soufflet.io/bash/2014/07/11/Mail-Mail-and-mail-again-my-head-will-explode.html).
@@ -39,10 +39,12 @@ Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` c
 If you want to add a minimal autocompletion, you can copy **imapcli_bash_completion.sh** in the file
 **/etc/bash_completion.d/imapcli** or simply source.
 
+If you want to benefit from the wrapper script described below, copy the script `imapcli` in your PATH
+
 
 ## Usage CLI ##
 
-    Usage: imapcli [options] <command> [<args>]
+    Usage: imapcli [options] <command> [<command_options>...]
 
     Available commands are:
         status      List unseen, recent and total number of mail per directory in IMAP account
@@ -52,11 +54,10 @@ If you want to add a minimal autocompletion, you can copy **imapcli_bash_complet
         flag        Set or unset flag on specified mail(s)
 
     Options:
-        -v, --verbose           Generate verbose messages
         -h, --help              Show help options
         --version               Print program version
 
-    See 'imapcli help <command>' to get further information about specified command
+    See 'imapcli help <command>' to get further information about specified command"
 
     ----
     imap-cli 0.4
@@ -68,7 +69,8 @@ If you want to add a minimal autocompletion, you can copy **imapcli_bash_complet
 
 ## Usage Python API ##
 
-This is work in progress. Python API aims to be as complete as possible to ease the creation of API and clients.
+This is work in progress, so API migth change. Python API aims to be as complete as possible to ease the creation of
+API, caching system and clients. You can find example in `examples` directory.
 
     import imap_cli
     from imap_cli import config
@@ -111,7 +113,7 @@ You can also [open new issues](https://github.com/Gentux/imap-cli/issues/new) fo
 
 The actual version of Imap-CLI is 0.4.
 
-Impa-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
+Imap-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
 below
 
 ### v0.1 ###
