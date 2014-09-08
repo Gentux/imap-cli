@@ -26,7 +26,7 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law."
 
 
-while [[ $# > 1 ]]; do
+while [[ $# -gt 0 ]]; do
     key="$1"
     shift
 
@@ -58,5 +58,7 @@ if [ "${COMMAND}" = "help" ]; then
     exit $?
 fi
 
-imap-cli-${COMMAND} $@
+COMMAND="imap-cli-${COMMAND}"
+${COMMAND} $@
+
 exit $?
