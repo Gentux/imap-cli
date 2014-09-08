@@ -6,17 +6,14 @@ This module aim to provide all search options available in IMAP protocoles witho
 For now, you can do following searches
 
 * Simple listing of all mails
-* Search By tag
-* Search By flag
+* Search by tag
+* Search by flag
 * Search full text in mails body
-
-In v0.4, following options should be available
-
-* By subject
-* By mail adresse, in *bcc*, *cc*, *from* or *to* header fields
-* By date, *before*, *after* or *on* a particular date
-* By header, given a pair of haeder name and header value to search
-* By size, *larger* or *smaller* than given value
+* search by subject
+* search by mail adresse, in *bcc*, *cc*, *from* or *to* header fields
+* search by date, *before*, *after* or *on* a particular date
+* search by header, given a pair of haeder name and header value to search
+* search by size, *larger* or *smaller* than given value
 
 Moreover, a few logical combination of the above
 
