@@ -178,7 +178,9 @@ def display_mail_tree(imap_account, threads, mail_info_by_uid=None, depth=0, for
     for idx, thread in enumerate(threads):
         if isinstance(thread, int):
             indent = depth if idx > 0 else depth - 1
-            yield u'{}{}'.format('  ' * indent, format_thread.format(**mail_info_by_uid.get(thread)))[0:140]
+            if mail_info_by_uid.get(thread) is None:
+                continue
+            yield u'{}{}'.format('  ' * indent, format_thread.format(**mail_info_by_uid[thread]))[0:140]
         else:
             for output in display_mail_tree(
                     imap_account,
