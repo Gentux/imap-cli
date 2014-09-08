@@ -330,7 +330,7 @@ def threads_to_mail_tree(threads):
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,

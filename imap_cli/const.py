@@ -3,6 +3,9 @@
 
 """Constant used by Imap_CLI packages """
 
+# IMAP CLI version number
+VERSION = 0.4
+
 # IMAP Constant
 #
 # All those value are documented in RFC 3501

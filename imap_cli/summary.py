@@ -28,6 +28,7 @@ import docopt
 
 import imap_cli
 from imap_cli import config
+from imap_cli import const
 
 
 log = logging.getLogger('imap-cli-status')
@@ -41,7 +42,7 @@ def truncate_string(string, length):
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,

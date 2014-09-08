@@ -161,7 +161,7 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,

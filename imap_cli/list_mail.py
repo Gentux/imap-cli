@@ -15,7 +15,7 @@ Options:
     --version                   Print program version.
 
 ----
-imap-cli-status 0.4
+imap-cli-list 0.4
 Copyright (C) 2014 Romain Soufflet
 License MIT
 This is free software: you are free to change and redistribute it.
@@ -38,7 +38,7 @@ log = logging.getLogger('imap-cli-list')
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]))
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
