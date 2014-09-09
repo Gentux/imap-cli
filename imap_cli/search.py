@@ -213,8 +213,8 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
             continue
 
         flags = flags_match.groupdict().get('flags').split()
-        mail_id = mail_id_match.groupdict().get('mail_id').split()
-        mail_uid = uid_match.groupdict().get('uid').split()
+        mail_id = mail_id_match.groupdict().get('mail_id').split()[0]
+        mail_uid = uid_match.groupdict().get('uid').split()[0]
 
         mail = email.message_from_string(mail_data[1])
         if decode is True:

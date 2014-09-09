@@ -123,10 +123,10 @@ class SearchTests(unittest.TestCase):
             'from': u'exampleFrom <example@from.org>',
             'to': u'exampleTo <example@to.org>',
             'subject': u'Mocking IMAP Protocols',
-            'id': [u'1'],
+            'id': u'1',
             'flags': [u'\\Seen', u'NonJunk'],
             'date': u'Tue, 03 Jan 1989 09:42:34 +0200',
-            'uid': [u'1'],
+            'uid': u'1',
         }]
         assert list(search.fetch_mails_info(self.imap_account)) == reference_mails_info
 
