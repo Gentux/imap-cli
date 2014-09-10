@@ -8,7 +8,7 @@ Usage: imap-cli-read [options] <mail_uid>
 Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
     -d, --directory=<DIR>       Directory in wich the search occur
-    -s, --save=<DIR>            Save attachement in specified directory
+    -s, --save=<DIR>            Save attachment in specified directory
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
@@ -65,7 +65,7 @@ def display(fetched_mail, browser=False):
     ]
     other_parts = [part for part in fetched_mail['parts'] if not part['content_type'].startswith('text')]
     if len(other_parts) > 0:
-        output.append('\nAttachement :')
+        output.append('\nAttachment :')
         for part in other_parts:
             if part.get('filename'):
                 output.append('    {}'.format(part.get('filename')))
@@ -149,8 +149,8 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
             })
             if save_directory is not None and os.path.isdir(save_directory):
                 attachment_full_filename = os.path.join(save_directory, part.get_filename())
-                with open(attachment_full_filename, 'wb') as attachement_file:
-                    attachement_file.write(part.get_payload(decode=True))
+                with open(attachment_full_filename, 'wb') as attachment_file:
+                    attachment_file.write(part.get_payload(decode=True))
             elif save_directory is not None:
                 log.error('Can\'t save attachment, directory {} does not exist'.format(save_directory))
 
