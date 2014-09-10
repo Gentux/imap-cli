@@ -53,20 +53,24 @@ def main():
         display_conf[config_key] = args['--format']
     if args['--limit'] is not None:
         try:
-            display_conf['limit'] = int(args['--limit'])
+            limit = int(args['--limit'])
+            if limit < 1:
+                raise ValueError
         except ValueError:
             log.error('Invalid argument limit : {}'.format(args['--limit']))
             return 1
+    else:
+        limit = None
 
     try:
         imap_account = imap_cli.connect(**connect_conf)
         imap_cli.change_dir(imap_account, directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
         if args['--thread'] is False:
-            for mail_info in search.fetch_mails_info(imap_account):
+            for mail_info in search.fetch_mails_info(imap_account, limit=limit):
                 sys.stdout.write(display_conf['format_list'].format(**mail_info))
                 sys.stdout.write('\n')
         else:
-            threads = search.fetch_threads(imap_account)
+            threads = search.fetch_threads(imap_account, limit=limit)
             mail_tree = search.threads_to_mail_tree(threads)
             for output in search.display_mail_tree(imap_account,
                                                    mail_tree,

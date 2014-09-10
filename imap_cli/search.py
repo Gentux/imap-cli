@@ -10,6 +10,7 @@ Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
     -d, --date=<date>           Search mail receive since the specified date (format YYYY-MM-DD)
     -f, --format=<FMT>          Output format
+    -l, --limit=<limit>         Limit number of mail displayed
     -s, --size=<SIZE>           Search mails larger than specified size (in bytes)
     -S, --subject=<subject>     Search by subject
     -t, --tags=<tags>           Searched tags (Comma separated values)
@@ -173,7 +174,7 @@ def display_mail_tree(imap_account, threads, mail_info_by_uid=None, depth=0, for
 
         mail_info_by_uid = {}
         for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
-            mail_info_by_uid[int(mail_info['uid'][0])] = mail_info
+            mail_info_by_uid[int(mail_info['uid'])] = mail_info
 
     for idx, thread in enumerate(threads):
         if isinstance(thread, int):
@@ -267,7 +268,8 @@ def fetch_threads(imap_account, charset=None, limit=None, search_criterion=None)
     status, data = imap_account.uid('THREAD', 'REFERENCES', charset, request_search_criterion)
     if status != const.STATUS_OK:
         return None
-    return parse_thread_response(data[0])
+    threads = parse_thread_response(data[0])
+    return threads if limit is None else threads[-limit:]
 
 
 def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
@@ -305,7 +307,7 @@ def parse_thread_response(thread_string):
         >>> repr(parse_thread_response(imap_response))
         '[[[6], [7]], [14, 19], [23, 58, 60, 61, 62, 63, 68, 69, 70]]'
     """
-    # FIXME(rsoufflet) Not sure the use of "ast" module is the right solution here. Any ideas are welcome here
+    # FIXME(rsoufflet) Not sure the use of "ast" module is the right solution. Any ideas are welcome here
     return ast.literal_eval('[{}]'.format(thread_string.replace(' ', ', ').replace('(', '[').replace(')', '], ')))
 
 
@@ -346,7 +348,6 @@ def main():
         display_conf['format_status'] = args['--format']
     if args.get('--tags') is not None:
         args['--tags'] = args['--tags'].split(',')
-
     if args['--date'] is not None:
         try:
             date = datetime.datetime.strptime(args['--date'], '%Y-%m-%d')
@@ -354,6 +355,14 @@ def main():
             date = None
     else:
         date = None
+    if args['--limit'] is not None:
+        try:
+            limit = int(args['--limit'])
+            if limit < 1:
+                raise ValueError
+        except ValueError:
+            log.error('Invalid argument limit : {}'.format(args['--limit']))
+            return 1
 
     try:
         imap_account = imap_cli.connect(**connect_conf)
@@ -371,11 +380,11 @@ def main():
             if len(mail_set) == 0:
                 log.error('No mail found')
                 return 0
-            for mail_info in fetch_mails_info(imap_account, mail_set=mail_set):
+            for mail_info in fetch_mails_info(imap_account, limit=limit, mail_set=mail_set):
                 sys.stdout.write(display_conf['format_list'].format(**mail_info))
                 sys.stdout.write('\n')
         else:
-            threads = fetch_threads(imap_account, search_criterion=search_criterion)
+            threads = fetch_threads(imap_account, limit=limit, search_criterion=search_criterion)
             mail_tree = threads_to_mail_tree(threads)
             for output in display_mail_tree(imap_account, mail_tree, format_thread=display_conf['format_thread']):
                 sys.stdout.write(output)
