@@ -78,7 +78,7 @@ class ImapShell(cmd.Cmd):
             limit = 10
         for mail_info in search.fetch_mails_info(self.imap_account, limit=limit):
             sys.stdout.write(u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
-                mail_info['uid'][0],
+                mail_info['uid'],
                 truncate_string(mail_info['from'], 33),
                 truncate_string(mail_info['subject'], 50),
             ))
@@ -152,7 +152,7 @@ class ImapShell(cmd.Cmd):
             return 0
         for mail_info in search.fetch_mails_info(self.imap_account, mail_set=mail_set):
             sys.stdout.write(u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
-                mail_info['uid'][0],
+                mail_info['uid'],
                 truncate_string(mail_info['from'], 33),
                 truncate_string(mail_info['subject'], 50),
             ))
@@ -177,7 +177,7 @@ class ImapShell(cmd.Cmd):
         else:
             for mail_info in search.fetch_mails_info(self.imap_account, mail_set=mail_set):
                 sys.stdout.write(u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
-                    mail_info['uid'][0],
+                    mail_info['uid'],
                     truncate_string(mail_info['from'], 33),
                     truncate_string(mail_info['subject'], 50),
                 ))
