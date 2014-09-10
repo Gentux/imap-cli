@@ -38,6 +38,9 @@ class ListMailTests(unittest.TestCase):
         sys.argv = ['imap-cli-list', '-l', 'a']
         assert list_mail.main() == 1
 
+        sys.argv = ['imap-cli-list', '-l', '0']
+        assert list_mail.main() == 1
+
         sys.argv = ['imap-cli-list', '-v']
         assert list_mail.main() == 0
 

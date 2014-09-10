@@ -55,7 +55,7 @@ class FetchTest(unittest.TestCase):
                     u'EMAIL BODY CONTENT',
                 ]),
                 u'content_type': 'text/html'
-            }
+            },
         ]
     }
 
@@ -64,6 +64,24 @@ class FetchTest(unittest.TestCase):
 
     def test_display(self):
         assert isinstance(fetch.display(self.reference_mail), six.string_types)
+
+    def test_display_in_browser(self):
+        assert isinstance(fetch.display(self.reference_mail, browser=True), six.string_types)
+
+    def test_display_attachment(self):
+        multipart_mail = copy.deepcopy(self.reference_mail)
+        multipart_mail['parts'].append({
+            u'content_type': u'img/png',
+            u'data': u'xxxxxx',
+            u'filename': 'IMGTEST',
+        })
+
+        assert isinstance(fetch.display(multipart_mail), six.string_types)
+
+    def test_fetch_wrong(self):
+        self.imap_account = imaplib.IMAP4_SSL()
+        assert fetch.fetch(self.imap_account, None) is None
+        assert fetch.fetch(self.imap_account, []) is None
 
     def test_get_charset(self):
         multipart_mail = copy.deepcopy(self.reference_mail)
@@ -78,8 +96,14 @@ class FetchTest(unittest.TestCase):
 
     def test_read(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        self.imap_account.login()
+        mail = fetch.read(self.imap_account, 1, directory="INBOX")
 
+        for header_name, header_value in mail['headers'].items():
+            assert self.reference_mail['headers'][header_name] == header_value
+        assert len(mail['parts']) == len(self.reference_mail['parts'])
+
+    def test_read_multipart(self):
+        self.imap_account = imaplib.IMAP4_SSL()
         mail = fetch.read(self.imap_account, 1, directory="INBOX")
 
         for header_name, header_value in mail['headers'].items():

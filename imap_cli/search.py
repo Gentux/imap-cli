@@ -364,7 +364,7 @@ def main():
             log.error('Invalid argument limit : {}'.format(args['--limit']))
             return 1
     else:
-        limit=None
+        limit = None
 
     try:
         imap_account = imap_cli.connect(**connect_conf)

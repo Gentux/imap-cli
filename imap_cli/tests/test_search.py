@@ -54,6 +54,9 @@ class SearchTests(unittest.TestCase):
         search_criterion = search.create_search_criterion(address=mail_address)
         assert search_criterion == ['FROM "user@example.tld"']
 
+        search_criterion = search.create_search_criterion_by_mail_address(mail_address, header_name='WRONG')
+        assert search_criterion == 'FROM "user@example.tld"'
+
         search_criterion = search.create_search_criterion_by_mail_address(mail_address, header_name='CC')
         assert search_criterion == 'CC "user@example.tld"'
 
@@ -155,3 +158,9 @@ class SearchTests(unittest.TestCase):
 
         sys.argv = ['imap-cli-search', '-f', '{from}']
         assert search.main() == 0
+
+        sys.argv = ['imap-cli-search', '-l', '10']
+        assert search.main() == 0
+
+        sys.argv = ['imap-cli-search', '-l', '0']
+        assert search.main() == 1
