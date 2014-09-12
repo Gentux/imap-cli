@@ -258,7 +258,7 @@ def fetch_threads(imap_account, charset=None, limit=None, search_criterion=None)
         request_search_criterion = 'ALL'
     if charset is None:
         charset = 'UTF-8'
-    elif isinstance(search_criterion, list):
+    if isinstance(search_criterion, list):
         request_search_criterion = combine_search_criterion(search_criterion)
 
     if imap_account.state != 'SELECTED':

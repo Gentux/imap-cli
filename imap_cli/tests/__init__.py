@@ -30,7 +30,9 @@ class ImapConnectionMock(mock.Mock):
         if request.find('FLAG') >= 0:
             flag_str = u'FLAGS (\\Seen NonJunk) '
         uid_str = ""
-        if request.find('UID') >= 0:
+        if self.error is True:
+            uid_str = u'UD 1 '
+        elif request.find('UID') >= 0:
             uid_str = u'UID 1 '
 
         imap_header = u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(flag_str=flag_str, uid_str=uid_str)
