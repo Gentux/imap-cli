@@ -38,6 +38,18 @@ log = logging.getLogger(app_name)
 
 
 def new_context(config=None):
+    """Read configuration from *config* dict.
+
+    .. versionadded:: 0.1
+
+    :param config: Dict containing custom configuration
+
+    Example:
+
+    >>> from imap_cli import config
+    >>> config.new_context({'hostname': 'another.imap-server.org', 'password': 'another.secret'})
+    {u'username': u'username', u'hostname': 'another.imap-server.org', u'limit': 10, u'password': 'another.secret'}
+    """
     if config is None:
         log.debug(u'Loading default configuration')
         config = DEFAULT_CONFIG
@@ -51,6 +63,22 @@ def new_context(config=None):
 
 
 def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
+    """Open and read *config_filename* and parse configuration from it.
+
+    .. versionadded:: 0.1
+
+    :param config_filename: Configuration filename
+    :param encoding: Encoding of configuration file
+    :param section: Import only a specific section of configuration file
+
+    Example:
+
+    >>> from imap_cli import config
+    >>> config_file = 'config-example.ini'
+    >>> config.new_context_from_file(config_file, section='imap')
+    {'hostname': u'imap.example.org', 'password': u'secret', 'ssl': True, 'username': u'username'}
+
+    """
     if config_filename is None:
         config_filename = const.DEFAULT_CONFIG_FILE
     config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))

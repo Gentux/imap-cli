@@ -59,40 +59,11 @@ Loading config from python code
 
 If you need to connect and retrieve mail information with a python script, you can load any config file
 
-.. function:: new_context_from_file(config_filename=None, section=None)
-
-    Open and read *config_filename* (`~/.config/imapcli` by default) and parse configuration from it.
-
-    Example::
-
-        from imap_cli import config
-        config_file = '~/.config/imapcli'
-        conf = config.new_context_from_file(config_file)
-
-    You can also load a single section of this configuration file::
-
-        from imap_cli import config
-        config_file = '~/.config/imapcli'
-        conf = config.new_context_from_file(config_file, section='imap')
-
-    .. versionadded:: 0.1
-
+.. autofunction:: imap_cli.config.new_context_from_file
 
 But you can also use a python sructure to store your information and load it from a *dict*. In fact, config it's just a
 dict, the following method will just "complete" your dict.
 
-.. function:: new_context(config=None)
-
-    Read configuration from *config* dict.
-
-    Example::
-
-        from imap_cli import config
-        conf = config.new_context({
-            'hostname': 'another.imap-server.org',
-            'password': 'another.secret',
-            })
-
-    .. versionadded:: 0.1
+.. autofunction:: imap_cli.config.new_context
 
 Every missing key will take the default value.
