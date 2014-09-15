@@ -1,6 +1,7 @@
+.. _configuration:
+
 Configuration
 =============
-
 
 Imap-CLI need to have information about your IMAP account to connect to it. And to do so, it provide several ways to
 retrieve those configurations.

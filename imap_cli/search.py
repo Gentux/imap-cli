@@ -1,9 +1,29 @@
 # -*- coding: utf-8 -*-
 
 
-"""Functions searching in IMAP account
+"""Functions searching in IMAP account"""
 
-Usage: imap-cli-search [options] [-t <tags>] [-T <full-text>] [<directory>]
+
+import ast
+import codecs
+import datetime
+import email
+from email import header
+import logging
+import re
+import sys
+
+import docopt
+import six
+
+import imap_cli
+from imap_cli import config
+from imap_cli import const
+from imap_cli import fetch
+
+
+log = logging.getLogger('imap-cli-list')
+usage = """Usage: imap-cli-search [options] [-t <tags>] [-T <full-text>] [<directory>]
 
 Options:
     -a, --address=<address>     Search for specified "FROM" address
@@ -29,26 +49,6 @@ There is NO WARRANTY, to the extent permitted by law.
 """
 
 
-import ast
-import codecs
-import datetime
-import email
-from email import header
-import logging
-import re
-import sys
-
-import docopt
-import six
-
-import imap_cli
-from imap_cli import config
-from imap_cli import const
-from imap_cli import fetch
-
-
-log = logging.getLogger('imap-cli-list')
-
 FLAGS_RE = r'.*FLAGS \((?P<flags>[^\)]*)\)'
 MAIL_ID_RE = r'^(?P<mail_id>\d+) \('
 UID_RE = r'.*UID (?P<uid>[^ ]*)'
@@ -57,8 +57,9 @@ UID_RE = r'.*UID (?P<uid>[^ ]*)'
 def combine_search_criterion(search_criterion, operator='AND'):
     """Return a single IMAP search string combining all criterion given.
 
-    Keyword:
-        operator : Possible values are : 'AND', 'OR' and 'NOT'
+    .. versionadded:: 0.4
+
+    :param operator: Possible values are : 'AND', 'OR' and 'NOT'
     """
     if operator not in ['AND', 'OR', 'NOT']:
         operator = 'AND'
@@ -73,7 +74,10 @@ def combine_search_criterion(search_criterion, operator='AND'):
 
 
 def create_search_criterion(address=None, date=None, size=None, subject=None, tags=None, text=None, operator='AND'):
-    """Wrapper helping developer to construct a list of search criterion with a single method."""
+    """Wrapper helping developer to construct a list of search criterion with a single method.
+
+    .. versionadded:: 0.2
+    """
     search_criterion = []
     if address is not None:
         search_criterion.append(create_search_criterion_by_mail_address(address))
@@ -97,9 +101,10 @@ def create_search_criterion(address=None, date=None, size=None, subject=None, ta
 def create_search_criterion_by_date(datetime, relative=None, sent=False):
     """Return a search criteria by date.
 
-    Keywords:
-        relative: Can be one of 'BEFORE', 'SINCE', 'ON'
-        sent: Search after "sent" date instead of "received" date
+    .. versionadded:: 0.4
+
+    :param relative: Can be one of 'BEFORE', 'SINCE', 'ON'.
+    :param sent: Search after "sent" date instead of "received" date.
     """
     if relative not in ['BEFORE', 'ON', 'SINCE']:
         relative = 'SINCE'
@@ -108,16 +113,20 @@ def create_search_criterion_by_date(datetime, relative=None, sent=False):
 
 
 def create_search_criterion_by_header(header_name, header_value):
-    """Return search criteria by header."""
+    """Return search criteria by header.
+
+    .. versionadded:: 0.4
+    """
     return 'HEADER {} {}'.format(header_name, header_value)
 
 
 def create_search_criterion_by_mail_address(mail_address, header_name='FROM'):
     """Return a search criteria over mail address.
 
-    Keyword:
-        header_name: Specify in wich header address must be searched.
-                     Possible values are "FROM", "CC", "BCC" and "TO"
+    .. versionadded:: 0.4
+
+    :param header_name: Specify in wich header address must be searched. \
+                        Possible values are "FROM", "CC", "BCC" and "TO"
     """
     if header_name not in ['BCC', 'CC', 'FROM', 'TO']:
         header_name = 'FROM'
@@ -129,8 +138,9 @@ def create_search_criterion_by_mail_address(mail_address, header_name='FROM'):
 def create_search_criterion_by_size(size, relative='LARGER'):
     """Return a search criteria by size.
 
-    Keywords:
-        relative: Can be one of 'LARGER' or 'SMALLER'
+    .. versionadded:: 0.4
+
+    :param relative: Can be one of 'LARGER' or 'SMALLER'
     """
     # TODO(rsoufflet) sannitize "size" arg
     if relative not in ['LARGER', 'SMALLER']:
@@ -140,11 +150,18 @@ def create_search_criterion_by_size(size, relative='LARGER'):
 
 
 def create_search_criterion_by_subject(subject):
+    """Return search criteria by subject.
+
+    .. versionadded:: 0.4
+    """
     return 'SUBJECT "{}"'.format(subject)
 
 
 def create_search_criteria_by_tag(tags):
-    """Return a search criteria for specified tags."""
+    """Return a search criteria for specified tags.
+
+    .. versionadded:: 0.3
+    """
     if len(tags) == 0:
         return ''
 
@@ -158,15 +175,32 @@ def create_search_criteria_by_tag(tags):
 
 
 def create_search_criteria_by_text(text):
-    """Return a search criteria for fulltext search."""
+    """Return a search criteria for fulltext.
+
+    .. versionadded: 0.4
+    """
     return 'BODY "{}"'.format(text)
 
 
 def create_search_criterion_by_uid(uid):
+    """Return a search criteria for UID.
+
+    .. versionadded: 0.4
+    """
     return 'UID {}'.format(uid)
 
 
 def display_mail_tree(imap_account, threads, mail_info_by_uid=None, depth=0, format_thread=None):
+    """Generate indented string representing threads.
+
+    .. versionadded:: 0.5
+
+    :param imap_account: imaplib.IMAP4 or imaplib.IMAP4_SSL instance
+    :param threads: List containing other list or uids
+    :param mail_info_by_uid: Dict of information for every mail listed in threads
+    :param depth: Actual depth of indentation
+    :param format_thread: Format string to apply to mail informations
+    """
     if mail_info_by_uid is None:
         mail_set = list(threads_to_mail_set(threads))
         if len(mail_set) == 0:
@@ -193,6 +227,15 @@ def display_mail_tree(imap_account, threads, mail_info_by_uid=None, depth=0, for
 
 
 def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
+    """Retrieve information for every mail in mail_set
+
+    .. versionadded:: 0.2
+
+    :param imap_account: imaplib.IMAP4 or imaplib.IMAP4_SSL instance
+    :param mail_set: List of mail UID
+    :param decode: Wether we must or mustn't decode mails informations
+    :param limit: Return only last mails
+    """
     flags_re = re.compile(FLAGS_RE)
     mail_id_re = re.compile(MAIL_ID_RE)
     uid_re = re.compile(UID_RE)
@@ -244,14 +287,14 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
 
 
 def fetch_threads(imap_account, charset=None, limit=None, search_criterion=None):
-    """Return a list of thread corresponding to specified search.
+    """Retrieve information for every mail search_criterion by thread.
 
-    Keyword arguments:
-    charset             -- Request a particular charset from IMAP server
-    limit               -- Limit the number of mail returned
-    search_criterion    -- Iterable containing criterion
+    .. versionadded:: 0.5
 
-    Search criterion avalaible are listed in const.SEARH_CRITERION
+    :param imap_account: imaplib.IMAP4 or imaplib.IMAP4_SSL instance
+    :param charset: Desired charset for IMAP response
+    :param limit: Return only last mails
+    :param search_criterion: List of criteria for IMAP Search
     """
     request_search_criterion = search_criterion
     if search_criterion is None or search_criterion == ['ALL']:
@@ -273,14 +316,14 @@ def fetch_threads(imap_account, charset=None, limit=None, search_criterion=None)
 
 
 def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
-    """Return a list of mails id corresponding to specified search.
+    """Retrieve information for every mail search_criterion.
 
-    Keyword arguments:
-    charset             -- Request a particular charset from IMAP server
-    limit               -- Limit the number of mail returned
-    search_criterion    -- Iterable containing criterion
+    .. versionadded:: 0.3
 
-    Search criterion avalaible are listed in const.SEARH_CRITERION
+    :param imap_account: imaplib.IMAP4 or imaplib.IMAP4_SSL instance
+    :param charset: Desired charset for IMAP response
+    :param limit: Return only last mails
+    :param search_criterion: List of criteria for IMAP Search
     """
     request_search_criterion = search_criterion
     if search_criterion is None:
@@ -302,10 +345,11 @@ def parse_thread_response(thread_string):
 
     We define thread as list of mail UID (int) which can contain other thread (nested list)
     Example:
-        >>> imap_account = imap_cli.connect('serveur', 'login', 'password')
-        >>> imap_response = fetch_threads(imap_account)
-        >>> repr(parse_thread_response(imap_response))
-        '[[[6], [7]], [14, 19], [23, 58, 60, 61, 62, 63, 68, 69, 70]]'
+
+    >>> imap_account = imap_cli.connect('serveur', 'login', 'password')
+    >>> imap_response = fetch_threads(imap_account)
+    >>> repr(parse_thread_response(imap_response))
+    '[[[6], [7]], [14, 19], [23, 58, 60, 61, 62, 63, 68, 69, 70]]'
     """
     # FIXME(rsoufflet) Not sure the use of "ast" module is the right solution. Any ideas are welcome here
     return ast.literal_eval('[{}]'.format(thread_string.replace(' ', ', ').replace('(', '[').replace(')', '], ')))
@@ -334,7 +378,7 @@ def threads_to_mail_tree(threads):
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
+    args = docopt.docopt('\n'.join(usage.split('\n')), version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,

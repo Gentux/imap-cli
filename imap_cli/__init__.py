@@ -34,6 +34,18 @@ def change_dir(imap_account, directory, read_only=True):
 
 
 def connect(hostname, username, password, port=None, ssl=True):
+    """Return an IMAP account object (see imaplib documentation for details)
+
+    .. versionadded:: 0.1
+
+    Example:
+
+    >>> import imap_cli
+    >>> from imap_cli import config
+    >>> conf = config.new_context_from_file(section='imap')
+    >>> imap_cli.connect(**conf)
+    <imaplib.IMAP4_SSL instance at 0x7fccd57579e0>
+    """
     if port is None:
         port = const.DEFAULT_PORT if ssl is False else const.DEFAULT_SSL_PORT
 
@@ -48,6 +60,21 @@ def connect(hostname, username, password, port=None, ssl=True):
 
 
 def disconnect(imap_account):
+    """Disconnect IMAP account object
+
+    .. versionadded:: 0.1
+
+    Example:
+
+    >>> import imap_cli
+    >>> from imap_cli import config
+    >>> conf = config.new_context_from_file(section='imap')
+    >>> imap_account = imap_cli.connect(**conf)
+    >>> imap_account
+    <imaplib.IMAP4_SSL instance at 0x7fccd57579e0>
+    >>> imap_cli.change_dir(imap_account, 'INBOX'):
+    >>> imap_cli.disconnect(imap_account)
+    """
     log.debug('Disconnecting from {}'.format(imap_account.host))
     if imap_account.state == 'SELECTED':
         imap_account.close()
@@ -72,6 +99,24 @@ def list_dir(imap_account):
 
 
 def status(imap_account):
+    """Return an interator of directory status. Each directory status provide the following keys::
+
+        u'count'    # Number of mail in directory
+        u'directory # Name of directory
+        u'recent    # Number of recent mail
+        u'unseen    # Number of unseen mail
+
+    .. versionadded:: 0.1
+
+    Example:
+
+    >>> import imap_cli
+    >>> from imap_cli import config
+    >>> conf = config.new_context_from_file(section='imap')
+    >>> imap_account = imap_cli.connect(**conf)
+    >>> for directory_status in imap_cli.status(imap_account):
+    >>>     print directory_status
+    """
     for directory_info in list_dir(imap_account):
         status, data = imap_account.status(directory_info['directory'], '(MESSAGES RECENT UNSEEN)')
         if status != const.STATUS_OK:
