@@ -143,6 +143,13 @@ below
 * List mail by thread
 * Display threads
 
+### v0.6 ###
+
+* Clean up and complete documentation
+* Clean up code
+* Generate Debian package
+* Test coverage > 90%
+
 
 ## Creator ##
 
