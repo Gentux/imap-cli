@@ -389,7 +389,8 @@ def main():
         return 1
     display_conf = config.new_context_from_file(args['--config-file'], section='display')
     if args['--format'] is not None:
-        display_conf['format_status'] = args['--format']
+        display_conf_key = 'format_thread' if args['--thread'] is True else 'format_list'
+        display_conf[display_conf_key] = args['--format']
     if args.get('--tags') is not None:
         args['--tags'] = args['--tags'].split(',')
     if args['--date'] is not None:
