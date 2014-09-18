@@ -1,0 +1,13 @@
+Source: imap-cli
+Maintainer: Romain Soufflet <romain@soufflet.io>
+Section: python
+Priority: optional
+Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3), debhelper (>= 9)
+Standards-Version: 3.9.1
+
+Package: python-imap-cli
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: Set of high level mail management functions. All managed in
+ Command line interface for imap account
+
