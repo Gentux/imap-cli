@@ -1,3 +1,9 @@
+v0.6, 09-22-2014 --
+    Clean up and complete documentation
+    Clean up code
+    Generate Debian package
+    Test coverage > 90%
+
 v0.5, 09-08-2014 --
     Add IMAP Shell in scripts directory
     Display search and list by thread

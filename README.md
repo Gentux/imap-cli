@@ -60,7 +60,7 @@ If you want to benefit from the wrapper script described below, copy the script 
     See 'imapcli help <command>' to get further information about specified command"
 
     ----
-    imap-cli 0.5
+    imap-cli 0.6
     Copyright (C) 2014 Romain Soufflet
     License MIT
     This is free software: you are free to change and redistribute it.
@@ -111,7 +111,7 @@ You can also [open new issues](https://github.com/Gentux/imap-cli/issues/new) fo
 
 ## Roadmap ##
 
-The actual version of Imap-CLI is 0.5.
+The actual version of Imap-CLI is 0.6.
 
 Imap-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
 below
@@ -138,12 +138,12 @@ below
 * Use UID instead of volatil mails id
 * Read all type of mail and handle attachments
 
-### v0.5 (current) ###
+### v0.5 ###
 
 * List mail by thread
 * Display threads
 
-### v0.6 ###
+### v0.6 (current) ###
 
 * Clean up and complete documentation
 * Clean up code
