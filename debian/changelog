@@ -4,7 +4,7 @@ imap-cli (0.6-1) unstable; urgency=low
   * Generate Debian package
   * Test coverage > 90%
 
- -- Romain Soufflet <romain@soufflet.io>  Fri, 19 Sep 2014 14:22:02 +0200
+ -- Romain Soufflet <romain@soufflet.io>  Fri, 22 Sep 2014 14:22:02 +0200
 
 imap-cli (0.5-1) unstable; urgency=low
   * Add IMAP Shell in scripts directory
