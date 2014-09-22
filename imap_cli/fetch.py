@@ -3,7 +3,7 @@
 
 """Functions returning an IMAP account state
 
-Usage: imap-cli-read [options] <mail_uid>
+Usage: imap-cli-read [options] [<mail_uid>...]
 
 Options:
     -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
@@ -83,8 +83,11 @@ def fetch(imap_account, message_set=None, message_parts=None):
     Avalable message_parts are listed in const.MESSAGE_PARTS, for more information checkout RFC3501
     """
     if message_set is None or not isinstance(message_set, collections.Iterable):
-        log.error('Can\'t fetch email {}'.format(message_set))
-        return None
+        if isinstance(message_set, int):
+            message_set = [str(message_set)]
+        else:
+            log.error('Can\'t fetch email {}'.format(message_set))
+            return None
     if len(message_set) == 0:
         log.error('No uid given')
         return None
@@ -115,49 +118,52 @@ def get_charset(message, default="ascii"):
 
 def read(imap_account, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
-    raw_mail = fetch(imap_account, [mail_uid])[0]
-    if raw_mail is None:
+    raw_mails = fetch(imap_account, mail_uid)
+    if raw_mails is None:
         log.error('Server didn\'t sent this email')
-        return None
-    mail = email.message_from_string(raw_mail[1])
-
-    mail_headers = {}
-    for header_name, header_value in mail.items():
-        value, encoding = header.decode_header(header_value)[0]
-        if encoding is not None:
-            value = value.decode(encoding)
-        mail_headers[header_name] = value
-
-    message_parts = []
-    for part in mail.walk():
-        # multipart/* are just containers
-        if part.get_content_maintype() == 'multipart':
+        yield None
+    for raw_mail in raw_mails or []:
+        if raw_mail == ')':
             continue
+        mail = email.message_from_string(raw_mail[1])
 
-        if part.get_content_type().startswith('text'):
-            charset = get_charset(part, get_charset(mail))
-            message_parts.append({
-                'content_type': part.get_content_type(),
-                'data': part.as_string(),
-                'as_string': part.get_payload(decode=True).decode(charset, 'replace'),
-            })
-        elif part.get_filename():
-            message_parts.append({
-                'content_type': part.get_content_type(),
-                'filename': part.get_filename(),
-                'data': part.get_payload(decode=True),
-            })
-            if save_directory is not None and os.path.isdir(save_directory):
-                attachment_full_filename = os.path.join(save_directory, part.get_filename())
-                with open(attachment_full_filename, 'wb') as attachment_file:
-                    attachment_file.write(part.get_payload(decode=True))
-            elif save_directory is not None:
-                log.error('Can\'t save attachment, directory {} does not exist'.format(save_directory))
+        mail_headers = {}
+        for header_name, header_value in mail.items():
+            value, encoding = header.decode_header(header_value)[0]
+            if encoding is not None:
+                value = value.decode(encoding)
+            mail_headers[header_name] = value
 
-    return {
-        'headers': mail_headers,
-        'parts': message_parts,
-    }
+        message_parts = []
+        for part in mail.walk():
+            # multipart/* are just containers
+            if part.get_content_maintype() == 'multipart':
+                continue
+
+            if part.get_content_type().startswith('text'):
+                charset = get_charset(part, get_charset(mail))
+                message_parts.append({
+                    'content_type': part.get_content_type(),
+                    'data': part.as_string(),
+                    'as_string': part.get_payload(decode=True).decode(charset, 'replace'),
+                })
+            elif part.get_filename():
+                message_parts.append({
+                    'content_type': part.get_content_type(),
+                    'filename': part.get_filename(),
+                    'data': part.get_payload(decode=True),
+                })
+                if save_directory is not None and os.path.isdir(save_directory):
+                    attachment_full_filename = os.path.join(save_directory, part.get_filename())
+                    with open(attachment_full_filename, 'wb') as attachment_file:
+                        attachment_file.write(part.get_payload(decode=True))
+                elif save_directory is not None:
+                    log.error('Can\'t save attachment, directory {} does not exist'.format(save_directory))
+
+        yield {
+            'headers': mail_headers,
+            'parts': message_parts,
+        }
 
 
 def main():
@@ -167,6 +173,12 @@ def main():
         stream=sys.stdout,
     )
 
+    if len(args['<mail_uid>']) == 0:
+        args['<mail_uid>'] = sys.stdin.read().strip().split()
+    if len(args['<mail_uid>']) == 0:
+        sys.stderr.write('\n'.join(__doc__.split('\n')[2:]))
+        return 1
+
     conf = config.new_context_from_file(args['--config-file'], section='imap')
     if conf is None:
         return 1
@@ -174,13 +186,15 @@ def main():
     try:
         imap_account = imap_cli.connect(**conf)
         imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY)
-        fetched_mail = read(imap_account, args['<mail_uid>'], save_directory=args['--save'])
-        if fetched_mail is None:
+        fetched_mails = read(imap_account, args['<mail_uid>'], save_directory=args['--save'])
+        if fetched_mails is None:
             log.error("Mail was not fetched, an error occured")
             return 1
-        imap_cli.disconnect(imap_account)
 
-        sys.stdout.write(display(fetched_mail))
+        for fetched_mail in fetched_mails:
+            sys.stdout.write(display(fetched_mail))
+
+        imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:
         log.info('Interrupt by user, exiting')
 

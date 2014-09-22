@@ -96,19 +96,21 @@ class FetchTest(unittest.TestCase):
 
     def test_read(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        mail = fetch.read(self.imap_account, 1, directory="INBOX")
+        mails = list(fetch.read(self.imap_account, 1, directory="INBOX"))
 
-        for header_name, header_value in mail['headers'].items():
-            assert self.reference_mail['headers'][header_name] == header_value
-        assert len(mail['parts']) == len(self.reference_mail['parts'])
+        for mail in mails:
+            for header_name, header_value in mail['headers'].items():
+                assert self.reference_mail['headers'][header_name] == header_value
+            assert len(mail['parts']) == len(self.reference_mail['parts'])
 
     def test_read_multipart(self):
         self.imap_account = imaplib.IMAP4_SSL()
-        mail = fetch.read(self.imap_account, 1, directory="INBOX")
+        mails = fetch.read(self.imap_account, 1, directory="INBOX")
 
-        for header_name, header_value in mail['headers'].items():
-            assert self.reference_mail['headers'][header_name] == header_value
-        assert len(mail['parts']) == len(self.reference_mail['parts'])
+        for mail in mails:
+            for header_name, header_value in mail['headers'].items():
+                assert self.reference_mail['headers'][header_name] == header_value
+            assert len(mail['parts']) == len(self.reference_mail['parts'])
 
     def test_fetch_cli_tool(self):
         const.DEFAULT_CONFIG_FILE = 'config-example.ini'
