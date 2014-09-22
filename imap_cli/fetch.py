@@ -83,8 +83,11 @@ def fetch(imap_account, message_set=None, message_parts=None):
     Avalable message_parts are listed in const.MESSAGE_PARTS, for more information checkout RFC3501
     """
     if message_set is None or not isinstance(message_set, collections.Iterable):
-        log.error('Can\'t fetch email {}'.format(message_set))
-        return None
+        if isinstance(message_set, int):
+            message_set = [str(message_set)]
+        else:
+            log.error('Can\'t fetch email {}'.format(message_set))
+            return None
     if len(message_set) == 0:
         log.error('No uid given')
         return None
