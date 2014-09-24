@@ -5,12 +5,12 @@
 """Use IMAP CLI to gt a summary of IMAP account state."""
 
 
-import argparse
 import logging
 import os
 import sys
 import time
 
+import docopt
 import pynotify
 
 import imap_cli
@@ -18,30 +18,43 @@ from imap_cli import config
 
 
 app_name = os.path.splitext(os.path.basename(__file__))[0]
-keep_alive_timer = 10
-log = logging.getLogger(app_name)
+usage = """Usage: imap-cli-notifier [options] <directories>...
 
-watched_dir = [
-    'INBOX',
-    'Openstack',
-]
+Options:
+    -d, --delay=<delay>         Delay (in seconds) between checks and notifications
+    -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
+    -f, --format=<FMT>          Output format
+    -v, --verbose               Generate verbose messages
+    -h, --help                  Show help options.
+    --version                   Print program version.
+
+----
+Copyright (C) 2014 Romain Soufflet
+License MIT
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+"""
+log = logging.getLogger(app_name)
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--verbose', action='store_true', help='increase output verbosity')
-
-    args = parser.parse_args()
+    args = docopt.docopt('\n'.join(usage.split('\n')))
 
     logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.WARNING,
+        level=logging.DEBUG if args['--verbose'] else logging.WARNING,
         stream=sys.stdout,
     )
     pynotify.init(app_name)
 
-    connection_config = config.new_context_from_file(section='imap')
+    connection_config = config.new_context_from_file(args['--config-file'], section='imap')
     if connection_config is None:
         return 1
+    try:
+        delay = int(args['--delay'] or 60)
+    except ValueError:
+        log.error('Wrong value for options "delay"')
+        return 1
+    format_str = args['--format'] or u'{:<3} new mails in {}'
 
     imap_account = imap_cli.connect(**connection_config)
 
@@ -49,11 +62,11 @@ def main():
     sys.stdout.write('\n')
     while True:
         time_count += 1
-        if time_count % keep_alive_timer == 0:
+        if time_count % delay == 0:
             notifications = []
             for status in imap_cli.status(imap_account):
-                if status['directory'] in watched_dir and status['unseen'] != '0':
-                    notifications.append(u'{} has {} new mails'.format(status['directory'], status['unseen']))
+                if status['directory'] in args['<directories>'] and status['unseen'] != '0':
+                    notifications.append(format_str.format(status['unseen'], status['directory']))
             if len(notifications) > 0:
                 notifier = pynotify.Notification("IMAP Notify", u'\n'.join(notifications))
                 notifier.show()
