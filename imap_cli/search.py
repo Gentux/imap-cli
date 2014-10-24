@@ -268,7 +268,7 @@ def fetch_mails_info(imap_account, mail_set=None, decode=True, limit=None):
                     if value is None:
                         continue
                     try:
-                        decoded_value = codecs.decode(value, encoding or 'utf-8')
+                        decoded_value = codecs.decode(value, encoding or 'utf-8', 'ignore')
                     except TypeError:
                         log.debug(u'Can\'t decode {} with {} encoding'.format(value, encoding))
                         decoded_value = value
