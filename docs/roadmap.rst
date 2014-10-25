@@ -43,5 +43,5 @@ v0.6 (current)
 
 * Clean up and complete documentation
 * Clean up code
-* Generate Debian package
 * Test coverage > 90%
+* Copy, Move and Delete methods

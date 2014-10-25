@@ -14,6 +14,7 @@ library:
 * Search through mail
 * Read mail
 * Flag mail (Read, Unread, Delete, etc…)
+* Copy, Move and Delete mail
 
 You can read about my initial motivation to write this software
 [here](http://romain.soufflet.io/bash/2014/07/11/Mail-Mail-and-mail-again-my-head-will-explode.html).
@@ -147,8 +148,8 @@ below
 
 * Clean up and complete documentation
 * Clean up code
-* Generate Debian package
 * Test coverage > 90%
+* Copy, Move and Delete methods
 
 
 ## Creator ##
