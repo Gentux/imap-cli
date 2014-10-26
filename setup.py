@@ -28,6 +28,7 @@ setuptools.setup(
         'console_scripts': [
             'imap-api=imap_cli.scripts.imap_api:main',
             'imap-cli-copy=imap_cli.copy:main',
+            'imap-cli-delete=imap_cli.delete:main',
             'imap-cli-flag=imap_cli.flag:main',
             'imap-cli-list=imap_cli.list_mail:main',
             'imap-cli-read=imap_cli.fetch:main',

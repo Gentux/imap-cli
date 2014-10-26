@@ -32,7 +32,10 @@ DEFAULT_CONFIG = {
         u'Subject:    {subject}',
     ]),
     u'format_thread': u'{uid} {subject} <<< FROM {from}',
-    u'format_status': u'{directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent'
+    u'format_status': u'{directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent',
+
+    u'delete_method': u'MOVE_TO_TRASH',
+    u'trash_directory': u'Trash',
 }
 log = logging.getLogger(app_name)
 
@@ -121,5 +124,10 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
             if config_reader.has_option('display', 'format_thread')
             else u'{uid:<7} {subject} <<< FROM {from}'
         )
+
+    if section is None or section == 'trash':
+        # Account
+        config['trash_directory'] = config_reader.get('trash', 'trash_directory')
+        config['delete_method'] = config_reader.get('trash', 'delete_method')
 
     return config
