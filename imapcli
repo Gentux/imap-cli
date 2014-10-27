@@ -11,6 +11,9 @@ Available commands are:
     search      Search for mail
     read        Display Header and Body of specified mail(s)
     flag        Set or unset flag on specified mail(s)
+    copy        Copy (or move) mail from one mailbox to another
+    delete      Remove mails (or move to Trash mailbox by default)
+
 
 Options:
     -h, --help              Show help options
@@ -31,7 +34,7 @@ while [[ $# -gt 0 ]]; do
     shift
 
     case $key in
-        status|list|search|read|flag|help)
+        status|list|search|read|flag|copy|delete|help)
             COMMAND="${key}"
             break
             ;;
