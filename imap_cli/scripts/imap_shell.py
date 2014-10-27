@@ -20,6 +20,8 @@ import docopt
 
 import imap_cli
 from imap_cli import config
+from imap_cli import const
+from imap_cli import copy
 from imap_cli import fetch
 from imap_cli import flag
 from imap_cli import search
@@ -37,6 +39,7 @@ class ImapShell(cmd.Cmd):
     prompt = '(imap-cli "INBOX") '
     stdout = sys.stdout
     cmdqueue = []
+    delete_conf = None
 
     def __init__(self, imap_account):
         self.imap_account = imap_account
@@ -49,6 +52,11 @@ class ImapShell(cmd.Cmd):
             sys.stdout.write('IMAP Folder can\'t be found\n')
         else:
             self.prompt = '(imap-cli "{}") '.format(args['<directory>'])
+
+    def do_cp(self, arg):
+        '''Copy mail from one mailbox to another.'''
+        args = docopt.docopt('Usage: cp <dest> <mail_id>...', arg)
+        copy.copy(self.imap_account, args['<mail_id>'], args['<dest>'])
 
     def do_flag(self, arg):
         '''Set or Unset flag on mails.'''
@@ -83,6 +91,13 @@ class ImapShell(cmd.Cmd):
                 truncate_string(mail_info['subject'], 50),
             ))
 
+    def do_mv(self, arg):
+        '''Move mail from one mailbox to another.'''
+        args = docopt.docopt('Usage: cp <dest> <mail_id>...', arg)
+        copy.copy(self.imap_account, args['<mail_id>'], args['<dest>'])
+        flag.flag(self.imap_account, args['<mail_id>'], [const.FLAG_DELETED])
+        self.imap_account.expunge()
+
     def do_quit(self, arg):
         'Exit this shell'
         global keep_alive_bool
@@ -90,6 +105,16 @@ class ImapShell(cmd.Cmd):
         imap_cli.disconnect(self.imap_account)
         sys.stdout.write('Bye\n')
         return True
+
+    def do_rm(self, arg):
+        '''Remove mail from one mailbox.'''
+        args = docopt.docopt('Usage: rm <mail_id>...', arg)
+
+        if self.delete_conf['delete_method'] == 'MOVE_TO_TRASH':
+            copy.copy(self.imap_account, args['<mail_id>'], self.delete_conf['trash_directory'])
+        flag.flag(self.imap_account, args['<mail_id>'], [const.FLAG_DELETED])
+        if self.delete_conf['delete_method'] in ['MOVE_TO_TRASH', 'EXPUNGE']:
+            self.imap_account.expunge()
 
     def do_read(self, arg):
         '''Read mail by uid.'''
@@ -218,9 +243,11 @@ def main():
     connection_config = config.new_context_from_file(section='imap')
     if connection_config is None:
         return 1
+    delete_config = config.new_context_from_file(section='trash')
 
     imap_account = imap_cli.connect(**connection_config)
     imap_shell = ImapShell(imap_account)
+    imap_shell.delete_conf = delete_config
     keep_alive_thread = threading.Thread(target=keep_alive, args=(imap_account,))
 
     keep_alive_thread.start()
