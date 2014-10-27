@@ -11,9 +11,9 @@ import datetime
 import logging
 import os
 import sys
-import tempfile
-import threading
 import time
+import threading
+import tempfile
 import webbrowser
 
 import docopt
@@ -46,7 +46,11 @@ class ImapShell(cmd.Cmd):
 
     def do_cd(self, arg):
         '''Change selected IMAP folder.'''
-        args = docopt.docopt('Usage: cd <directory>', arg)
+        try:
+            args = docopt.docopt('Usage: cd <directory>', arg)
+        except SystemExit:
+            return
+
         cd_result = imap_cli.change_dir(self.imap_account, directory=args['<directory>'])
         if cd_result == -1:
             sys.stdout.write('IMAP Folder can\'t be found\n')
@@ -55,30 +59,39 @@ class ImapShell(cmd.Cmd):
 
     def do_cp(self, arg):
         '''Copy mail from one mailbox to another.'''
-        args = docopt.docopt('Usage: cp <dest> <mail_id>...', arg)
+        try:
+            args = docopt.docopt('Usage: cp <dest> <mail_id>...', arg)
+        except SystemExit:
+            return
         copy.copy(self.imap_account, args['<mail_id>'], args['<dest>'])
 
     def do_flag(self, arg):
         '''Set or Unset flag on mails.'''
-        args = docopt.docopt('\n'.join([
-            'Usage: flag [options] <mail_id> <flag>',
-            '',
-            'Options:',
-            '    -u, --unset    Remove flag instead of setting them',
-            '    -h, --help     Show help options',
-        ]), argv=arg)
+        try:
+            args = docopt.docopt('\n'.join([
+                'Usage: flag [options] <mail_id> <flag>',
+                '',
+                'Options:',
+                '    -u, --unset    Remove flag instead of setting them',
+                '    -h, --help     Show help options',
+            ]), argv=arg)
+        except SystemExit:
+            return
         flag.flag(self.imap_account, [args['<mail_id>']], args['<flag>'], unset=args['--unset'])
 
     def do_list(self, arg):
         '''List mail in specified folder.'''
 
-        args = docopt.docopt('\n'.join([
-            'Usage: list [options] [<directory>]',
-            '',
-            'Options:',
-            '    -l, --limit=<LIMIT>    Limit number of mail displayed',
-            '    -h, --help             Show this message',
-        ]), argv=arg)
+        try:
+            args = docopt.docopt('\n'.join([
+                'Usage: list [options] [<directory>]',
+                '',
+                'Options:',
+                '    -l, --limit=<LIMIT>    Limit number of mail displayed',
+                '    -h, --help             Show this message',
+            ]), argv=arg)
+        except SystemExit:
+            return
 
         try:
             limit = int(args['--limit'] or 10)
@@ -93,7 +106,10 @@ class ImapShell(cmd.Cmd):
 
     def do_mv(self, arg):
         '''Move mail from one mailbox to another.'''
-        args = docopt.docopt('Usage: cp <dest> <mail_id>...', arg)
+        try:
+            args = docopt.docopt('Usage: cp <dest> <mail_id>...', arg)
+        except SystemExit:
+            return
         copy.copy(self.imap_account, args['<mail_id>'], args['<dest>'])
         flag.flag(self.imap_account, args['<mail_id>'], [const.FLAG_DELETED])
         self.imap_account.expunge()
@@ -108,7 +124,10 @@ class ImapShell(cmd.Cmd):
 
     def do_rm(self, arg):
         '''Remove mail from one mailbox.'''
-        args = docopt.docopt('Usage: rm <mail_id>...', arg)
+        try:
+            args = docopt.docopt('Usage: rm <mail_id>...', arg)
+        except SystemExit:
+            return
 
         if self.delete_conf['delete_method'] == 'MOVE_TO_TRASH':
             copy.copy(self.imap_account, args['<mail_id>'], self.delete_conf['trash_directory'])
@@ -118,12 +137,16 @@ class ImapShell(cmd.Cmd):
 
     def do_read(self, arg):
         '''Read mail by uid.'''
-        args = docopt.docopt(u'\n'.join([
-            u'Usage: read [options] <mail_uid> [<save_directory>]',
-            u'',
-            u'Options:',
-            u'    -b, --browser     Open mail in browser',
-        ]), arg)
+        try:
+            args = docopt.docopt(u'\n'.join([
+                u'Usage: read [options] <mail_uid> [<save_directory>]',
+                u'',
+                u'Options:',
+                u'    -b, --browser     Open mail in browser',
+            ]), arg)
+        except SystemExit:
+            return
+
         fetched_mail = fetch.read(self.imap_account, args['<mail_uid>'], save_directory=args['<save_directory>'])
         if fetched_mail is None:
             log.error("Mail was not fetched, an error occured")
@@ -140,18 +163,21 @@ class ImapShell(cmd.Cmd):
 
     def do_search(self, arg):
         '''Search mail.'''
-        args = docopt.docopt('\n'.join([
-            'Usage: search [options]',
-            '',
-            'Options:',
-            '    -a, --address=<address>     Search for specified "FROM" address',
-            '    -d, --date=<date>           Search mail receive since the specified date (format YYYY-MM-DD)',
-            '    -s, --size=<SIZE>           Search mails larger than specified size (in bytes)',
-            '    -S, --subject=<subject>     Search by subject',
-            '    -t, --tags=<tags>           Searched tags (Comma separated values)',
-            '    -T, --full-text=<text>      Searched tags (Comma separated values)',
-            '    -h, --help                  Show help options.',
-        ]), argv=arg)
+        try:
+            args = docopt.docopt('\n'.join([
+                'Usage: search [options]',
+                '',
+                'Options:',
+                '    -a, --address=<address>     Search for specified "FROM" address',
+                '    -d, --date=<date>           Search mail receive since the specified date (format YYYY-MM-DD)',
+                '    -s, --size=<SIZE>           Search mails larger than specified size (in bytes)',
+                '    -S, --subject=<subject>     Search by subject',
+                '    -t, --tags=<tags>           Searched tags (Comma separated values)',
+                '    -T, --full-text=<text>      Searched tags (Comma separated values)',
+                '    -h, --help                  Show help options.',
+            ]), argv=arg)
+        except SystemExit:
+            return
 
         if args.get('--tags') is not None:
             args['--tags'] = args['--tags'].split(',')
