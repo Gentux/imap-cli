@@ -73,7 +73,7 @@ def disconnect(imap_account):
     >>> imap_account = imap_cli.connect(**conf)
     >>> imap_account
     <imaplib.IMAP4_SSL instance at 0x7fccd57579e0>
-    >>> imap_cli.change_dir(imap_account, 'INBOX'):
+    >>> imap_cli.change_dir(imap_account, 'INBOX')
     >>> imap_cli.disconnect(imap_account)
     """
     log.debug('Disconnecting from {}'.format(imap_account.host))
