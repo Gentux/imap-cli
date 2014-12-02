@@ -6,7 +6,7 @@ Imap-CLI
 
 ## Description ##
 
-Command line interface and API for imap accounts. It provide the following actions through a minial python
+Command line interface and API for imap accounts. It provide the following actions through a minimal python
 library:
 
 * Get imap account status (New mails, mail counting… etc…)
@@ -32,6 +32,7 @@ pip install imap-cli
 
 Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` containing :
 
+    [imap]
     hostname = imap.example.org
     username = username
     password = secret
