@@ -40,7 +40,8 @@ def read_controller(req):
     if inputs['uid'] is None:
         return 'You need to specify an UID'
 
-    imap_cli.change_dir(imap_account, inputs['directory'] or const.DEFAULT_DIRECTORY)
+    imap_cli.change_dir(imap_account,
+                        inputs['directory'] or const.DEFAULT_DIRECTORY)
     fetched_mail = fetch.read(imap_account, inputs['uid'])
     if fetched_mail is None:
         # TODO(rsoufflet) Handle this error with HTTP
@@ -64,8 +65,10 @@ def search_controller(req):
 
     imap_cli.change_dir(imap_account, inputs['directory'])
 
-    search_criterion = search.create_search_criterion(tags=inputs['tags'], text=inputs['text'])
-    mail_set = search.fetch_uids(imap_account, search_criterion=search_criterion or [])
+    search_criterion = search.create_search_criterion(tags=inputs['tags'],
+                                                      text=inputs['text'])
+    mail_set = search.fetch_uids(imap_account,
+                                 search_criterion=search_criterion or [])
     mails_info = list(
         search.fetch_mails_info(imap_account, mail_set=mail_set)
     )
@@ -74,7 +77,8 @@ def search_controller(req):
 
 @wsgify
 def status_controller(req):
-    return json.dumps(sorted(imap_cli.status(imap_account), key=lambda obj: obj['directory']), indent=2)
+    return json.dumps(sorted(imap_cli.status(imap_account),
+                             key=lambda obj: obj['directory']), indent=2)
 
 
 routings = [
@@ -97,7 +101,8 @@ def router(req):
                 if getattr(req, 'urlvars', None) is None:
                     req.urlvars = {}
                 req.urlvars.update(dict(
-                    (name, value.decode('utf-8') if value is not None else None)
+                    (name,
+                     value.decode('utf-8') if value is not None else None)
                     for name, value in match.groupdict().iteritems()
                 ))
                 req.urlvars.update(vars)

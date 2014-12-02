@@ -66,7 +66,8 @@ class FetchTest(unittest.TestCase):
         assert isinstance(fetch.display(self.reference_mail), six.string_types)
 
     def test_display_in_browser(self):
-        assert isinstance(fetch.display(self.reference_mail, browser=True), six.string_types)
+        assert isinstance(fetch.display(self.reference_mail, browser=True),
+                          six.string_types)
 
     def test_display_attachment(self):
         multipart_mail = copy.deepcopy(self.reference_mail)
@@ -91,7 +92,8 @@ class FetchTest(unittest.TestCase):
             u'filename': 'IMGTEST',
         })
 
-        mail = email.message_from_string(self.reference_mail['parts'][0]['data'])
+        mail = email.message_from_string(
+            self.reference_mail['parts'][0]['data'])
         assert fetch.get_charset(mail) == 'windows-1252'
 
     def test_read(self):
@@ -100,7 +102,8 @@ class FetchTest(unittest.TestCase):
 
         for mail in mails:
             for header_name, header_value in mail['headers'].items():
-                assert self.reference_mail['headers'][header_name] == header_value
+                assert self.reference_mail['headers'][
+                    header_name] == header_value
             assert len(mail['parts']) == len(self.reference_mail['parts'])
 
     def test_read_multipart(self):
@@ -109,7 +112,8 @@ class FetchTest(unittest.TestCase):
 
         for mail in mails:
             for header_name, header_value in mail['headers'].items():
-                assert self.reference_mail['headers'][header_name] == header_value
+                assert self.reference_mail['headers'][
+                    header_name] == header_value
             assert len(mail['parts']) == len(self.reference_mail['parts'])
 
     def test_fetch_cli_tool(self):

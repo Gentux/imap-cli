@@ -52,7 +52,8 @@ def flag(imap_account, message_set, flags, unset=False):
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]),
+                         version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
@@ -64,9 +65,12 @@ def main():
 
     try:
         imap_account = imap_cli.connect(**conf)
-        imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY, read_only=False)
+        imap_cli.change_dir(imap_account,
+                            args['--directory'] or const.DEFAULT_DIRECTORY,
+                            read_only=False)
 
-        flag(imap_account, [args['<mail_id>']], args['<flag>'], unset=args['--unset'])
+        flag(imap_account, [args['<mail_id>']], args['<flag>'],
+             unset=args['--unset'])
 
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:

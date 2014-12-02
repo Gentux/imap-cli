@@ -37,23 +37,28 @@ log = logging.getLogger('imap-cli-delete')
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]),
+                         version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
     )
 
     conf = config.new_context_from_file(args['--config-file'], section='imap')
-    delete_conf = config.new_context_from_file(args['--config-file'], section='trash')
+    delete_conf = config.new_context_from_file(args['--config-file'],
+                                               section='trash')
     if conf is None:
         return 1
 
     try:
         imap_account = imap_cli.connect(**conf)
-        imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY, read_only=False)
+        imap_cli.change_dir(imap_account,
+                            args['--directory'] or const.DEFAULT_DIRECTORY,
+                            read_only=False)
 
         if delete_conf['delete_method'] == 'MOVE_TO_TRASH':
-            copy.copy(imap_account, args['<mail_id>'], delete_conf['trash_directory'])
+            copy.copy(imap_account, args['<mail_id>'],
+                      delete_conf['trash_directory'])
         flag.flag(imap_account, args['<mail_id>'], [const.FLAG_DELETED])
         if delete_conf['delete_method'] in ['MOVE_TO_TRASH', 'EXPUNGE']:
             imap_account.expunge()

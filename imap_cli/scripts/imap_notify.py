@@ -21,8 +21,8 @@ app_name = os.path.splitext(os.path.basename(__file__))[0]
 usage = """Usage: imap-cli-notifier [options] <directories>...
 
 Options:
-    -d, --delay=<delay>         Delay (in seconds) between checks and notifications
-    -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
+    -d, --delay=<delay>         Delay (in seconds) between notifications
+    -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli`)
     -f, --format=<FMT>          Output format
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
@@ -46,7 +46,8 @@ def main():
     )
     pynotify.init(app_name)
 
-    connection_config = config.new_context_from_file(args['--config-file'], section='imap')
+    connection_config = config.new_context_from_file(args['--config-file'],
+                                                     section='imap')
     if connection_config is None:
         return 1
     try:
@@ -54,7 +55,9 @@ def main():
     except ValueError:
         log.error('Wrong value for options "delay"')
         return 1
-    format_str = args['--format'] or u'{recent:<3} new mails in {directory} ({count} total)'
+    format_str = args['--format'] or u' '.join([
+        u'{recent:<3} new mails in ',
+        u'{directory} ({count} total)'])
 
     imap_account = imap_cli.connect(**connection_config)
 
@@ -65,10 +68,12 @@ def main():
         if time_count % delay == 0:
             notifications = []
             for status in imap_cli.status(imap_account):
-                if status['directory'] in args['<directories>'] and status['recent'] != '0':
+                if (status['directory'] in args['<directories>'] and
+                        status['recent'] != '0'):
                     notifications.append(format_str.format(**status))
             if len(notifications) > 0:
-                notifier = pynotify.Notification("IMAP Notify", u'\n'.join(notifications))
+                notifier = pynotify.Notification("IMAP Notify",
+                                                 u'\n'.join(notifications))
                 notifier.show()
         time.sleep(1)
 

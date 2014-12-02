@@ -38,7 +38,9 @@ MESSAGE_PARTS = [
     'ENVELOPE',
     'FLAGS',
     'INTERNALDATE',
-    'RFC822',   # Functionally equivalent to BODY[], differing in the syntax of the resulting untagged FETCH data.
+    'RFC822',
+    # NOTE(gentux) Functionally equivalent to BODY[], differing in the syntax
+    # of the resulting untagged FETCH data.
     'RFC822.HEADER',
     'RFC822.SIZE',
     'RFC822.TEXT',

@@ -35,7 +35,8 @@ class ImapConnectionMock(mock.Mock):
         elif request.find('UID') >= 0:
             uid_str = u'UID 1 '
 
-        imap_header = u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(flag_str=flag_str, uid_str=uid_str)
+        imap_header = u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(
+            flag_str=flag_str, uid_str=uid_str)
         return (u'OK', [(imap_header, example_email_content), ')'])
 
     def store(self, mails_id_set, request, flags):
@@ -46,8 +47,12 @@ class ImapConnectionMock(mock.Mock):
 
     def list(self, *args):
         if self.fail is True:
-            return (u'OK', [u'(\\HasNoChildren) ) "." "Directory_name"', u'(\\HasNoChildren) "." "INBOX"'])
-        return (u'OK', [u'(\\HasNoChildren) "." "Directory_name"', u'(\\HasNoChildren) "." "INBOX"'])
+            return (u'OK', [
+                u'(\\HasNoChildren) ) "." "Directory_name"',
+                u'(\\HasNoChildren) "." "INBOX"'])
+        return (u'OK', [
+            u'(\\HasNoChildren) "." "Directory_name"',
+            u'(\\HasNoChildren) "." "INBOX"'])
 
     def login(self, *args):
         return (u'OK', [u'Logged in'])
@@ -69,7 +74,8 @@ class ImapConnectionMock(mock.Mock):
         if self.fail is True:
             return (u'NO', None)
         if self.error is True:
-            return (u'OK', [u'"Directory_name"" ((MESSAGES 1 RECENT 1 UNSEEN 0)'])
+            return (u'OK',
+                    [u'"Directory_name"" ((MESSAGES 1 RECENT 1 UNSEEN 0)'])
         return (u'OK', [u'"Directory_name" (MESSAGES 1 RECENT 1 UNSEEN 0)'])
 
     def uid(self, command, *args):

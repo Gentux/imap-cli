@@ -30,11 +30,13 @@ class ImapCLITest(unittest.TestCase):
         assert imap_cli.change_dir(self.imap_account, 'INBOX') == '1'
 
     def test_connect(self):
-        self.imap_account = imap_cli.connect('hostname', 'username', 'password')
+        self.imap_account = imap_cli.connect('hostname', 'username',
+                                             'password')
         assert isinstance(self.imap_account, tests.ImapConnectionMock)
 
     def test_connect_no_ssl(self):
-        self.imap_account = imap_cli.connect('hostname', 'username', 'password', ssl=False)
+        self.imap_account = imap_cli.connect('hostname', 'username',
+                                             'password', ssl=False)
         assert isinstance(self.imap_account, tests.ImapConnectionMock)
 
     def test_wrong_change_dir(self):

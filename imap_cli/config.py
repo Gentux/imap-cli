@@ -32,7 +32,11 @@ DEFAULT_CONFIG = {
         u'Subject:    {subject}',
     ]),
     u'format_thread': u'{uid} {subject} <<< FROM {from}',
-    u'format_status': u'{directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent',
+    u'format_status': u''.join([
+        u'{directory:>20} : ',
+        u'{count:>5} Mails - ',
+        u'{unseen:>5} Unseen - ',
+        u'{recent:>5} Recent']),
 
     u'delete_method': u'MOVE_TO_TRASH',
     u'trash_directory': u'Trash',
@@ -50,8 +54,10 @@ def new_context(config=None):
     Example:
 
     >>> from imap_cli import config
-    >>> config.new_context({'hostname': 'another.imap-server.org', 'password': 'another.secret'})
-    {u'username': u'username', u'hostname': 'another.imap-server.org', u'limit': 10, u'password': 'another.secret'}
+    >>> config.new_context({'hostname': 'another.imap-server.org',
+                            'password': 'another.secret'})
+    {u'username': u'username', u'hostname': 'another.imap-server.org',
+     u'limit': 10, u'password': 'another.secret'}
     """
     if config is None:
         log.debug(u'Loading default configuration')
@@ -61,11 +67,13 @@ def new_context(config=None):
 
     return dict(
         (key, value)
-        for key, value in itertools.chain(DEFAULT_CONFIG.items(), config.items())
+        for key, value in itertools.chain(DEFAULT_CONFIG.items(),
+                                          config.items())
     )
 
 
-def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
+def new_context_from_file(config_filename=None, encoding='utf-8',
+                          section=None):
     """Open and read *config_filename* and parse configuration from it.
 
     .. versionadded:: 0.1
@@ -79,14 +87,16 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
     >>> from imap_cli import config
     >>> config_file = 'config-example.ini'
     >>> config.new_context_from_file(config_file, section='imap')
-    {'hostname': u'imap.example.org', 'password': u'secret', 'ssl': True, 'username': u'username'}
-
+    {'hostname': u'imap.example.org', 'password': u'secret', 'ssl': True,
+     'username': u'username'}
     """
     if config_filename is None:
         config_filename = const.DEFAULT_CONFIG_FILE
-    config_filename = os.path.abspath(os.path.expanduser(os.path.expandvars(config_filename)))
+    config_filename = os.path.abspath(
+        os.path.expanduser(os.path.expandvars(config_filename)))
     if not os.path.isfile(config_filename):
-        log.error(u'Configuration file \'{}\' not found.'.format(config_filename))
+        log.error(u'Configuration file \'{}\' not found.'.format(
+            config_filename))
         return None
     log.debug(u'Reading configuration file \'{}\''.format(config_filename))
 
@@ -116,18 +126,19 @@ def new_context_from_file(config_filename=None, encoding='utf-8', section=None):
         config['format_status'] = (
             config_reader.get('display', 'format_status')
             if config_reader.has_option('display', 'format_status')
-            else u'{directory}:{unseen} Unseen - {count} Mails - {recent} Recent'
+            else DEFAULT_CONFIG['format_status']
         )
 
         config['format_thread'] = (
             config_reader.get('display', 'format_thread')
             if config_reader.has_option('display', 'format_thread')
-            else u'{uid:<7} {subject} <<< FROM {from}'
+            else DEFAULT_CONFIG['format_thread']
         )
 
     if section is None or section == 'trash':
         # Account
-        config['trash_directory'] = config_reader.get('trash', 'trash_directory')
+        config['trash_directory'] = config_reader.get('trash',
+                                                      'trash_directory')
         config['delete_method'] = config_reader.get('trash', 'delete_method')
 
     return config

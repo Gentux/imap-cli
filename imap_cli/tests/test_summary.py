@@ -26,7 +26,8 @@ class FetchTest(unittest.TestCase):
         sys.argv = ['imap-cli-status', '--config-file=config-example.ini']
         assert summary.main() == 0
 
-        sys.argv = ['imap-cli-status', '--config-file=config-imaginary-file.ini']
+        sys.argv = ['imap-cli-status',
+                    '--config-file=config-imaginary-file.ini']
         assert summary.main() == 1
 
         sys.argv = ['imap-cli-status', '--format=\"{directory:>10} {unseen}\"']

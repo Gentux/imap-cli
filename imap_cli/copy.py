@@ -46,13 +46,16 @@ def copy(imap_account, message_set, destination):
         destination,
     )
     if status == const.STATUS_OK:
-        log.debug('Mails "{}" have been copied : {}'.format(request_message_set, result))
+        log.debug('Mails "{}" have been copied : {}'.format(
+            request_message_set, result))
     else:
-        log.error('Mails "{}" have NOT been copied : {}'.format(request_message_set, result))
+        log.error('Mails "{}" have NOT been copied : {}'.format(
+            request_message_set, result))
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]),
+                         version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
@@ -64,7 +67,9 @@ def main():
 
     try:
         imap_account = imap_cli.connect(**conf)
-        imap_cli.change_dir(imap_account, args['--from'] or const.DEFAULT_DIRECTORY, read_only=False)
+        imap_cli.change_dir(imap_account,
+                            args['--from'] or const.DEFAULT_DIRECTORY,
+                            read_only=False)
 
         copy(imap_account, args['<mail_id>'], args['<dest>'])
         if args['--delete']:

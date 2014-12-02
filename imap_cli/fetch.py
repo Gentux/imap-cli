@@ -6,7 +6,8 @@
 Usage: imap-cli-read [options] [<mail_uid>...]
 
 Options:
-    -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by default)
+    -c, --config-file=<FILE>    Configuration file (`~/.config/imap-cli` by
+                                default)
     -d, --directory=<DIR>       Directory in wich the search occur
     -s, --save=<DIR>            Save attachment in specified directory
     -v, --verbose               Generate verbose messages
@@ -59,11 +60,12 @@ def display(fetched_mail, browser=False):
     output = [
         u'From       : {}'.format(fetched_mail['headers']['From']),
         u'Subject    : {}'.format(fetched_mail['headers']['Subject']),
-        u'Date       : {}'.format(fetched_mail['headers']['Date']),
+        u'Date       : {}'.format(fetched_mail['headers'].get('Date')),
         u'',
-        u'\n\n'.join(displayable_parts).strip(),
-    ]
-    other_parts = [part for part in fetched_mail['parts'] if not part['content_type'].startswith('text')]
+        u'\n\n'.join(displayable_parts).strip()]
+    other_parts = [part
+                   for part in fetched_mail['parts']
+                   if not part['content_type'].startswith('text')]
     if len(other_parts) > 0:
         output.append('\nAttachment :')
         for part in other_parts:
@@ -78,11 +80,14 @@ def fetch(imap_account, message_set=None, message_parts=None):
 
     Keyword arguments:
     message_set     -- Iterable containing mails ID (integers)
-    message_parts   -- Iterable of message part names or IMAP protocoles ENVELOP string
+    message_parts   -- Iterable of message part names or IMAP protocoles
+                       ENVELOP string
 
-    Avalable message_parts are listed in const.MESSAGE_PARTS, for more information checkout RFC3501
+    Avalable message_parts are listed in const.MESSAGE_PARTS, for more
+    information checkout RFC3501
     """
-    if message_set is None or not isinstance(message_set, collections.Iterable):
+    if message_set is None or not isinstance(message_set,
+                                             collections.Iterable):
         if isinstance(message_set, int):
             message_set = [str(message_set)]
         else:
@@ -96,12 +101,15 @@ def fetch(imap_account, message_set=None, message_parts=None):
 
     request_message_set = ','.join(str(mail_id) for mail_id in message_set)
     request_message_parts = '({})'.format(' '.join(message_parts)
-                                          if isinstance(message_parts, collections.Iterable)
+                                          if isinstance(message_parts,
+                                                        collections.Iterable)
                                           else message_parts)
     if imap_account.state != 'SELECTED':
-        log.warning(u'No directory specified, selecting {}'.format(const.DEFAULT_DIRECTORY))
+        log.warning(u'No directory specified, selecting {}'.format(
+            const.DEFAULT_DIRECTORY))
         imap_cli.change_dir(imap_account, const.DEFAULT_DIRECTORY)
-    typ, data = imap_account.uid('FETCH', request_message_set, request_message_parts)
+    typ, data = imap_account.uid('FETCH',
+                                 request_message_set, request_message_parts)
     if typ == const.STATUS_OK:
         return data
 
@@ -123,7 +131,7 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
         log.error('Server didn\'t sent this email')
         yield None
     for raw_mail in raw_mails or []:
-        if raw_mail == ')':
+        if raw_mail is None or raw_mail == ')':
             continue
         mail = email.message_from_string(raw_mail[1])
 
@@ -145,20 +153,24 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
                 message_parts.append({
                     'content_type': part.get_content_type(),
                     'data': part.as_string(),
-                    'as_string': part.get_payload(decode=True).decode(charset, 'replace'),
-                })
+                    'as_string': part.get_payload(decode=True).decode(
+                        charset, 'replace')})
             elif part.get_filename():
                 message_parts.append({
                     'content_type': part.get_content_type(),
                     'filename': part.get_filename(),
                     'data': part.get_payload(decode=True),
                 })
-                if save_directory is not None and os.path.isdir(save_directory):
-                    attachment_full_filename = os.path.join(save_directory, part.get_filename())
-                    with open(attachment_full_filename, 'wb') as attachment_file:
-                        attachment_file.write(part.get_payload(decode=True))
+                if save_directory is not None and os.path.isdir(
+                        save_directory):
+                    attachment_full_filename = os.path.join(
+                        save_directory, part.get_filename())
+                    with open(attachment_full_filename, 'wb') as attachment:
+                        attachment.write(part.get_payload(decode=True))
                 elif save_directory is not None:
-                    log.error('Can\'t save attachment, directory {} does not exist'.format(save_directory))
+                    log.error(' '.join([
+                        'Can\'t save attachment, directory {}',
+                        'does not exist']).format(save_directory))
 
         yield {
             'headers': mail_headers,
@@ -167,7 +179,8 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
 
 
 def main():
-    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]), version=const.VERSION)
+    args = docopt.docopt('\n'.join(__doc__.split('\n')[2:]),
+                         version=const.VERSION)
     logging.basicConfig(
         level=logging.DEBUG if args['--verbose'] else logging.INFO,
         stream=sys.stdout,
@@ -185,8 +198,11 @@ def main():
 
     try:
         imap_account = imap_cli.connect(**conf)
-        imap_cli.change_dir(imap_account, args['--directory'] or const.DEFAULT_DIRECTORY)
-        fetched_mails = read(imap_account, args['<mail_uid>'], save_directory=args['--save'])
+        imap_cli.change_dir(imap_account,
+                            args['--directory'] or const.DEFAULT_DIRECTORY)
+        fetched_mails = read(imap_account,
+                             args['<mail_uid>'],
+                             save_directory=args['--save'])
         if fetched_mails is None:
             log.error("Mail was not fetched, an error occured")
             return 1

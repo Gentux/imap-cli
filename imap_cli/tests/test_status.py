@@ -20,7 +20,9 @@ class StatusTest(unittest.TestCase):
 
         statuses = list(imap_cli.status(self.imap_account))
         for directory_status in statuses:
-            assert directory_status == {'directory': "Directory_name", 'unseen': "0", 'count': "1", 'recent': "1"}
+            assert directory_status == {'directory': "Directory_name",
+                                        'unseen': "0",
+                                        'count': "1", 'recent': "1"}
         assert len(statuses) == 2
 
     def test_status_with_wrong_imap_call(self):
@@ -28,7 +30,9 @@ class StatusTest(unittest.TestCase):
         self.imap_account.fail = True
 
         for directory_status in imap_cli.status(self.imap_account):
-            assert directory_status == {'directory': "Directory_name", 'unseen': "0", 'count': "1", 'recent': "1"}
+            assert directory_status == {'directory': "Directory_name",
+                                        'unseen': "0", 'count': "1",
+                                        'recent': "1"}
 
     def test_status_with_error_imap_response(self):
         self.imap_account = imaplib.IMAP4_SSL()
@@ -36,5 +40,7 @@ class StatusTest(unittest.TestCase):
 
         statuses = list(imap_cli.status(self.imap_account))
         for directory_status in statuses:
-            assert directory_status == {'directory': "Directory_name", 'unseen': "0", 'count': "1", 'recent': "1"}
+            assert directory_status == {'directory': "Directory_name",
+                                        'unseen': "0", 'count': "1",
+                                        'recent': "1"}
         assert len(statuses) == 0

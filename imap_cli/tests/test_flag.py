@@ -20,7 +20,8 @@ class FlagTests(unittest.TestCase):
     def test_flag_cli_tools(self):
         const.DEFAULT_CONFIG_FILE = 'config-example.ini'
 
-        sys.argv = ['imap-cli-flag', '-c', 'config-example.ini', '1', 'testFlag']
+        sys.argv = ['imap-cli-flag', '-c', 'config-example.ini', '1',
+                    'testFlag']
         assert flag.main() == 0
 
         sys.argv = ['imap-cli-flag', '-u', '1', 'testFlag']
