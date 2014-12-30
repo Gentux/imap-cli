@@ -19,13 +19,6 @@ app_name = os.path.splitext(os.path.basename(__file__))[0]
 log = logging.getLogger(app_name)
 
 
-def truncate_string(string, length):
-    minus_than_position = string.find('<')
-    if minus_than_position > 0 and string.find('>') > minus_than_position:
-        string = string[0:minus_than_position]
-    return string if len(string) < length else u'{0}…'.format(string[0:length])
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('imap_server', help="IMAP Server hostname")
@@ -62,11 +55,14 @@ def main():
 
                 for mail_info in search.fetch_mails_info(imap_account,
                                                          mail_set=mail_set):
-                    sys.stdout.write(
-                        u'    {:<10} From : {:<30} \tSubject : {}\n'.format(
-                            mail_info['uid'],
-                            truncate_string(mail_info['from'], 30),
-                            truncate_string(mail_info['subject'], 50)))
+                    format_string = ''.join([
+                        u'    {:<10} ',
+                        u'From : {:<30.30} \t',
+                        u'Subject : {:.50}\n'])
+                    sys.stdout.write(format_string.format(
+                        mail_info['uid'],
+                        mail_info['from'],
+                        mail_info['subject']))
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:
         log.info('Interrupt by user, exiting')

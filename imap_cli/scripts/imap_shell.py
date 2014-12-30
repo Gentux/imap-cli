@@ -104,10 +104,10 @@ class ImapShell(cmd.Cmd):
         for mail_info in search.fetch_mails_info(self.imap_account,
                                                  limit=limit):
             sys.stdout.write(
-                u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
+                u'UID : {:<10} From : {:<40.40} Subject : {:.50}\n'.format(
                     mail_info['uid'],
-                    truncate_string(mail_info['from'], 33),
-                    truncate_string(mail_info['subject'], 50)))
+                    mail_info['from'],
+                    mail_info['subject']))
 
     def do_mv(self, arg):
         '''Move mail from one mailbox to another.'''
@@ -214,10 +214,10 @@ class ImapShell(cmd.Cmd):
         for mail_info in search.fetch_mails_info(self.imap_account,
                                                  mail_set=mail_set):
             sys.stdout.write(
-                u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
+                u'UID : {:<10} From : {:<40.40} Subject : {:.50}\n'.format(
                     mail_info['uid'],
-                    truncate_string(mail_info['from'], 33),
-                    truncate_string(mail_info['subject'], 50)))
+                    mail_info['from'],
+                    mail_info['subject']))
 
     def do_status(self, arg):
         'Print status of all IMAP folder in this account'
@@ -242,10 +242,10 @@ class ImapShell(cmd.Cmd):
             for mail_info in search.fetch_mails_info(self.imap_account,
                                                      mail_set=mail_set):
                 sys.stdout.write(
-                    u'UID : {:<10} From : {:<40} Subject : {}\n'.format(
+                    u'UID : {:<10} From : {:<40.40} Subject : {:.50}\n'.format(
                         mail_info['uid'],
-                        truncate_string(mail_info['from'], 33),
-                        truncate_string(mail_info['subject'], 50)))
+                        mail_info['from'],
+                        mail_info['subject']))
 
     def emptyline(self):
         pass
@@ -260,13 +260,6 @@ def keep_alive(imap_account):
             imap_account.noop()
         time.sleep(1)
     log.debug('Keep alive thread terminated')
-
-
-def truncate_string(string, length):
-    minus_than_position = string.find('<')
-    if minus_than_position > 0 and string.find('>') > minus_than_position:
-        string = string[0:minus_than_position]
-    return string if len(string) < length else u'{0}…'.format(string[0:length])
 
 
 def main():
