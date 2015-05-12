@@ -41,7 +41,6 @@ setuptools.setup(
     install_requires=[
         "docopts>=0.6",
         "mock>=1.0.1",
-        "pyimap4utf7",
     ],
     keywords="imap cli high level",
     license="MIT License",

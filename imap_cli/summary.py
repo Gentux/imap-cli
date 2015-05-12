@@ -26,6 +26,7 @@ import logging
 import sys
 
 import docopt
+import six
 
 import imap_cli
 from imap_cli import config
@@ -51,7 +52,7 @@ def main():
         display_conf = config.new_context_from_file(args['--config-file'],
                                                     section='display')
         if args['--format'] is not None:
-            display_conf['format_status'] = args['--format']
+            display_conf['format_status'] = six.text_type(args['--format'])
 
         imap_account = imap_cli.connect(**connect_conf)
         for directory_status in sorted(imap_cli.status(imap_account),
