@@ -47,11 +47,13 @@ class ImapConnectionMock(mock.Mock):
 
     def list(self, *args):
         if self.fail is True:
-            return (u'OK', [
-                u'(\\HasNoChildren) ) "." "Directory_name"',
+            return (u'OK', [(
+                u'(\\HasNoChildren) ) "." '
+                u'"&A5Q-i&A8A-ect&API-r&AP8-_&APEA5A-m&AOk-"'),
                 u'(\\HasNoChildren) "." "INBOX"'])
-        return (u'OK', [
-            u'(\\HasNoChildren) "." "Directory_name"',
+        return (u'OK', [(
+            u'(\\HasNoChildren) "." '
+            u'"&A5Q-i&A8A-ect&API-r&AP8-_&APEA5A-m&AOk-"'),
             u'(\\HasNoChildren) "." "INBOX"'])
 
     def login(self, *args):
@@ -61,7 +63,7 @@ class ImapConnectionMock(mock.Mock):
         self.state = 'LOGOUT'
 
     def select(self, *args):
-        if args[0] not in ['INBOX', 'Test', 'Directory_name']:
+        if args[0] not in ['INBOX', 'Test', u'Δiπectòrÿ_ñämé']:
             self.state = 'LOGOUT'
             return (u'NO', None)
         self.state = 'SELECTED'
@@ -74,9 +76,10 @@ class ImapConnectionMock(mock.Mock):
         if self.fail is True:
             return (u'NO', None)
         if self.error is True:
-            return (u'OK',
-                    [u'"Directory_name"" ((MESSAGES 1 RECENT 1 UNSEEN 0)'])
-        return (u'OK', [u'"Directory_name" (MESSAGES 1 RECENT 1 UNSEEN 0)'])
+            return (u'OK', [(u'"&A5Q-i&A8A-ect&API-r&AP8-_&APEA5A-m&AOk-" '
+                             u'((MESSAGES 1 RECENT 1 UNSEEN 0)')])
+        return (u'OK', [(u'"&A5Q-i&A8A-ect&API-r&AP8-_&APEA5A-m&AOk-" '
+                         u'(MESSAGES 1 RECENT 1 UNSEEN 0)')])
 
     def uid(self, command, *args):
         command_upper = command.upper()
