@@ -8,6 +8,8 @@ import imaplib
 import logging
 import re
 
+import pyimap4utf7
+
 from imap_cli import const
 
 
@@ -132,7 +134,7 @@ def status(imap_account):
             continue
         group_dict = status_match.groupdict()
         yield {
-            'directory': group_dict['directory'],
+            'directory': pyimap4utf7.decode(group_dict['directory']),
             'unseen': group_dict['mail_unseen'],
             'count': group_dict['mail_count'],
             'recent': group_dict['mail_recent'],
