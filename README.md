@@ -1,5 +1,4 @@
-Imap-CLI
-========
+# Imap-CLI
 
 [![Build Status](https://travis-ci.org/Gentux/imap-cli.svg?branch=master)](https://travis-ci.org/Gentux/imap-cli)
 [![Documentation Status](https://readthedocs.org/projects/imap-cli/badge/?version=master)](https://readthedocs.org/projects/imap-cli/?badge=master)
