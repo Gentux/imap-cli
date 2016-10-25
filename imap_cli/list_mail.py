@@ -15,7 +15,11 @@ Options:
     -h, --help                  Show help options.
     --version                   Print program version.
 
-----
+    Format of the format string <FMT>
+        The follwing placeholders are replaced by their values:
+        {uid}, {flags}, {from}, {to}, {date}, {subject}
+
+---
 imap-cli-list 0.6
 Copyright (C) 2014 Romain Soufflet
 License MIT
