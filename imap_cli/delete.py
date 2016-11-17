@@ -7,7 +7,7 @@ Usage: imap-cli-delete [options] <mail_id>...
 
 Options:
     -c, --config-file=<FILE>    Configuration file
-    -d, --directory             Specify a Mailbox
+    -d, --directory MAILBOX     Specify a Mailbox
     -v, --verbose               Generate verbose messages
     -h, --help                  Show help options.
     --version                   Print program version.
