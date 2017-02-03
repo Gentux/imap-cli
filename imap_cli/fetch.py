@@ -42,39 +42,45 @@ log = logging.getLogger(app_name)
 
 
 def display(fetched_mail, browser=False):
-    displayable_parts = list([
-        part.get('as_string')
-        for part in fetched_mail['parts']
-        if part['content_type'] == 'text/plain'
-    ])
+    parts = list()  
+    displayable_parts = list()
+    other_parts = list()
+    headers = dict()
+    
+    for i in fetched_mail:
+        headers = i['headers']
+        parts = i['parts']
+
+    for part in parts:
+        if part['content_type'] == 'text/plain':
+            displayable_parts.append(part.get('as_string'))
+        elif not part['content_type'].startswith('text'):
+            other_parts.append(part)
+            
     if len(displayable_parts) == 0:
-        displayable_parts = list([
-            part.get('as_string')
-            for part in fetched_mail['parts']
-            if part['content_type'].startswith('text')
-        ])
-
-    if browser is True:
-        return u'<br><br>'.join(displayable_parts).strip()
-
+        for part in parts:
+            if part['content_type'].startswith('text'):
+                displayable_parts.append(part.get('as_string'))
+              
+    if browser:
+        return u'<br><br>'.join(displayable_parts).strip() 
+        
     output = [
-        u'From       : {}'.format(fetched_mail['headers']['From']),
-        u'Subject    : {}'.format(fetched_mail['headers']['Subject']),
-        u'Date       : {}'.format(fetched_mail['headers'].get('Date')),
+        u'From       : {}'.format(headers['From']),
+        u'Subject    : {}'.format(headers['Subject']),
+        u'Date       : {}'.format(headers.get('Date')),
         u'',
         u'\n\n'.join(displayable_parts).strip()]
-    other_parts = [part
-                   for part in fetched_mail['parts']
-                   if not part['content_type'].startswith('text')]
+        
     if len(other_parts) > 0:
-        output.append('\nAttachment :')
+        output.append('\nAttachment:')
         for part in other_parts:
-            if part.get('filename'):
-                output.append('    {}'.format(part.get('filename')))
-
-    return u'{}\n'.format(u'\n'.join(output))
-
-
+            if part['filename']:
+                output.append('    {}'.format(part['filename'])) 
+    
+    return u'{}\n'.format(u'\n'.join(output)).encode(sys.stdout.encoding, errors='replace')
+	
+	
 def fetch(imap_account, message_set=None, message_parts=None):
     """Return mails corresponding to mails_id.
 
@@ -83,7 +89,7 @@ def fetch(imap_account, message_set=None, message_parts=None):
     message_parts   -- Iterable of message part names or IMAP protocoles
                        ENVELOP string
 
-    Avalable message_parts are listed in const.MESSAGE_PARTS, for more
+    Available message_parts are listed in const.MESSAGE_PARTS, for more
     information checkout RFC3501
     """
     if message_set is None or not isinstance(message_set,
@@ -126,6 +132,8 @@ def get_charset(message, default="ascii"):
 
 def read(imap_account, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
+    if not isinstance(mail_uid,list):
+        mail_uid = [mail_uid]
     raw_mails = fetch(imap_account, mail_uid)
     if raw_mails is None:
         log.error('Server didn\'t sent this email')
