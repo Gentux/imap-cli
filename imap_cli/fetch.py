@@ -47,9 +47,9 @@ def display(fetched_mail, browser=False):
     other_parts = list()
     headers = dict()
     
-    for i in fetched_mail:
-        headers = i['headers']
-        parts = i['parts']
+    msg = feched_mail.next()
+    headers = msg['headers']
+    parts = msg['parts']
 
     for part in parts:
         if part['content_type'] == 'text/plain':
