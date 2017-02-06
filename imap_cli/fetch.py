@@ -47,7 +47,7 @@ def display(fetched_mail, browser=False):
     other_parts = list()
     headers = dict()
     
-    msg = feched_mail.next()
+    msg = fetched_mail.next()
     headers = msg['headers']
     parts = msg['parts']
 
