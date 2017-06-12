@@ -8,6 +8,7 @@ import codecs
 import itertools
 import logging
 import os
+import getpass
 
 from six.moves import configparser
 
@@ -108,7 +109,12 @@ def new_context_from_file(config_filename=None, encoding='utf-8',
     if section is None or section == 'imap':
         # Account
         config['username'] = config_reader.get('imap', 'username')
-        config['password'] = config_reader.get('imap', 'password')
+
+        try:
+            config['password'] = config_reader.get('imap', 'password')
+        except configparser.NoOptionError:
+            config['password'] = getpass.getpass()
+
         config['hostname'] = config_reader.get('imap', 'hostname')
         config['ssl'] = config_reader.getboolean('imap', 'ssl')
 
