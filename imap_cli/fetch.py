@@ -78,9 +78,7 @@ def display(fetched_mail, browser=False):
             if part['filename']:
                 output.append('    {}'.format(part['filename']))
 
-    return u'{}\n'.format(u'\n'.join(output)).encode(
-        sys.stdout.encoding,
-        errors='replace')
+    return u'{}\n'.format(u'\n'.join(output))
 
 
 def fetch(imap_account, message_set=None, message_parts=None):
