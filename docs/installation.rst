@@ -15,7 +15,7 @@ Or install it from its source code::
 This installation will provide command line tools allowing you to do simple task an IMAP account::
 
 * imap-api: Provide a simple REST API to access your mailbox information
-* imap-cli-status: List directories and display count of mail *seen*, *unseen* and *recent* [#f1]_
+* imap-cli-status: List directories and display count of mail *seen*, *unseen* and *recent*
 * imap-cli-list: List mail in specified directory
 * imap-cli-search: Search throug specified directory for tag or plain text
 * imap-cli-read: Display a mail on standard output
@@ -48,6 +48,3 @@ The last script included in source code is **imapcli_bash_completion.sh**. This 
     source ~/.bashrc
 
 And then, autocompletion will be available.
-
-
-.. [#f1] *seen*, *unseen* and *recent* are special tags defined in IMAP's RFC
