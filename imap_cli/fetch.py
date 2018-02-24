@@ -42,11 +42,11 @@ log = logging.getLogger(app_name)
 
 
 def display(fetched_mail, browser=False):
-    parts = list()  
+    parts = list()
     displayable_parts = list()
     other_parts = list()
     headers = dict()
-    
+
     msg = fetched_mail.next()
     headers = msg['headers']
     parts = msg['parts']
@@ -56,31 +56,33 @@ def display(fetched_mail, browser=False):
             displayable_parts.append(part.get('as_string'))
         elif not part['content_type'].startswith('text'):
             other_parts.append(part)
-            
+
     if len(displayable_parts) == 0:
         for part in parts:
             if part['content_type'].startswith('text'):
                 displayable_parts.append(part.get('as_string'))
-              
+
     if browser:
-        return u'<br><br>'.join(displayable_parts).strip() 
-        
+        return u'<br><br>'.join(displayable_parts).strip()
+
     output = [
         u'From       : {}'.format(headers['From']),
         u'Subject    : {}'.format(headers['Subject']),
         u'Date       : {}'.format(headers.get('Date')),
         u'',
         u'\n\n'.join(displayable_parts).strip()]
-        
+
     if len(other_parts) > 0:
         output.append('\nAttachment:')
         for part in other_parts:
             if part['filename']:
-                output.append('    {}'.format(part['filename'])) 
-    
-    return u'{}\n'.format(u'\n'.join(output)).encode(sys.stdout.encoding, errors='replace')
-	
-	
+                output.append('    {}'.format(part['filename']))
+
+    return u'{}\n'.format(u'\n'.join(output)).encode(
+        sys.stdout.encoding,
+        errors='replace')
+
+
 def fetch(imap_account, message_set=None, message_parts=None):
     """Return mails corresponding to mails_id.
 
@@ -132,7 +134,7 @@ def get_charset(message, default="ascii"):
 
 def read(imap_account, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
-    if not isinstance(mail_uid,list):
+    if not isinstance(mail_uid, list):
         mail_uid = [mail_uid]
     raw_mails = fetch(imap_account, mail_uid)
     if raw_mails is None:
