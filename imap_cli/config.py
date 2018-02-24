@@ -5,10 +5,10 @@
 
 
 import codecs
+import getpass
 import itertools
 import logging
 import os
-import getpass
 
 from six.moves import configparser
 
