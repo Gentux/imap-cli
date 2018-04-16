@@ -20,6 +20,24 @@ You can read about my initial motivation to write this software
 
 A presentation of Imap-CLI is available [here](http://gentux.github.io/imap-cli/)
 
+## Example
+
+```
+$ imapcli search INBOX -a Caroline
+8465:         Caroline Chemin <xxx@gmail.com> atelier dégustation, école du thé
+9108:         Caroline Chemin <xxx@gmail.com> nouveau salon de thé
+```
+
+```
+$ imapcli read 8465
+From       : Caroline Chemin <xxx@gmail.com>
+Subject    : atelier dégustation, école du thé
+Date       : Mon, 12 Feb 2018 17:47:19 +0100
+
+ça t'intéresserais ?
+
+http://www.lautrethe.com/accords-the-et-fromage-22-03-2018.htm
+```
 
 ## Quickstart ##
 
