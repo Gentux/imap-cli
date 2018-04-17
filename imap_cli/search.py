@@ -386,8 +386,12 @@ def parse_thread_response(thread_string):
     """
     # FIXME(rsoufflet) Not sure the use of "ast" module is the right solution.
     # Any ideas are welcome here
-    return ast.literal_eval('[{}]'.format(thread_string.replace(
-        ' ', ', ').replace('(', '[').replace(')', '], ')))
+    return ast.literal_eval('[{}]'.format(
+        thread_string
+        .decode('utf-8')
+        .replace(' ', ', ')
+        .replace('(', '[')
+        .replace(')', '], ')))
 
 
 def threads_to_mail_set(threads):

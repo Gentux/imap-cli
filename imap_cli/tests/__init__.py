@@ -93,4 +93,4 @@ class ImapConnectionMock(mock.Mock):
             return self.thread(*args)
 
     def thread(self, *args):
-        return (u'OK', [u'((1)(2))(3 4)'])
+        return ('OK', [b'((1)(2))(3 4)'])
