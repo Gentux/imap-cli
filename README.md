@@ -18,7 +18,7 @@ library:
 You can read about my initial motivation to write this software
 [here](http://romain.soufflet.io/bash/2014/07/11/Mail-Mail-and-mail-again-my-head-will-explode.html).
 
-A presentation of Imap-CLI is available [here](http://gentux.github.io/imap-cli/)
+A presentation of Imap-CLI is available [here](http://imap-cli.readthedocs.io/en/latest/)
 
 ## Example
 
