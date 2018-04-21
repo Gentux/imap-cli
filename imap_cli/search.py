@@ -365,8 +365,11 @@ def fetch_uids(imap_account, charset=None, limit=None, search_criterion=None):
             const.DEFAULT_DIRECTORY))
         imap_cli.change_dir(imap_account, const.DEFAULT_DIRECTORY)
 
-    status, data = imap_account.uid('SEARCH', charset,
-                                    request_search_criterion)
+    status, data_bytes = imap_account.uid(
+        'SEARCH',
+        charset,
+        request_search_criterion)
+    data = [data_bytes[0].decode('utf-8')]
     if status == const.STATUS_OK:
         return data[0].split() if limit is None else data[0].split()[-limit:]
 

@@ -4,10 +4,12 @@
 """Imaplib IMAP4_SSL mocking class"""
 
 
+from builtins import bytes
+
 import mock
 
 
-example_email_content = u'\r\n'.join([
+example_email_content_unicode = u'\r\n'.join([
     u'From: exampleFrom <example@from.org>',
     u'Date: Tue, 03 Jan 1989 09:42:34 +0200',
     u'Subject: Mocking IMAP Protocols',
@@ -18,6 +20,7 @@ example_email_content = u'\r\n'.join([
     u'',
     u'EMAIL BODY CONTENT',
 ])
+example_email_content = bytes(example_email_content_unicode, 'utf-8')
 
 
 class ImapConnectionMock(mock.Mock):
@@ -35,9 +38,12 @@ class ImapConnectionMock(mock.Mock):
         elif request.find('UID') >= 0:
             uid_str = u'UID 1 '
 
-        imap_header = u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(
-            flag_str=flag_str, uid_str=uid_str)
-        return (u'OK', [(imap_header, example_email_content), ')'])
+        imap_header = bytes(
+            u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(
+                flag_str=flag_str,
+                uid_str=uid_str),
+            'utf-8')
+        return (u'OK', [(imap_header, example_email_content, b')')])
 
     def store(self, mails_id_set, request, flags):
         flags = [u'\\\\Answered', u'\\\\Seen', 'NonJunk']
@@ -70,7 +76,7 @@ class ImapConnectionMock(mock.Mock):
         return (u'OK', [u'1'])
 
     def search(self, *args):
-        return (u'OK', [u'1'])
+        return (u'OK', [bytes(u'1', 'utf-8')])
 
     def status(self, *args):
         if self.fail is True:
