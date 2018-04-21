@@ -42,7 +42,6 @@ log = logging.getLogger(app_name)
 
 
 def display(fetched_mail, browser=False):
-    parts = list()
     displayable_parts = list()
     other_parts = list()
 
@@ -109,8 +108,18 @@ def fetch(imap_account, message_set=None, message_parts=None):
         log.warning(u'No directory specified, selecting {}'.format(
             const.DEFAULT_DIRECTORY))
         imap_cli.change_dir(imap_account, const.DEFAULT_DIRECTORY)
-    typ, data = imap_account.uid('FETCH',
-                                 request_message_set, request_message_parts)
+    typ, data_bytes = imap_account.uid(
+        'FETCH',
+        request_message_set, request_message_parts)
+    data = []
+    for mail in data_bytes:
+        if len(mail) == 1:
+            continue
+        mail_parts = []
+        for mail_part in mail:
+            mail_parts.append(mail_part.decode('utf-8'))
+        data.append(mail_parts)
+
     if typ == const.STATUS_OK:
         return data
 
@@ -136,7 +145,7 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
     for raw_mail in raw_mails or []:
         if raw_mail is None or len(raw_mail) == 1:
             continue
-        mail = email.message_from_string(raw_mail[1].decode('utf-8'))
+        mail = email.message_from_string(raw_mail[1])
 
         mail_headers = {}
         for header_name, header_value in mail.items():

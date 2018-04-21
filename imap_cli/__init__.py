@@ -85,7 +85,8 @@ def disconnect(imap_account):
 
 
 def list_dir(imap_account):
-    status, data = imap_account.list()
+    status, data_bytes = imap_account.list()
+    data = [data_byte.decode('utf-8') for data_byte in data_bytes]
     if status == const.STATUS_OK:
         for datum in data:
             datum_match = LIST_DIR_RE.match(datum)
