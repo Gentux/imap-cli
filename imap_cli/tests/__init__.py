@@ -52,15 +52,19 @@ class ImapConnectionMock(mock.Mock):
         return (u'OK', [u'1 (UID 1 FLAGS ({}))'.format(' '.join(flags))])
 
     def list(self, *args):
+        wrong_chars_mailbox = bytes(
+            u' '.join([
+                u'(\\HasNoChildren)',
+                u'"."',
+                u'"&A5Q-i&A8A-ect&API-r&AP8-_&APEA5A-m&AOk-"']),
+            'utf-8')
         if self.fail is True:
-            return (u'OK', [(
-                u'(\\HasNoChildren) ) "." '
-                u'"&A5Q-i&A8A-ect&API-r&AP8-_&APEA5A-m&AOk-"'),
-                u'(\\HasNoChildren) "." "INBOX"'])
-        return (u'OK', [(
-            u'(\\HasNoChildren) "." '
-            u'"&A5Q-i&A8A-ect&API-r&AP8-_&APEA5A-m&AOk-"'),
-            u'(\\HasNoChildren) "." "INBOX"'])
+            return (u'OK', [
+                wrong_chars_mailbox,
+                bytes(u'(\\HasNoChildren) "." "INBOX"', 'utf-8')])
+        return (u'OK', [
+            wrong_chars_mailbox,
+            bytes(u'(\\HasNoChildren) "." "INBOX"', 'utf-8')])
 
     def login(self, *args):
         return (u'OK', [u'Logged in'])
