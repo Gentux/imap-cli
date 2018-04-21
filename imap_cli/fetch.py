@@ -108,8 +108,18 @@ def fetch(imap_account, message_set=None, message_parts=None):
         log.warning(u'No directory specified, selecting {}'.format(
             const.DEFAULT_DIRECTORY))
         imap_cli.change_dir(imap_account, const.DEFAULT_DIRECTORY)
-    typ, data = imap_account.uid('FETCH',
-                                 request_message_set, request_message_parts)
+    typ, data_bytes = imap_account.uid(
+        'FETCH',
+        request_message_set, request_message_parts)
+    data = []
+    for mail in data_bytes:
+        if len(mail) == 1:
+            continue
+        mail_parts = []
+        for mail_part in mail:
+            mail_parts.append(mail_part.decode('utf-8'))
+        data.append(mail_parts)
+
     if typ == const.STATUS_OK:
         return data
 
