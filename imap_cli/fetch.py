@@ -42,19 +42,21 @@ log = logging.getLogger(app_name)
 
 
 def display(fetched_mail, browser=False):
-    displayable_parts = list([
-        part.get('as_string')
-        for part in fetched_mail['parts']
-        if part['content_type'] == 'text/plain'
-    ])
-    if len(displayable_parts) == 0:
-        displayable_parts = list([
-            part.get('as_string')
-            for part in fetched_mail['parts']
-            if part['content_type'].startswith('text')
-        ])
+    displayable_parts = list()
+    other_parts = list()
 
-    if browser is True:
+    for part in fetched_mail['parts']:
+        if part['content_type'] == 'text/plain':
+            displayable_parts.append(part.get('as_string'))
+        elif not part['content_type'].startswith('text'):
+            other_parts.append(part)
+
+    if len(displayable_parts) == 0:
+        for part in fetched_mail['parts']:
+            if part['content_type'].startswith('text'):
+                displayable_parts.append(part.get('as_string'))
+
+    if browser:
         return u'<br><br>'.join(displayable_parts).strip()
 
     output = [
@@ -63,14 +65,12 @@ def display(fetched_mail, browser=False):
         u'Date       : {}'.format(fetched_mail['headers'].get('Date')),
         u'',
         u'\n\n'.join(displayable_parts).strip()]
-    other_parts = [part
-                   for part in fetched_mail['parts']
-                   if not part['content_type'].startswith('text')]
+
     if len(other_parts) > 0:
-        output.append('\nAttachment :')
+        output.append('\nAttachment:')
         for part in other_parts:
-            if part.get('filename'):
-                output.append('    {}'.format(part.get('filename')))
+            if part['filename']:
+                output.append('    {}'.format(part['filename']))
 
     return u'{}\n'.format(u'\n'.join(output))
 
@@ -83,7 +83,7 @@ def fetch(imap_account, message_set=None, message_parts=None):
     message_parts   -- Iterable of message part names or IMAP protocoles
                        ENVELOP string
 
-    Avalable message_parts are listed in const.MESSAGE_PARTS, for more
+    Available message_parts are listed in const.MESSAGE_PARTS, for more
     information checkout RFC3501
     """
     if message_set is None or not isinstance(message_set,
@@ -136,12 +136,14 @@ def get_charset(message, default="ascii"):
 
 def read(imap_account, mail_uid, directory=None, save_directory=None):
     """Return mail information within a dict."""
+    if not isinstance(mail_uid, list):
+        mail_uid = [mail_uid]
     raw_mails = fetch(imap_account, mail_uid)
     if raw_mails is None:
         log.error('Server didn\'t sent this email')
         yield None
     for raw_mail in raw_mails or []:
-        if raw_mail is None or raw_mail == ')':
+        if raw_mail is None or len(raw_mail) == 1:
             continue
         mail = email.message_from_string(raw_mail[1])
 
