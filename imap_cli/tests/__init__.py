@@ -35,8 +35,8 @@ class ImapConnectionMock(mock.Mock):
         elif request.find('UID') >= 0:
             uid_str = u'UID 1 '
 
-        imap_header = u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(
-            flag_str=flag_str, uid_str=uid_str)
+        imap_header = bytes(u'1 ({uid_str}{flag_str}BODY[HEADER] {{1621}}'.format(
+            flag_str=flag_str, uid_str=uid_str), 'utf-8')
         return (u'OK', [(imap_header, example_email_content), ')'])
 
     def store(self, mails_id_set, request, flags):

@@ -45,20 +45,15 @@ def display(fetched_mail, browser=False):
     parts = list()
     displayable_parts = list()
     other_parts = list()
-    headers = dict()
 
-    msg = fetched_mail.next()
-    headers = msg['headers']
-    parts = msg['parts']
-
-    for part in parts:
+    for part in fetched_mail['parts']:
         if part['content_type'] == 'text/plain':
             displayable_parts.append(part.get('as_string'))
         elif not part['content_type'].startswith('text'):
             other_parts.append(part)
 
     if len(displayable_parts) == 0:
-        for part in parts:
+        for part in fetched_mail['parts']:
             if part['content_type'].startswith('text'):
                 displayable_parts.append(part.get('as_string'))
 
@@ -66,9 +61,9 @@ def display(fetched_mail, browser=False):
         return u'<br><br>'.join(displayable_parts).strip()
 
     output = [
-        u'From       : {}'.format(headers['From']),
-        u'Subject    : {}'.format(headers['Subject']),
-        u'Date       : {}'.format(headers.get('Date')),
+        u'From       : {}'.format(fetched_mail['headers']['From']),
+        u'Subject    : {}'.format(fetched_mail['headers']['Subject']),
+        u'Date       : {}'.format(fetched_mail['headers'].get('Date')),
         u'',
         u'\n\n'.join(displayable_parts).strip()]
 
@@ -139,9 +134,9 @@ def read(imap_account, mail_uid, directory=None, save_directory=None):
         log.error('Server didn\'t sent this email')
         yield None
     for raw_mail in raw_mails or []:
-        if raw_mail is None or raw_mail == ')':
+        if raw_mail is None or len(raw_mail) == 1:
             continue
-        mail = email.message_from_string(raw_mail[1])
+        mail = email.message_from_string(raw_mail[1].decode('utf-8'))
 
         mail_headers = {}
         for header_name, header_value in mail.items():
