@@ -1,7 +1,7 @@
 Roadmap
 =======
 
-The actual version of Imap-CLI is 0.6.
+The actual version of Imap-CLI is 0.7.
 
 Impa-CLI aims to map all IMAP protocols functionnality within a simple python API, and points in development are listed
 below
@@ -38,10 +38,16 @@ v0.5
 * List mail by thread
 * Display threads
 
-v0.6 (current)
---------------
+v0.6
+----
 
 * Clean up and complete documentation
 * Clean up code
 * Test coverage > 90%
 * Copy, Move and Delete methods
+
+v0.7 (current)
+--------------
+
+* Python 3 supported
+* Clean up code

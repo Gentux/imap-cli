@@ -1,3 +1,7 @@
+v0.7, 04-21-2018 --
+    Fix issues
+    Get more contributors
+
 v0.6, 09-22-2014 --
     Clean up and complete documentation
     Clean up code
