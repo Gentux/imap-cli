@@ -60,6 +60,21 @@ If you want to add a minimal autocompletion, you can copy **imapcli_bash_complet
 
 If you want to benefit from the wrapper script described below, copy the script `imapcli` in your PATH
 
+## Quickstart (using Docker)
+
+Pull imap-cli image:
+
+```
+docker pull gentux/imap-cli
+```
+
+As the first `quickstart` section, you'll need to configure imap-cli.
+
+```
+alias imap-cli="docker run -v ${HOME}/.config/imap-cli:/root/.config/imap-cli -t gentux/imap-cli imap-cli
+```
+
+And voilà, you can use imap-cli without installing or bothering with python.
 
 ## Usage CLI ##
 
