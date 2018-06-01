@@ -110,10 +110,26 @@ def new_context_from_file(config_filename=None, encoding='utf-8',
         # Account
         config['username'] = config_reader.get('imap', 'username')
 
-        try:
-            config['password'] = config_reader.get('imap', 'password')
-        except configparser.NoOptionError:
-            config['password'] = getpass.getpass()
+        config['sasl_auth'] = (
+            config_reader.get('imap', 'sasl_auth')
+            if config_reader.has_option('imap', 'sasl_auth')
+            else None
+        )
+
+        if config['sasl_auth']:
+            config['sasl_ir'] = (
+                const.SASL_XOAUTH2_IR.format(config['username'],
+                                             config_reader.get('imap',
+                                                               'access_token'))
+                if config['sasl_auth'] == 'XOAUTH2' and
+                config_reader.has_option('imap', 'access_token')
+                else config_reader.get('imap', 'sasl_ir')
+            )
+        else:
+            try:
+                config['password'] = config_reader.get('imap', 'password')
+            except configparser.NoOptionError:
+                config['password'] = getpass.getpass()
 
         config['hostname'] = config_reader.get('imap', 'hostname')
         config['ssl'] = config_reader.getboolean('imap', 'ssl')
