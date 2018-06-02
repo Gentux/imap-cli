@@ -72,9 +72,9 @@ class SASLAuthConfigTest(unittest.TestCase):
         self.config_file.write('username = username\n')
         self.config_file.write('ssl = True\n')
 
-    def test_xoauth2_with_access_token(self):
+    def test_xoauth2_with_bearer_access_token(self):
         self.config_file.write('sasl_auth = XOAUTH2\n')
-        self.config_file.write('access_token = 12345abcde\n')
+        self.config_file.write('bearer_access_token = 12345abcde\n')
         self.config_file.seek(SEEK_SET, 0)
 
         self.conf = config.new_context_from_file(self.config_file.name,
@@ -87,7 +87,7 @@ class SASLAuthConfigTest(unittest.TestCase):
 
     def test_xoauth2_with_initial_response(self):
         self.config_file.write('sasl_auth = XOAUTH2\n')
-        self.config_file.write('sasl_ir = 12345abcde\n')
+        self.config_file.write('sasl_ir = 12345abcde\x01\n')
         self.config_file.seek(SEEK_SET, 0)
 
         self.conf = config.new_context_from_file(self.config_file.name,
@@ -95,7 +95,7 @@ class SASLAuthConfigTest(unittest.TestCase):
         assert self.conf['hostname'] == 'imap.example.org'
         assert self.conf['username'] == 'username'
         assert self.conf['sasl_auth'] == 'XOAUTH2'
-        assert self.conf['sasl_ir'] == '12345abcde'
+        assert self.conf['sasl_ir'] == '12345abcde\x01'
 
     def test_other_sasl_auth_with_initial_response(self):
         self.config_file.write('sasl_auth = OAUTHBEARER\n')

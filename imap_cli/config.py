@@ -119,10 +119,11 @@ def new_context_from_file(config_filename=None, encoding='utf-8',
         if config['sasl_auth']:
             config['sasl_ir'] = (
                 const.SASL_XOAUTH2_IR.format(config['username'],
-                                             config_reader.get('imap',
-                                                               'access_token'))
+                                             config_reader
+                                             .get('imap',
+                                                  'bearer_access_token'))
                 if config['sasl_auth'] == 'XOAUTH2' and
-                config_reader.has_option('imap', 'access_token')
+                config_reader.has_option('imap', 'bearer_access_token')
                 else config_reader.get('imap', 'sasl_ir')
             )
         else:
