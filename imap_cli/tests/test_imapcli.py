@@ -39,6 +39,12 @@ class ImapCLITest(unittest.TestCase):
                                              'password', ssl=False)
         assert isinstance(self.imap_account, tests.ImapConnectionMock)
 
+    def test_connect_sasl_auth(self):
+        self.imap_account = imap_cli.connect('hostname', 'username',
+                                             sasl_auth='XOAUTH2',
+                                             sasl_ir='12345abcde')
+        assert isinstance(self.imap_account, tests.ImapConnectionMock)
+
     def test_wrong_change_dir(self):
         self.imap_account = imaplib.IMAP4_SSL()
         self.imap_account.login()
