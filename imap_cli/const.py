@@ -85,6 +85,9 @@ SEARH_CRITERION = [
     'UNSEEN',
 ]
 
+# This SASL XOAUTH2 initial client response is documented in the Gmail API
+# https://developers.google.com/gmail/imap/xoauth2-protocol#initial_client_response
+SASL_XOAUTH2_IR = 'user={}\x01auth=Bearer {}\x01\x01'
 
 # CLI Constant
 DEFAULT_CONFIG_FILE = '~/.config/imap-cli'
