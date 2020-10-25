@@ -113,7 +113,7 @@ And voilà, you can use imap-cli without installing or bothering with python.
 
 ## Usage Python API ##
 
-This is work in progress, so API migth change. Python API aims to be as complete as possible to ease the creation of
+This is work in progress, so API might change. Python API aims to be as complete as possible to ease the creation of
 API, caching system and clients. You can find example in `examples` directory.
 
     import imap_cli
