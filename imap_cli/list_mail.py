@@ -79,7 +79,7 @@ def main():
             for mail_info in search.fetch_mails_info(imap_account,
                                                      limit=limit):
                 sys.stdout.write(
-                    display_conf['format_list'].format(**mail_info))
+                    display_conf['format_list'].format(**mail_info).encode('UTF-8'))
                 sys.stdout.write('\n')
         else:
             threads = search.fetch_threads(imap_account, limit=limit)
@@ -88,7 +88,7 @@ def main():
                     imap_account,
                     mail_tree,
                     format_thread=display_conf['format_thread']):
-                sys.stdout.write(output)
+                sys.stdout.write(output.encode('UTF-8'))
                 sys.stdout.write('\n')
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:

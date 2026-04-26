@@ -58,7 +58,7 @@ def main():
         for directory_status in sorted(imap_cli.status(imap_account),
                                        key=lambda obj: obj['directory']):
             sys.stdout.write(
-                display_conf['format_status'].format(**directory_status))
+                display_conf['format_status'].format(**directory_status).encode('UTF-8'))
             sys.stdout.write('\n')
     except KeyboardInterrupt:
         log.info('Interrupt by user, exiting')

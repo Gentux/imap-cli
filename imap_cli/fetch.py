@@ -201,7 +201,7 @@ def main():
     if len(args['<mail_uid>']) == 0:
         args['<mail_uid>'] = sys.stdin.read().strip().split()
     if len(args['<mail_uid>']) == 0:
-        sys.stderr.write('\n'.join(__doc__.split('\n')[2:]))
+        sys.stderr.write('\n'.join(__doc__.split('\n')[2:]).encode('UTF-8'))
         return 1
 
     conf = config.new_context_from_file(args['--config-file'], section='imap')
@@ -220,7 +220,7 @@ def main():
             return 1
 
         for fetched_mail in fetched_mails:
-            sys.stdout.write(display(fetched_mail))
+            sys.stdout.write(display(fetched_mail).encode('UTF-8'))
 
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:

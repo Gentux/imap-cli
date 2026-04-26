@@ -107,7 +107,7 @@ class ImapShell(cmd.Cmd):
                 u'UID : {:<10} From : {:<40.40} Subject : {:.50}\n'.format(
                     mail_info['uid'],
                     mail_info['from'],
-                    mail_info['subject']))
+                    mail_info['subject']).encode('UTF-8'))
 
     def do_mv(self, arg):
         '''Move mail from one mailbox to another.'''
@@ -167,7 +167,7 @@ class ImapShell(cmd.Cmd):
 
             temp_file.close()
         else:
-            sys.stdout.write(fetch.display(fetched_mail))
+            sys.stdout.write(fetch.display(fetched_mail).encode('UTF-8'))
 
     def do_search(self, arg):
         '''Search mail.'''
@@ -217,7 +217,7 @@ class ImapShell(cmd.Cmd):
                 u'UID : {:<10} From : {:<40.40} Subject : {:.50}\n'.format(
                     mail_info['uid'],
                     mail_info['from'],
-                    mail_info['subject']))
+                    mail_info['subject']).encode('UTF-8'))
 
     def do_status(self, arg):
         'Print status of all IMAP folder in this account'
@@ -229,7 +229,7 @@ class ImapShell(cmd.Cmd):
                     directory_status['directory'],
                     directory_status['unseen'],
                     directory_status['recent'],
-                    directory_status['count']))
+                    directory_status['count']).encode('UTF-8'))
 
     def do_unseen(self, arg):
         '''List Unseen mail (equivalent to "search -t unseen").'''
@@ -245,7 +245,7 @@ class ImapShell(cmd.Cmd):
                     u'UID : {:<10} From : {:<40.40} Subject : {:.50}\n'.format(
                         mail_info['uid'],
                         mail_info['from'],
-                        mail_info['subject']))
+                        mail_info['subject']).encode('UTF-8'))
 
     def emptyline(self):
         pass

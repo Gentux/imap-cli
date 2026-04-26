@@ -42,7 +42,7 @@ def main():
         for directory_status in sorted(imap_cli.status(imap_account),
                                        key=lambda obj: obj['directory']):
             if int(directory_status['unseen']) > 0:
-                sys.stdout.write(directory_status['directory'])
+                sys.stdout.write(directory_status['directory'].encode('UTF-8'))
                 sys.stdout.write('\n')
 
                 imap_cli.change_dir(imap_account,
@@ -62,7 +62,7 @@ def main():
                     sys.stdout.write(format_string.format(
                         mail_info['uid'],
                         mail_info['from'],
-                        mail_info['subject']))
+                        mail_info['subject']).encode('UTF-8'))
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:
         log.info('Interrupt by user, exiting')

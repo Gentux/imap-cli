@@ -53,7 +53,7 @@ def main():
 
             if len(mail_set) > 0:
                 sys.stdout.write(u'{} Directory\n'.format(
-                    directory_status['directory']))
+                    directory_status['directory']).encode('UTF-8'))
 
                 for mail_info in search.fetch_mails_info(imap_account,
                                                          mail_set=mail_set):
@@ -64,7 +64,7 @@ def main():
                     sys.stdout.write(format_string.format(
                         mail_info['uid'],
                         mail_info['from'],
-                        mail_info['subject']))
+                        mail_info['subject']).encode('UTF-8'))
         imap_cli.disconnect(imap_account)
     except KeyboardInterrupt:
         log.info('Interrupt by user, exiting')
