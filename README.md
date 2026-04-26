@@ -14,6 +14,7 @@ library:
 * Read mail
 * Flag mail (Read, Unread, Delete, etc…)
 * Copy, Move and Delete mail
+* Authenticate using SASL
 
 You can read about my initial motivation to write this software
 [here](http://romain.soufflet.io/bash/2014/07/11/Mail-Mail-and-mail-again-my-head-will-explode.html).
@@ -53,6 +54,15 @@ Then, configure imap-cli creating a configuration file in `~/.config/imap-cli` c
     hostname = imap.example.org
     username = username
     password = secret
+    ssl = True
+
+Alternatively, for authentication via a SASL mechanism such as XOAUTH2:
+
+    [imap]
+    hostname = imap.example.org
+    username = username
+    sasl_auth = XOAUTH2
+    bearer_access_token = abcde12345
     ssl = True
 
 If you want to add a minimal autocompletion, you can copy **imapcli_bash_completion.sh** in the file

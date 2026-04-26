@@ -211,7 +211,7 @@ def main():
     try:
         imap_account = imap_cli.connect(**conf)
         imap_cli.change_dir(imap_account,
-                            args['--directory'] or const.DEFAULT_DIRECTORY)
+                            '"{}"'.format(args['--directory']) or const.DEFAULT_DIRECTORY)
         fetched_mails = read(imap_account,
                              args['<mail_uid>'],
                              save_directory=args['--save'])

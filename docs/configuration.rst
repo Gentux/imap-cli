@@ -48,6 +48,30 @@ This file can contains the following options::
     format_status = {directory:>20} : {count:>5} Mails - {unseen:>5} Unseen - {recent:>5} Recent
     limit = 10
 
+SASL Authentication
+~~~~~~~~~~~~~~~~~~~~~~
+In addition to the standard `LOGIN` authentication illustrated above, Imap-CLI also supports authentication via SASL. This can be specified in the **[imap]** section of the config::
+
+    [imap]
+    hostname = imap.example.org
+    username = username
+    sasl_auth = OAUTHBEARER
+    sasl_ir = abcde12345
+    ssl = True
+
+Here `sasl_auth` is the authentication method and `sasl_ir` is the initial response (or the client response to the first server challenge). If the `sasl_ir` contains
+non-printable characters, such as the SOH (start of heading) character, you may find it easier to generate the config file programatically.
+
+Additionally, for SASL XOAUTH2 authentication, Imap-CLI can simply take a `bearer_access_token` instead of the `sasl_ir`, like so::
+
+    [imap]
+    hostname = imap.example.org
+    username = username
+    sasl_auth = XOAUTH2
+    bearer_access_token = abcde12345
+    ssl = True
+
+Imap-CLI will then automatically construct the SASL XOAUTH2 initial response.
 
 .. warning::
 

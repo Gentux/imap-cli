@@ -35,7 +35,8 @@ def change_dir(imap_account, directory, read_only=True):
         return -1
 
 
-def connect(hostname, username, password, port=None, ssl=True):
+def connect(hostname, username, password=None, port=None, ssl=True,
+            sasl_auth=None, sasl_ir=None):
     """Return an IMAP account object (see imaplib documentation for details)
 
     .. versionadded:: 0.1
@@ -57,7 +58,11 @@ def connect(hostname, username, password, port=None, ssl=True):
     else:
         log.debug('Connecting on {}'.format(hostname))
         imap_account = imaplib.IMAP4(hostname, port)
-    imap_account.login(username, password)
+
+    if sasl_auth:
+        imap_account.authenticate(sasl_auth, lambda x: sasl_ir)
+    else:
+        imap_account.login(username, password)
     return imap_account
 
 
@@ -123,7 +128,7 @@ def status(imap_account):
     >>>     print directory_status
     """
     for directory_info in list_dir(imap_account):
-        status, data = imap_account.status(directory_info['directory'],
+        status, data = imap_account.status('"{}"'.format(directory_info['directory']),
                                            '(MESSAGES RECENT UNSEEN)')
         if status != const.STATUS_OK:
             log.warning('Wrong status : {}'.format(repr(data)))
