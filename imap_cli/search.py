@@ -461,7 +461,7 @@ def main():
         imap_account = imap_cli.connect(**connect_conf)
         imap_cli.change_dir(
             imap_account,
-            directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
+            directory='"{}"'.format(args['<directory>']) or const.DEFAULT_DIRECTORY)
         search_criterion = create_search_criterion(
             address=args['--address'],
             date=date,

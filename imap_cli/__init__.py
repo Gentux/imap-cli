@@ -128,7 +128,7 @@ def status(imap_account):
     >>>     print directory_status
     """
     for directory_info in list_dir(imap_account):
-        status, data = imap_account.status(directory_info['directory'],
+        status, data = imap_account.status('"{}"'.format(directory_info['directory']),
                                            '(MESSAGES RECENT UNSEEN)')
         if status != const.STATUS_OK:
             log.warning('Wrong status : {}'.format(repr(data)))

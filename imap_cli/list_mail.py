@@ -74,7 +74,7 @@ def main():
         imap_account = imap_cli.connect(**connect_conf)
         imap_cli.change_dir(
             imap_account,
-            directory=args['<directory>'] or const.DEFAULT_DIRECTORY)
+            directory='"{}"'.format(args['<directory>']) or const.DEFAULT_DIRECTORY)
         if args['--thread'] is False:
             for mail_info in search.fetch_mails_info(imap_account,
                                                      limit=limit):
